@@ -517,34 +517,57 @@ if(kf_data_sel_temp==1){//GPS
 //	 if(par[2]!=0)K_spd_flow=(float)par[2]/1000.;
 	 velNorth=SPDY*cos(Yaw_qr*0.0173)-SPDX*sin(Yaw_qr*0.0173);
    velEast=SPDY*sin(Yaw_qr*0.0173)+SPDX*cos(Yaw_qr*0.0173);
-	 if(qr.check==0)
+	 if(qr.check==0&&qr.connect)
 	 H[0]=0; 
+	 static float pos_reg[2];
    Qr_y=-qr.y;
 	 Posy=Qr_y*K_pos_qr;
 	 Sdpy=velNorth*K_spd_gps;
 	 Accy=accNorth;
-	 double Zy[3]={Posy,Sdpy,0};
-	 if(1)//bei 
-   KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
-   Qr_x=qr.x;
+	 Qr_x=qr.x;
 	 Posx=Qr_x*K_pos_qr;
 	 Sdpx=velEast*K_spd_gps;
 	 Accx=accEast;
+	 static u8 state_init_flow_pos;
+	 switch(state_init_flow_pos)
+	 {
+		 case 0:
+			  if(qr.check&&qr.connect)
+				{
+				state_init_flow_pos=1;
+				X_KF_NAV[1][0]=Posy;X_KF_NAV[0][0]=Posx;
+				}
+			 break;
+		 case 1:
+			 if(ALT_POS_SONAR2<0.15||!fly_ready)
+				state_init_flow_pos=0;
+			break; 
+	 }
+	 
+	 
+	 
+	 double Zy[3]={Posy,Sdpy,0};
+	 if(1)//bei 
+   KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
 	 double Zx[3]={Posx,Sdpx,0};
 	 if(1)//dong
    KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
-
-	 
 	 X_ukf[0]=X_KF_NAV[0][0];//East pos
 	 //X_ukf[1]=X_KF_NAV[0][1];//East vel
 	 X_ukf[2]=X_KF_NAV[0][2];
 	 X_ukf[3]=X_KF_NAV[1][0];//North  pos
 	 //X_ukf[4]=X_KF_NAV[1][1];//North  vel
-	 X_ukf[5]=X_KF_NAV[1][2];
-									
+	 X_ukf[5]=X_KF_NAV[1][2];							
 	 X_ukf[1]=-X_KF_NAV[1][1]*sin(Yaw_qr*0.0173)+X_KF_NAV[0][1]*cos(Yaw_qr*0.0173);//X
 	 X_ukf[4]= X_KF_NAV[1][1]*cos(Yaw_qr*0.0173)+X_KF_NAV[0][1]*sin(Yaw_qr*0.0173);//Y
-
+   if(fabs( X_ukf[0]-pos_reg[0])>1.5||fabs( X_ukf[3]-pos_reg[1])>1.5){
+		  if(qr.connect)
+			{X_KF_NAV[1][0]=Posy;X_KF_NAV[0][0]=Posx;}
+			else
+			{X_KF_NAV[1][0]= pos_reg[1];X_KF_NAV[0][0]= pos_reg[0];}	
+		}
+	 pos_reg[0]=X_ukf[0];
+	 pos_reg[1]=X_ukf[3];	
  	 X_ukf_Pos[0]=X_ukf[0];//East Pos
    X_ukf_Pos[1]=X_ukf[3];//North Pos
 	}else{//--------------------------------------flow in body-------------------------------------------------------------------------	

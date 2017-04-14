@@ -378,14 +378,14 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
-              <FileName>ucos_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ucos_task.c</FilePath>
-            </File>
-            <File>
               <FileName>datasheet.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\HARDWARE\IIC\datasheet.txt</FilePath>
+            </File>
+            <File>
+              <FileName>ucos_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\ucos_task.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>

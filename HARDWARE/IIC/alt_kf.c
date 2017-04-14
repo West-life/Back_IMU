@@ -1429,7 +1429,7 @@ int baroAlt_temp;
 	static float spd_r_imu;
   acc_est_imu=(X_apo_height[1]-spd_r_imu)/dt;
 	spd_r_imu=X_apo_height[1];
-	if(fabs(acc_est_imu>5)||fabs(spd_r_imu)>10)	
+	if(fabs(acc_est_imu)>5||fabs(spd_r_imu)>10)	
   {baro_ekf_ero=1;}
 	
 	if(fabs(X_kf_sonar[1])<0.1&&fabs(X_kf_baro[1])<0.1&&ALT_POS_SONAR3<2.6&&ultra_ok)
@@ -1448,8 +1448,8 @@ static   float wz;
 float accz_x,accz_y;  
 flow_dt = Get_Cycle_T(GET_T_FLOW_UKF);	
   
-accz_x =k_acc_ukf*accz_x +(1-k_acc_ukf)*(acc_neo[0]*acc_flag[0]);
-accz_y =k_acc_ukf*accz_y +(1-k_acc_ukf)*(acc_neo[1]*acc_flag[1]);
+accz_x =flow_matlab_data[0];//k_acc_ukf*accz_x +(1-k_acc_ukf)*(acc_neo[0]*acc_flag[0]);
+accz_y =flow_matlab_data[1];//k_acc_ukf*accz_y +(1-k_acc_ukf)*(acc_neo[1]*acc_flag[1]);
 accz_x=LIMIT(accz_x,-MAX_ACC_NEO,MAX_ACC_NEO);
 accz_y=LIMIT(accz_y,-MAX_ACC_NEO,MAX_ACC_NEO);
 static u16 cnt_init;

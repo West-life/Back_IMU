@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\OBJ\UCOSII-3.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\UCOSII-3.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Fri Apr 14 17:28:32 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Fri Apr 14 21:07:47 2017
 <BR><P>
 <H3>Maximum Stack Usage =       1384 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -129,7 +129,7 @@ Function Pointers
  <LI><a href="#[d]">UsageFault_Handler</a> from stm32f4xx_it.o(.text) referenced from startup_stm32f40_41xxx.o(RESET)
  <LI><a href="#[12]">WWDG_IRQHandler</a> from startup_stm32f40_41xxx.o(.text) referenced from startup_stm32f40_41xxx.o(RESET)
  <LI><a href="#[75]">__main</a> from __main.o(!!!main) referenced from startup_stm32f40_41xxx.o(.text)
- <LI><a href="#[73]">altUkfTimeUpdate</a> from alt_kf.o(.text) referenced 2 times from alt_kf.o(.text)
+ <LI><a href="#[73]">altUkfTimeUpdate</a> from alt_kf.o(.text) referenced from alt_kf.o(.text)
  <LI><a href="#[6a]">baro_task</a> from ucos_task.o(.text) referenced from main.o(.text)
  <LI><a href="#[68]">ekf_task</a> from ucos_task.o(.text) referenced from main.o(.text)
  <LI><a href="#[6c]">error_task</a> from ucos_task.o(.text) referenced from main.o(.text)
@@ -5019,8 +5019,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
 <LI><a href="#[286]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_atan
-<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
+<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 </UL>
 
 <P><STRONG><a name="[286]"></a>my_atan</STRONG> (Thumb, 24 bytes, Stack size 4 bytes, my_math.o(.text), UNUSED)
@@ -5169,7 +5169,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FlowUkfProcess
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 </UL>
 
 <P><STRONG><a name="[296]"></a>srcdkfMeasurementUpdate</STRONG> (Thumb, 1368 bytes, Stack size 128 bytes, alt_kf.o(.text))
@@ -5183,7 +5183,7 @@ Global Symbols
 <LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_trans_f32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[298]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
 </UL>
 
@@ -5199,12 +5199,12 @@ Global Symbols
 <P><STRONG><a name="[299]"></a>srcdkfGetState</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, alt_kf.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfInit
 <LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[298]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
 </UL>
 
-<P><STRONG><a name="[2a8]"></a>srcdkfSetVariance</STRONG> (Thumb, 166 bytes, Stack size 28 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2a7]"></a>srcdkfSetVariance</STRONG> (Thumb, 166 bytes, Stack size 28 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = srcdkfSetVariance
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfInit
@@ -5253,7 +5253,7 @@ Global Symbols
 <LI><a href="#[27f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;anotc_filter_1
 </UL>
 
-<P><STRONG><a name="[99]"></a>altUkfProcess</STRONG> (Thumb, 1608 bytes, Stack size 104 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[99]"></a>altUkfProcess</STRONG> (Thumb, 1584 bytes, Stack size 104 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1288<LI>Call Chain = altUkfProcess &rArr; altDoPresUpdate &rArr; kf_oldx &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Cycle_T
@@ -5266,7 +5266,6 @@ Global Symbols
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
 <LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
@@ -5274,7 +5273,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;baro_task
 </UL>
 
-<P><STRONG><a name="[a6]"></a>FlowUkfProcess</STRONG> (Thumb, 502 bytes, Stack size 24 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[a6]"></a>FlowUkfProcess</STRONG> (Thumb, 416 bytes, Stack size 24 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 308<LI>Call Chain = FlowUkfProcess &rArr; flow_ukf_Update &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Cycle_T
@@ -5284,10 +5283,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 </UL>
 
-<P><STRONG><a name="[2a6]"></a>GpsUkfProcess</STRONG> (Thumb, 824 bytes, Stack size 80 bytes, alt_kf.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<P><STRONG><a name="[2a5]"></a>GpsUkfProcess</STRONG> (Thumb, 816 bytes, Stack size 80 bytes, alt_kf.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[293]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -5296,10 +5295,10 @@ Global Symbols
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 
-<P><STRONG><a name="[cd]"></a>altUkfInit</STRONG> (Thumb, 646 bytes, Stack size 68 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[cd]"></a>altUkfInit</STRONG> (Thumb, 536 bytes, Stack size 68 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = altUkfInit &rArr; srcdkfInit &rArr; matrixInit &rArr; aqDataCalloc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfSetVariance
+<BR>[Calls]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfSetVariance
 <LI><a href="#[299]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
 </UL>
@@ -5309,8 +5308,8 @@ Global Symbols
 <P><STRONG><a name="[2a3]"></a>kf_oldx</STRONG> (Thumb, 3726 bytes, Stack size 744 bytes, kf_oldx.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1064<LI>Call Chain = kf_oldx &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<BR>[Calls]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
@@ -5338,7 +5337,7 @@ Global Symbols
 <LI><a href="#[282]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;simple_3d_trans
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
@@ -5356,7 +5355,7 @@ Global Symbols
 <P><STRONG><a name="[2b3]"></a>euler_to_q</STRONG> (Thumb, 680 bytes, Stack size 104 bytes, imu_m.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 288<LI>Call Chain = euler_to_q &rArr; __hardfp_sin &rArr; __ieee754_rem_pio2 &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<BR>[Calls]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -5392,7 +5391,7 @@ Global Symbols
 <LI><a href="#[2b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invSqrt
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
@@ -5529,13 +5528,13 @@ Global Symbols
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
-<LI><a href="#[2c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VelBaroCorrection
+<BR>[Called By]<UL><LI><a href="#[2c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VelBaroCorrection
 <LI><a href="#[2c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsMagCorrection
 <LI><a href="#[2c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FullCorrection
 <LI><a href="#[2c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsBaroCorrection
 <LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MagVelBaroCorrection
 <LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MagCorrection
+<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 </UL>
 
 <P><STRONG><a name="[2c4]"></a>MagCorrection</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, insgps13state.o(.text), UNUSED)
@@ -5570,30 +5569,30 @@ Global Symbols
 <LI><a href="#[2cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtGetInfF
 <LI><a href="#[2cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtGetInf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV_initialize
-<LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx_initialize
-<LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_initialize
+<BR>[Called By]<UL><LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_initialize
 <LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw_initialize
+<LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV_initialize
+<LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx_initialize
 </UL>
 
-<P><STRONG><a name="[2ac]"></a>rtIsInf</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, rt_nonfinite.o(.text))
+<P><STRONG><a name="[2ab]"></a>rtIsInf</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, rt_nonfinite.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = rtIsInf &rArr; __aeabi_cdcmpeq
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<BR>[Calls]<UL><LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<BR>[Called By]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 </UL>
 
 <P><STRONG><a name="[424]"></a>rtIsInfF</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, rt_nonfinite.o(.text), UNUSED)
 
-<P><STRONG><a name="[2ab]"></a>rtIsNaN</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, rt_nonfinite.o(.text))
+<P><STRONG><a name="[2aa]"></a>rtIsNaN</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, rt_nonfinite.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = rtIsNaN &rArr; __aeabi_cdcmpeq
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<BR>[Calls]<UL><LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<BR>[Called By]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 </UL>
 
 <P><STRONG><a name="[425]"></a>rtIsNaNF</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, rt_nonfinite.o(.text), UNUSED)
@@ -5635,13 +5634,13 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[2d6]"></a>ukf_oldx</STRONG> (Thumb, 1118 bytes, Stack size 6024 bytes, ukf_oldx.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ut
+<BR><BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ut
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 <LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;diag
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
 </UL>
@@ -5662,7 +5661,7 @@ Global Symbols
 <LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSCorrection
 <LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSCovariancePrediction
 <LI><a href="#[2bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSStatePrediction
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -5684,13 +5683,13 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[2dd]"></a>ukf_flow</STRONG> (Thumb, 664 bytes, Stack size 1256 bytes, ukf_task.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx_initialize
-<LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<BR><BR>[Calls]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx_initialize
+<LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task
 </UL>
@@ -5699,34 +5698,36 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
 </UL>
 
-<P><STRONG><a name="[98]"></a>ukf_pos_task_qr</STRONG> (Thumb, 9084 bytes, Stack size 376 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[98]"></a>ukf_pos_task_qr</STRONG> (Thumb, 9476 bytes, Stack size 376 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1360<LI>Call Chain = ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
-<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
-<LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_init_algorithm
-<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
-<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[299]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
 <LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 <LI><a href="#[293]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[2d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
+<LI><a href="#[2d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_init_algorithm
+<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
+<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
+<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 </UL>
 <BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ekf_task
 </UL>
@@ -5734,12 +5735,12 @@ Global Symbols
 <P><STRONG><a name="[2e2]"></a>KF_OLDX_NAV</STRONG> (Thumb, 2886 bytes, Stack size 664 bytes, kf_oldx_nav.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 984<LI>Call Chain = KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 </UL>
 <BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
@@ -5869,7 +5870,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
@@ -5925,25 +5926,25 @@ Global Symbols
 <P><STRONG><a name="[2f4]"></a>__ARM_fpclassify</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, fpclassify.o(i.__ARM_fpclassify))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __ARM_fpclassify
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<BR>[Called By]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 </UL>
 
 <P><STRONG><a name="[253]"></a>__hardfp_acos</STRONG> (Thumb, 738 bytes, Stack size 72 bytes, acos.o(i.__hardfp_acos))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = __hardfp_acos &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
-<LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
-<LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
-<LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
-<LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
+<BR>[Calls]<UL><LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
+<LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
+<LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
+<LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
 </UL>
 <BR>[Called By]<UL><LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 </UL>
@@ -5951,41 +5952,41 @@ Global Symbols
 <P><STRONG><a name="[2b2]"></a>__hardfp_asin</STRONG> (Thumb, 770 bytes, Stack size 88 bytes, asin.o(i.__hardfp_asin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = __hardfp_asin &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
+<BR>[Calls]<UL><LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
+<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
 <LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
 <LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
 <LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
 <LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
 <LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
-<LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
-<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
-<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
-<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
+<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 </UL>
 
 <P><STRONG><a name="[2b6]"></a>__hardfp_atan</STRONG> (Thumb, 622 bytes, Stack size 48 bytes, atan.o(i.__hardfp_atan))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = __hardfp_atan &rArr; __kernel_poly &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
-<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
-<LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
-<LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
-<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
+<BR>[Calls]<UL><LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
+<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
+<LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
+<LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[2f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan
@@ -5994,13 +5995,13 @@ Global Symbols
 <P><STRONG><a name="[2b7]"></a>__hardfp_atan2</STRONG> (Thumb, 432 bytes, Stack size 48 bytes, atan2.o(i.__hardfp_atan2))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = __hardfp_atan2 &rArr; atan &rArr; __hardfp_atan &rArr; __kernel_poly &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan2
-<LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
+<BR>[Calls]<UL><LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
 <LI><a href="#[2f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;atan
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan2
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 </UL>
@@ -6008,13 +6009,13 @@ Global Symbols
 <P><STRONG><a name="[1b5]"></a>__hardfp_cos</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, cos.o(i.__hardfp_cos))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = __hardfp_cos &rArr; __ieee754_rem_pio2 &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
+<BR>[Calls]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 <LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
 <LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
 <LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
 <LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 </UL>
 <BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
@@ -6022,29 +6023,30 @@ Global Symbols
 <LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Get
 <LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI15_10_IRQHandler
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
+<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 </UL>
 
 <P><STRONG><a name="[9d]"></a>__hardfp_fabs</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, fabs.o(i.__hardfp_fabs))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __hardfp_fabs
 </UL>
-<BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
+<BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_sample
 <LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 </UL>
 
 <P><STRONG><a name="[2ad]"></a>__hardfp_floor</STRONG> (Thumb, 252 bytes, Stack size 40 bytes, floor.o(i.__hardfp_floor))
@@ -6054,23 +6056,14 @@ Global Symbols
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<BR>[Called By]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 </UL>
 
 <P><STRONG><a name="[24b]"></a>__hardfp_pow</STRONG> (Thumb, 3072 bytes, Stack size 192 bytes, pow.o(i.__hardfp_pow))
 <BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
-<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
-<LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
-<LI><a href="#[2fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_overflow
-<LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
-<LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan2
-<LI><a href="#[2fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_divzero
-<LI><a href="#[2fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbn
-<LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
-<LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
+<BR>[Calls]<UL><LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
 <LI><a href="#[2f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fabs
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -6080,33 +6073,42 @@ Global Symbols
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
+<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
+<LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
+<LI><a href="#[2fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_overflow
+<LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
+<LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan2
+<LI><a href="#[2fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_divzero
+<LI><a href="#[2fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbn
+<LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
 </UL>
 <BR>[Called By]<UL><LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeFeet
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeMeters
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 </UL>
 
-<P><STRONG><a name="[2a7]"></a>__hardfp_sin</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, sin.o(i.__hardfp_sin))
+<P><STRONG><a name="[2a6]"></a>__hardfp_sin</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, sin.o(i.__hardfp_sin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = __hardfp_sin &rArr; __ieee754_rem_pio2 &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
+<BR>[Calls]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 <LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
 <LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
 <LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
 <LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 </UL>
 <BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
+<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 </UL>
 
 <P><STRONG><a name="[252]"></a>__hardfp_sqrt</STRONG> (Thumb, 122 bytes, Stack size 32 bytes, sqrt.o(i.__hardfp_sqrt))
@@ -6117,13 +6119,13 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
-<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 <LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSCorrection
 <LI><a href="#[2bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSStatePrediction
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 </UL>
 
 <P><STRONG><a name="[2f9]"></a>__ieee754_rem_pio2</STRONG> (Thumb, 938 bytes, Stack size 120 bytes, rred.o(i.__ieee754_rem_pio2))
@@ -6139,20 +6141,20 @@ Global Symbols
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<BR>[Called By]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 </UL>
 
 <P><STRONG><a name="[2fb]"></a>__kernel_cos</STRONG> (Thumb, 322 bytes, Stack size 64 bytes, cos_i.o(i.__kernel_cos))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = __kernel_cos &rArr; __kernel_poly &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
+<LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<BR>[Called By]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 </UL>
 
@@ -6162,26 +6164,26 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
-<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<BR>[Called By]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
 <LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
+<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
 </UL>
 
 <P><STRONG><a name="[2fa]"></a>__kernel_sin</STRONG> (Thumb, 280 bytes, Stack size 72 bytes, sin_i.o(i.__kernel_sin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = __kernel_sin &rArr; __kernel_poly &rArr; __aeabi_dmul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
-<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
-<LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
+<LI><a href="#[2f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
+<LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<BR>[Called By]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 </UL>
 
@@ -6198,7 +6200,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<BR>[Called By]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
@@ -6219,7 +6221,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<BR>[Called By]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
@@ -6239,10 +6241,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<BR>[Called By]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 </UL>
 
 <P><STRONG><a name="[2f8]"></a>atan</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, atan.o(i.atan))
@@ -6256,11 +6258,11 @@ Global Symbols
 <P><STRONG><a name="[2f6]"></a>fabs</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, fabs.o(i.fabs))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = fabs
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<BR>[Called By]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 </UL>
 
 <P><STRONG><a name="[2f3]"></a>sqrt</STRONG> (Thumb, 110 bytes, Stack size 32 bytes, sqrt.o(i.sqrt))
@@ -6279,20 +6281,20 @@ Global Symbols
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_sample
-<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
-<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
+<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
+<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 </UL>
 
 <P><STRONG><a name="[438]"></a>_dneg</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, basic.o(x$fpl$basic), UNUSED)
@@ -6322,7 +6324,7 @@ Global Symbols
 <LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[289]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
@@ -6332,18 +6334,18 @@ Global Symbols
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
 <LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 <LI><a href="#[21d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Receive_Anl
-<LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
-<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
-<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSCorrection
 <LI><a href="#[2bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INSStatePrediction
 <LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StateEq
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
+<LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
+<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
+<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
+<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 </UL>
 
 <P><STRONG><a name="[300]"></a>_d2f</STRONG> (Thumb, 98 bytes, Stack size 32 bytes, d2f.o(x$fpl$d2f), UNUSED)
@@ -6368,6 +6370,17 @@ Global Symbols
 <LI><a href="#[25a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureF
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
+<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StateEq
+<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
+<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
 <LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
@@ -6375,28 +6388,17 @@ Global Symbols
 <LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ut
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 <LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
-<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StateEq
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 <LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
 <LI><a href="#[2f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan2
 <LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
-<LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
-<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
-<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
-<LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
 </UL>
 
 <P><STRONG><a name="[303]"></a>_dadd</STRONG> (Thumb, 332 bytes, Stack size 16 bytes, daddsub_clz.o(x$fpl$dadd), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[305]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dretinf
+<BR><BR>[Calls]<UL><LI><a href="#[304]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
+<LI><a href="#[305]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dretinf
 <LI><a href="#[302]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
-<LI><a href="#[304]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub1
 </UL>
 
 <P><STRONG><a name="[306]"></a>__fpl_dcheck_NaN1</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, dcheck1.o(x$fpl$dcheck1))
@@ -6420,29 +6422,29 @@ Global Symbols
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
 <LI><a href="#[1eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMEA_GPRMC_Analysis
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KalmanFilter
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 <LI><a href="#[21d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Receive_Anl
-<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
 <LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
-<LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
-<LI><a href="#[2fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_divzero
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
 <LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
+<LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
+<LI><a href="#[2fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_divzero
 </UL>
 
 <P><STRONG><a name="[308]"></a>_ddiv</STRONG> (Thumb, 552 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv), UNUSED)
@@ -6450,16 +6452,15 @@ Global Symbols
 <LI><a href="#[302]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
 </UL>
 
-<P><STRONG><a name="[2a4]"></a>__aeabi_cdcmpeq</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, deqf.o(x$fpl$deqf))
+<P><STRONG><a name="[2ac]"></a>__aeabi_cdcmpeq</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, deqf.o(x$fpl$deqf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_cdcmpeq
 </UL>
 <BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
+<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsNaN
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsInf
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
-<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsNaN
-<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsInf
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 </UL>
 
 <P><STRONG><a name="[309]"></a>_dcmpeq</STRONG> (Thumb, 120 bytes, Stack size 32 bytes, deqf.o(x$fpl$deqf), UNUSED)
@@ -6492,11 +6493,11 @@ Global Symbols
 <LI><a href="#[289]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_sin
 <LI><a href="#[259]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
-<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
+<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 </UL>
 
 <P><STRONG><a name="[43d]"></a>_dflt</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dflt), UNUSED)
@@ -6505,7 +6506,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;error_task
 <LI><a href="#[1eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMEA_GPRMC_Analysis
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 </UL>
@@ -6527,12 +6528,12 @@ Global Symbols
 <LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[287]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
-<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 </UL>
 
 <P><STRONG><a name="[30c]"></a>_dcmple</STRONG> (Thumb, 120 bytes, Stack size 32 bytes, dleqf.o(x$fpl$dleqf), UNUSED)
@@ -6574,6 +6575,17 @@ Global Symbols
 <LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;data_per_uart4
 <LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_GPS
 <LI><a href="#[224]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_UKF1
+<LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
+<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
+<LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
@@ -6584,23 +6596,12 @@ Global Symbols
 <LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ut
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 <LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
-<LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 <LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 <LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
 <LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_underflow
 <LI><a href="#[2fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_overflow
 <LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
-<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
-<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
-<LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
 </UL>
 
 <P><STRONG><a name="[30d]"></a>_dmul</STRONG> (Thumb, 332 bytes, Stack size 32 bytes, dmul.o(x$fpl$dmul), UNUSED)
@@ -6611,8 +6612,7 @@ Global Symbols
 <P><STRONG><a name="[302]"></a>__fpl_dnaninf</STRONG> (Thumb, 156 bytes, Stack size 16 bytes, dnaninf.o(x$fpl$dnaninf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __fpl_dnaninf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsqrt
-<LI><a href="#[30d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dmul
+<BR>[Called By]<UL><LI><a href="#[30d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dmul
 <LI><a href="#[30c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dcmple
 <LI><a href="#[30b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dfix
 <LI><a href="#[309]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dcmpeq
@@ -6620,6 +6620,7 @@ Global Symbols
 <LI><a href="#[312]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsub
 <LI><a href="#[303]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd
 <LI><a href="#[300]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2f
+<LI><a href="#[2ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dsqrt
 </UL>
 
 <P><STRONG><a name="[305]"></a>__fpl_dretinf</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, dretinf.o(x$fpl$dretinf), UNUSED)
@@ -6638,19 +6639,19 @@ Global Symbols
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;error_task
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_sample
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[289]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_sin
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
+<LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 <LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
-<LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
 </UL>
 
 <P><STRONG><a name="[30e]"></a>_drcmple</STRONG> (Thumb, 108 bytes, Stack size 16 bytes, drleqf.o(x$fpl$drleqf), UNUSED)
@@ -6660,26 +6661,27 @@ Global Symbols
 <P><STRONG><a name="[24c]"></a>__aeabi_drsub</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, daddsub_clz.o(x$fpl$drsb))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_drsub
 </UL>
-<BR>[Called By]<UL><LI><a href="#[287]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
+<BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
+<LI><a href="#[287]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeFeet
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeMeters
 <LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
-<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
-<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
-<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
 <LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
+<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invNxN
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
+<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
+<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
 </UL>
 
 <P><STRONG><a name="[310]"></a>_drsb</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, daddsub_clz.o(x$fpl$drsb), UNUSED)
@@ -6704,35 +6706,35 @@ Global Symbols
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[289]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_sin
 <LI><a href="#[287]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KalmanFilter
 <LI><a href="#[25a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
-<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
-<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
-<LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx
-<LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ut
-<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
-<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
-<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan2
 <LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_atan
 <LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asin
 <LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
+<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
+<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
+<LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_oldx
+<LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ut
+<LI><a href="#[2d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sigmas
+<LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
+<LI><a href="#[2f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
+<LI><a href="#[2fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_cos
 </UL>
 
 <P><STRONG><a name="[312]"></a>_dsub</STRONG> (Thumb, 464 bytes, Stack size 32 bytes, daddsub_clz.o(x$fpl$dsub), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[302]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
-<LI><a href="#[311]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
+<BR><BR>[Calls]<UL><LI><a href="#[311]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
+<LI><a href="#[302]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
 </UL>
 
 <P><STRONG><a name="[87]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d))
@@ -6755,7 +6757,7 @@ Global Symbols
 <LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeFeet
@@ -6764,10 +6766,6 @@ Global Symbols
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
 <LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 <LI><a href="#[21d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Receive_Anl
-<LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
-<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
-<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
 <LI><a href="#[2ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtGetNaN
 <LI><a href="#[2ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtGetMinusInf
 <LI><a href="#[2cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtGetInf
@@ -6776,8 +6774,12 @@ Global Symbols
 <LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StateEq
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MahonyAHRSupdate
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 <LI><a href="#[29b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
+<LI><a href="#[2dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_flow
+<LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ins_outdoor_update
+<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
+<LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
 </UL>
 
 <P><STRONG><a name="[313]"></a>_f2d</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d), UNUSED)
@@ -7194,7 +7196,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
 </UL>
 
-<P><STRONG><a name="[2a5]"></a>gps_ukf_Update</STRONG> (Thumb, 782 bytes, Stack size 64 bytes, alt_kf.o(.text), UNUSED)
+<P><STRONG><a name="[2a4]"></a>gps_ukf_Update</STRONG> (Thumb, 782 bytes, Stack size 64 bytes, alt_kf.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[299]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
 <LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
@@ -7206,10 +7208,10 @@ Local Symbols
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<BR>[Called By]<UL><LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 </UL>
 
-<P><STRONG><a name="[2a9]"></a>inv</STRONG> (Thumb, 1628 bytes, Stack size 168 bytes, kf_oldx.o(.text))
+<P><STRONG><a name="[2a8]"></a>inv</STRONG> (Thumb, 1628 bytes, Stack size 168 bytes, kf_oldx.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = inv &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
@@ -7224,11 +7226,11 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
 </UL>
 
-<P><STRONG><a name="[2aa]"></a>rt_powd_snf</STRONG> (Thumb, 592 bytes, Stack size 56 bytes, kf_oldx.o(.text))
+<P><STRONG><a name="[2a9]"></a>rt_powd_snf</STRONG> (Thumb, 592 bytes, Stack size 56 bytes, kf_oldx.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 320<LI>Call Chain = rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsNaN
-<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsInf
+<BR>[Calls]<UL><LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsNaN
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsInf
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
@@ -7236,7 +7238,7 @@ Local Symbols
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
@@ -7252,7 +7254,7 @@ Local Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
@@ -7293,7 +7295,7 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 336<LI>Call Chain = CalcEarthRadius &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -7343,8 +7345,8 @@ Local Symbols
 <P><STRONG><a name="[2e4]"></a>rt_powd_snf</STRONG> (Thumb, 592 bytes, Stack size 56 bytes, kf_oldx_nav.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 320<LI>Call Chain = rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsNaN
-<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsInf
+<BR>[Calls]<UL><LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsNaN
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtIsInf
 <LI><a href="#[252]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_pow
 <LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_floor
@@ -7352,7 +7354,7 @@ Local Symbols
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
-<LI><a href="#[2a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
