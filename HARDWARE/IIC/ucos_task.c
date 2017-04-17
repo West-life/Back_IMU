@@ -52,11 +52,14 @@ void inner_task(void *pdata)
 	if(cnt5++>0)	
 	#endif 
 	{cnt5=0;
+		if(mpu6050.good)
 		MPU6050_Read(); 															//读取mpu6轴传感器
   if(cnt++>=3){cnt=0;
+		if(mpu6050.good)
 	  ANO_AK8975_Read();//75hz	
 	}			//获取电子罗盘数据	
   if(cnt1++>=2){cnt1=0;
+		if(mpu6050.good)
 	MS5611_ThreadNew();//100hz
 	}
   }
@@ -69,7 +72,8 @@ void inner_task(void *pdata)
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
 	if(cnt3++>=7){cnt3=0;
-	//LP_readbmp(0);//25hz
+		if(!mpu6050.good)
+	LP_readbmp(0);//25hz
 	}
 	#endif
 	MPU6050_Data_Prepare( inner_loop_time_time );			//mpu6轴传感器数据处理

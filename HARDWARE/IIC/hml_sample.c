@@ -392,6 +392,9 @@ void HMC58X3_getID(char id[3])
 void HMC5883L_SetUp(void)
 { char id[3];
 	HMC58X3_getID(id);
+	if(id[0]!=0xff)
+		mpu6050.good=1;
+	
   HMC58X3_init(0); // Don't set mode yet, we'll do that later on.
   HMC58X3_setMode(0);
   //HMC58X3_setDOR(HMC5883L_RATE_15);

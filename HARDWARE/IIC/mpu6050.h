@@ -15,7 +15,7 @@ extern u32 mcuID[3];
 #define DRONE_350_ID 2818103
 
 typedef struct 
-{
+{ u8 good;
 	char Acc_CALIBRATE;
 	char Gyro_CALIBRATE;
   xyz_s16_t Acc_I16;

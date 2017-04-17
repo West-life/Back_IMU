@@ -1,6 +1,6 @@
 Dependencies for Project 'UCOSII-3', Target 'UCOSII-3': (DO NOT MODIFY !)
 F (..\HARDWARE\IIC\datasheet.txt)(0x570672DB)()
-F (..\HARDWARE\IIC\ucos_task.c)(0x58C14E62)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Device\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1" -D__CC_ARM-o ..\obj\ucos_task.o --omf_browse ..\obj\ucos_task.crf --depend ..\obj\ucos_task.d)
+F (..\HARDWARE\IIC\ucos_task.c)(0x58F4567D)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Device\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1" -D__CC_ARM-o ..\obj\ucos_task.o --omf_browse ..\obj\ucos_task.crf --depend ..\obj\ucos_task.d)
 I (..\HARDWARE\IIC\include.h)(0x58F0719D)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
@@ -42,7 +42,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -140,7 +140,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -1396,7 +1396,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -1458,7 +1458,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -1563,7 +1563,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -1627,7 +1627,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -1689,7 +1689,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -1842,7 +1842,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\MALLOC\malloc.h)(0x54212E6C)
 I (..\HARDWARE\IIC\usart_fc.h)(0x58F0719D)
@@ -1905,7 +1905,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2088,7 +2088,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2150,7 +2150,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2240,7 +2240,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
 I (..\MALLOC\malloc.h)(0x54212E6C)
@@ -2312,7 +2312,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
 I (..\MALLOC\malloc.h)(0x54212E6C)
@@ -2331,7 +2331,7 @@ I (..\HARDWARE\IIC\MadgwickAHRS.h)(0x57859C0F)
 I (..\HARDWARE\IIC\height_ctrl.h)(0x57072244)
 I (..\HARDWARE\IIC\flash.h)(0x578EE152)
 I (..\HARDWARE\IIC\dma.h)(0x56B011FD)
-F (..\HARDWARE\IIC\hml_sample.c)(0x58B69639)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Device\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1" -D__CC_ARM-o ..\obj\hml_sample.o --omf_browse ..\obj\hml_sample.crf --depend ..\obj\hml_sample.d)
+F (..\HARDWARE\IIC\hml_sample.c)(0x58F45674)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Device\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1" -D__CC_ARM-o ..\obj\hml_sample.o --omf_browse ..\obj\hml_sample.crf --depend ..\obj\hml_sample.d)
 I (..\HARDWARE\IIC\include.h)(0x58F0719D)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
@@ -2373,7 +2373,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2399,8 +2399,8 @@ I (..\HARDWARE\IIC\iic_soft.h)(0x58B582DB)
 I (..\HARDWARE\IIC\filter.h)(0x58340203)
 I (..\HARDWARE\IIC\hml5833l.h)(0x57737657)
 I (d:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
-F (..\HARDWARE\IIC\mpu6050.c)(0x58C0EFC4)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Device\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1" -D__CC_ARM-o ..\obj\mpu6050.o --omf_browse ..\obj\mpu6050.crf --depend ..\obj\mpu6050.d)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+F (..\HARDWARE\IIC\mpu6050.c)(0x58F4556E)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Device\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1" -D__CC_ARM-o ..\obj\mpu6050.o --omf_browse ..\obj\mpu6050.crf --depend ..\obj\mpu6050.d)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\USER\stm32f4xx.h)(0x542BA484)
 I (..\CORE\core_cm4.h)(0x53C7D532)
 I (d:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
@@ -2509,7 +2509,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2575,7 +2575,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2640,7 +2640,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2705,7 +2705,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2766,7 +2766,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2866,7 +2866,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -2941,7 +2941,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -3023,7 +3023,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
 I (..\MALLOC\malloc.h)(0x54212E6C)
@@ -3118,7 +3118,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -3185,7 +3185,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
 I (..\MALLOC\malloc.h)(0x54212E6C)
@@ -3248,7 +3248,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAE)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAE)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
@@ -3348,7 +3348,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
 I (..\HARDWARE\IIC\time.h)(0x58B7CBA6)
-I (..\HARDWARE\IIC\mpu6050.h)(0x58B6D061)
+I (..\HARDWARE\IIC\mpu6050.h)(0x58F4561A)
 I (..\HARDWARE\IIC\parameter.h)(0x56AB3086)
 I (..\SYSTEM\delay\delay.h)(0x53B7797E)
 I (..\SYSTEM\sys\sys.h)(0x543CFEBC)
