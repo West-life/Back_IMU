@@ -2,6 +2,18 @@
 #define __IOI2C_H
 #include "stm32f4xx.h"
 #include "include.h"
+#define  NEW_IMU 1
+#if NEW_IMU
+#define SDA_IMU1_IN()  {GPIOB->MODER&=~(3<<(6*2));GPIOB->MODER|=0<<6*2;}	//PB9输入模式
+#define SDA_IMU1_OUT() {GPIOB->MODER&=~(3<<(6*2));GPIOB->MODER|=1<<6*2;} //PB9输出模式
+
+
+//IO操作函数	 
+#define IIC_IMU1_SCL    PBout(7) //SCL
+#define IIC_IMU1_SDA    PBout(6) //SDA	 
+#define READ_IMU1_SDA   PBin(6)  //输入SDA 
+
+#else
 #define SDA_IMU1_IN()  {GPIOA->MODER&=~(3<<(7*2));GPIOA->MODER|=0<<7*2;}	//PB9输入模式
 #define SDA_IMU1_OUT() {GPIOA->MODER&=~(3<<(7*2));GPIOA->MODER|=1<<7*2;} //PB9输出模式
 
@@ -10,7 +22,7 @@
 #define IIC_IMU1_SCL    PAout(6) //SCL
 #define IIC_IMU1_SDA    PAout(7) //SDA	 
 #define READ_IMU1_SDA   PAin(7)  //输入SDA 
-
+#endif
 //IIC所有操作函数
 void IIC_IMU1_Init(void);                //初始化IIC的IO口				 
 void IIC_IMU1_Start(void);				//发送IIC开始信号

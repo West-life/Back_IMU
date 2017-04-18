@@ -72,7 +72,7 @@ void inner_task(void *pdata)
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
 	if(cnt3++>=7){cnt3=0;
-		if(!mpu6050.good)
+//		if(!mpu6050.good)
 	LP_readbmp(0);//25hz
 	}
 	#endif
@@ -102,8 +102,8 @@ void outer_task(void *pdata)
 	else{
  // if(cal_sel){cal_sel=0;
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
-	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(mpu6050.Gyro_deg.x,0.0), my_deathzoom_2(mpu6050.Gyro_deg.y,0.0), my_deathzoom_2(mpu6050.Gyro_deg.z,0.0),
-		mpu6050.Acc.x, mpu6050.Acc.y, mpu6050.Acc.z,&RollR,&PitchR,&YawR);		
+	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0),
+		imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);		
 	if(mode.en_imu_ekf==0){
 	Yaw=YawR;
 	Pitch=PitchR;

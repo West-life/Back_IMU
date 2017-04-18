@@ -364,6 +364,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>for_fly_ready</ItemText>
         </Ww>
+        <Ww>
+          <count>31</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>yaw_mag_view</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/imu.c\Yaw</ItemText>
+        </Ww>
+        <Ww>
+          <count>33</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Pitch</ItemText>
+        </Ww>
+        <Ww>
+          <count>34</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Roll</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -389,85 +409,80 @@
         <Ww>
           <count>4</count>
           <WinNumber>2</WinNumber>
-          <ItemText>altUkfData_bmp.x[1]</ItemText>
+          <ItemText>en_ble_debug</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>en_ble_debug</ItemText>
+          <ItemText>for_fly_ready</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>2</WinNumber>
-          <ItemText>for_fly_ready</ItemText>
+          <ItemText>imu_fushion</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>2</WinNumber>
-          <ItemText>imu_fushion</ItemText>
+          <ItemText>reference_vr_imd_down</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>2</WinNumber>
-          <ItemText>reference_vr_imd_down</ItemText>
+          <ItemText>UART_UP_LOAD_SEL</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>2</WinNumber>
-          <ItemText>UART_UP_LOAD_SEL</ItemText>
+          <ItemText>en_ble_debug</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>2</WinNumber>
-          <ItemText>en_ble_debug</ItemText>
+          <ItemText>baroAlt,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>2</WinNumber>
-          <ItemText>baroAlt,0x0A</ItemText>
+          <ItemText>baroAlt_sel</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>2</WinNumber>
-          <ItemText>baroAlt_sel</ItemText>
+          <ItemText>ultra_distance,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>2</WinNumber>
-          <ItemText>ultra_distance,0x0A</ItemText>
+          <ItemText>qr</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>2</WinNumber>
-          <ItemText>qr</ItemText>
+          <ItemText>k_flow_acc[2]</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>k_flow_acc[2]</ItemText>
+          <ItemText>k_flow_acc</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>2</WinNumber>
-          <ItemText>k_flow_acc</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\k_flow_acc[0]</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\k_flow_acc[0]</ItemText>
+          <ItemText>X_ukf_Pos</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>2</WinNumber>
-          <ItemText>X_ukf_Pos</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>2</WinNumber>
           <ItemText>yaw_qr_off</ItemText>
         </Ww>
         <Ww>
-          <count>20</count>
+          <count>19</count>
           <WinNumber>2</WinNumber>
           <ItemText>gh_sonar</ItemText>
         </Ww>

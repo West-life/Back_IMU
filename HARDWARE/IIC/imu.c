@@ -5,8 +5,8 @@
 #include "my_math.h"
 #include "filter.h"
 #include "kf_oldx_yaw.h"
-float Kp =0.6f;//2.25f;//0.6f   ;             	// proportional gain governs rate of convergence to accelerometer/magnetometer
-float Ki =0.1f    ;            	// 0.001  integral gain governs rate of convergence of gyroscope biases
+float Kp =0.3f;//2.25f;//0.6f   ;             	// proportional gain governs rate of convergence to accelerometer/magnetometer
+float Ki =0.001f    ;            	// 0.001  integral gain governs rate of convergence of gyroscope biases
 
 #define IMU_INTEGRAL_LIM  ( 2.0f *ANGLE_TO_RADIAN )
 #define NORM_ACC_LPF_HZ 10  		//(Hz)
@@ -52,10 +52,14 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	static float yaw_mag;
 		static u16 cnt;
 	static u8 init;
-	if(cnt++>256||init)
+	if(cnt++>256&&init==0)
 	{
 	init=1;
-	
+	ref.err.x=ref.err.y=ref.err.z=0;
+	ref.err_Int.x=ref.err_Int.y=ref.err_Int.z=0;
+	ref.err_lpf.x=ref.err_lpf.y=ref.err_lpf.z=0;
+	ref.err_tmp.x=ref.err_tmp.y=ref.err_tmp.z=0;
+	ref.g.x=ref.g.y=ref.g.z=0;
 	}else{
 	X_kf_yaw[0]=yaw_mag_view[4];
 	X_kf_yaw[1]=0;
@@ -65,7 +69,7 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	mag_norm_tmp = 20 *(6.28f *half_T);	
 	
 	mag_norm_xyz = my_sqrt(imu_fushion.Mag_Val.x * imu_fushion.Mag_Val.x + imu_fushion.Mag_Val.y * imu_fushion.Mag_Val.y + imu_fushion.Mag_Val.z * imu_fushion.Mag_Val.z);
-	
+	if(mag_norm_xyz==0)mag_norm_xyz=0.0001;
 		if( mag_norm_xyz != 0)
 	{
 		mag_tmp.x += mag_norm_tmp *( (float)imu_fushion.Mag_Val.x /( mag_norm_xyz ) - mag_tmp.x);
@@ -79,7 +83,7 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	simple_3d_trans(&reference_v,&mag_tmp,&mag_sim_3d);
 	
 	mag_norm = my_sqrt(mag_sim_3d.x * mag_sim_3d.x + mag_sim_3d.y *mag_sim_3d.y);
-	
+	if(mag_norm==0)mag_norm=0.0001;
 	if( mag_sim_3d.x != 0 && mag_sim_3d.y != 0 && mag_sim_3d.z != 0 && mag_norm != 0)
 	{
 		yaw_mag_view[1] = fast_atan2( ( mag_sim_3d.y/mag_norm ) , ( mag_sim_3d.x/mag_norm) ) *57.3f;
@@ -166,7 +170,7 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	//根据余弦矩阵和欧拉角的定义，地理坐标系的重力向量，转到机体坐标系，正好是这三个元素。
 	//所以这里的vx\y\z，其实就是当前的欧拉角（即四元数）的机体坐标参照系上，换算出来的重力单位向量。       
 	//=============================================================================
-	acc_ng.x = 10 *TO_M_S2 *(ax - 4096*reference_v.x) - acc_ng_offset.x;
+	  acc_ng.x = 10 *TO_M_S2 *(ax - 4096*reference_v.x) - acc_ng_offset.x;
 		acc_ng.y = 10 *TO_M_S2 *(ay - 4096*reference_v.y) - acc_ng_offset.y;
 		acc_ng.z = 10 *TO_M_S2 *(az - 4096*reference_v.z) - acc_ng_offset.z;
 		
@@ -175,8 +179,8 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	// 计算加速度向量的模
 	norm_acc = my_sqrt(ax*ax + ay*ay + az*az);   
 	norm_acc_lpf +=  NORM_ACC_LPF_HZ *(6.28f *half_T) *(norm_acc - norm_acc_lpf);  //10hz *3.14 * 2*0.001
-
-
+  yaw_mag=yaw_mag_view[4];
+  	if(norm_acc==0)norm_acc=0.0001;
 	if(ABS(ax)<4400 && ABS(ay)<4400 && ABS(az)<4400 )
 	{	
 		//把加计的三维向量转成单位向量。
@@ -253,6 +257,7 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 
 	/* 四元数规一化 normalise quaternion */
 	norm_q = my_sqrt(ref_q[0]*ref_q[0] + ref_q[1]*ref_q[1] + ref_q[2]*ref_q[2] + ref_q[3]*ref_q[3]);
+	if(norm_q==0)norm_q=1;
 	q_nav[0]=ref_q[0] = ref_q[0] / norm_q;
 	q_nav[1]=ref_q[1] = ref_q[1] / norm_q;
 	q_nav[2]=ref_q[2] = ref_q[2] / norm_q;
@@ -263,6 +268,6 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	*pit = asin(2*(ref_q[1]*ref_q[3] - ref_q[0]*ref_q[2])) *57.3f;
 // 				//Yaw   = ( - fast_atan2(2*(ref_q[1]*ref_q[2] + ref_q[0]*ref_q[3]),ref_q[0]*ref_q[0] + ref_q[1]*ref_q[1] - ref_q[2]*ref_q[2] - ref_q[3]*ref_q[3]) )* 57.3;
 	*yaw = fast_atan2(2*(-ref_q[1]*ref_q[2] - ref_q[0]*ref_q[3]), 2*(ref_q[0]*ref_q[0] + ref_q[1]*ref_q[1]) - 1) *57.3f  ;// 
-//	*yaw =X_kf_yaw[0];// yaw_mag;
+	//*yaw =X_kf_yaw[0];// yaw_mag;
 }
 

@@ -902,7 +902,10 @@ switch(sel){
 	_temp = (vs16)(ALT_VEL_SONAR*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(sys.sonar)
 	_temp = (vs16)(ALT_POS_SONAR2*1000);//navUkfData.posE[0]*1000;
+	else
+	_temp= 9000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp = (vs16)( ALT_VEL_BMP*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
