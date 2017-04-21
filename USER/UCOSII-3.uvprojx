@@ -598,14 +598,34 @@
           <GroupName>HARDWARE</GroupName>
           <Files>
             <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\GPS\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>ublox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\ublox.c</FilePath>
+            </File>
+            <File>
               <FileName>iic_fc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\iic_fc.c</FilePath>
             </File>
             <File>
-              <FileName>flash.c</FileName>
+              <FileName>iic_imu1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\flash.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\iic_imu1.c</FilePath>
+            </File>
+            <File>
+              <FileName>iic1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\iic1.c</FilePath>
+            </File>
+            <File>
+              <FileName>iic_sonar.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\iic_sonar.c</FilePath>
             </File>
             <File>
               <FileName>iic_soft.c</FileName>
@@ -618,24 +638,9 @@
               <FilePath>..\HARDWARE\IIC\led_fc.c</FilePath>
             </File>
             <File>
-              <FileName>time.c</FileName>
+              <FileName>flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\time.c</FilePath>
-            </File>
-            <File>
-              <FileName>ultrasonic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
-            </File>
-            <File>
-              <FileName>dma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\dma.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic_sonar.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_sonar.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\flash.c</FilePath>
             </File>
             <File>
               <FileName>flash_w25.c</FileName>
@@ -643,35 +648,25 @@
               <FilePath>..\HARDWARE\flash\flash_w25.c</FilePath>
             </File>
             <File>
-              <FileName>gps.c</FileName>
+              <FileName>time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\GPS\gps.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\time.c</FilePath>
             </File>
             <File>
               <FileName>watch_dog.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\watch_dog.c</FilePath>
             </File>
-            <File>
-              <FileName>ublox.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ublox.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic_imu1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_imu1.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic1.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>COMMUNICATION</GroupName>
           <Files>
+            <File>
+              <FileName>dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\dma.c</FilePath>
+            </File>
             <File>
               <FileName>usart_fc.c</FileName>
               <FileType>1</FileType>
@@ -688,14 +683,19 @@
               <FilePath>..\HARDWARE\IIC\LIS3MDL.c</FilePath>
             </File>
             <File>
-              <FileName>LSD303.c</FileName>
+              <FileName>flow.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\LSD303.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
             </File>
             <File>
               <FileName>hml_sample.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
             </File>
             <File>
               <FileName>mpu6050.c</FileName>
@@ -713,9 +713,9 @@
               <FilePath>..\HARDWARE\IIC\bmp_adc.c</FilePath>
             </File>
             <File>
-              <FileName>flow.c</FileName>
+              <FileName>LSD303.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\LSD303.c</FilePath>
             </File>
             <File>
               <FileName>laser.c</FileName>
@@ -728,6 +728,11 @@
           <GroupName>MATH&amp;FUSION</GroupName>
           <Files>
             <File>
+              <FileName>alt_kf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\alt_kf.c</FilePath>
+            </File>
+            <File>
               <FileName>fliter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
@@ -736,11 +741,6 @@
               <FileName>my_math.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\my_math.c</FilePath>
-            </File>
-            <File>
-              <FileName>alt_kf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\alt_kf.c</FilePath>
             </File>
             <File>
               <FileName>error.c</FileName>
@@ -758,14 +758,19 @@
           <GroupName>EKF</GroupName>
           <Files>
             <File>
-              <FileName>kf_oldx_yaw.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\IIC\kf_oldx_yaw.lib</FilePath>
-            </File>
-            <File>
               <FileName>imu.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\imu.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu_m.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\imu_m.c</FilePath>
+            </File>
+            <File>
+              <FileName>kf_oldx_yaw.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\kf_oldx_yaw.lib</FilePath>
             </File>
             <File>
               <FileName>Quaternion.c</FileName>
@@ -798,11 +803,6 @@
               <FilePath>..\HARDWARE\IIC\ekf_math.c</FilePath>
             </File>
             <File>
-              <FileName>imu_m.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\imu_m.c</FilePath>
-            </File>
-            <File>
               <FileName>baro_ekf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\KF\baro_ekf.c</FilePath>
@@ -817,6 +817,11 @@
         <Group>
           <GroupName>UKF_POS</GroupName>
           <Files>
+            <File>
+              <FileName>ukf_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\ukf_task.c</FilePath>
+            </File>
             <File>
               <FileName>rt_nonfinite.c</FileName>
               <FileType>1</FileType>
@@ -836,11 +841,6 @@
               <FileName>ukf_oldx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_OLDX\ukf_oldx.c</FilePath>
-            </File>
-            <File>
-              <FileName>ukf_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\ukf_task.c</FilePath>
             </File>
             <File>
               <FileName>KF_OLDX_NAV.c</FileName>

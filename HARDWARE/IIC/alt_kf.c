@@ -1083,8 +1083,8 @@ static void flow_ukf_Update(float dt) {
 static u16 init_cnt;
 	if(init_cnt++>100){init_cnt=101;
 
-	y[0] = flow_ground_temp[2];
-	y[1] = flow_ground_temp[3];
+	y[0] = flow_matlab_data[2];
+	y[1] = flow_matlab_data[3];
 	noise = FLOW_NOISE;
 	srcdkfMeasurementUpdate(flowUkfData_x.kf, 0, &y[0], 1, 1, &noise, flowUpdate);
 	srcdkfMeasurementUpdate(flowUkfData_y.kf, 0, &y[1], 1, 1, &noise, flowUpdate);
@@ -1382,7 +1382,7 @@ float dt;
 static int temp_r,temp;
 float acc_temp1;  
 int baroAlt_temp;
-	  if(baroAlt_sel)
+	  if(baroAlt_sel&&mpu6050.good)
 	  baroAlt_temp=baroAlt;
 		else
 		baroAlt_temp=lis3mdl.Alt*1000;	
@@ -1411,6 +1411,8 @@ int baroAlt_temp;
 		float z[2] = { (float)baroAlt_temp/1000., -(accz_bmp)};//)+((float)baroAlt/1000.-X_apo_height[0]
 		baro_matlab_data[0]=(float)baroAlt_temp/1000.;
     static u8 cnt_ekf;
+		if(mpu6050.good==0)
+		baro_set=1;
 		if(baro_set){cnt_ekf=0;
 		//dt = Get_Cycle_T(GET_T_BARO_EKF);	
 //		 srcdkfTimeUpdate(altUkfData_bmp.kf, &acc_temp1,dt);//5000			    // us (200 Hz)		

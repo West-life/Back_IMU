@@ -580,8 +580,8 @@ void flow_task1(void *pdata)
 		flow_matlab_data[0]=acc_neo[0];
 		flow_matlab_data[1]=acc_neo[1];
 		acc_neo[2]=((float)((int)((acc_temp[2]-1.0f)*200)))/200*9.87;	
-		flow_matlab_data[2]=flow_ground_temp[2];
-		flow_matlab_data[3]=flow_ground_temp[3];
+		flow_matlab_data[2]=-flow_ground_temp[2];
+		flow_matlab_data[3]=-flow_ground_temp[3];
 		//ukf_task(flow_matlab_data[2],flow_matlab_data[3],flow_matlab_data[0],flow_matlab_data[1],0.02);
 		flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
 		//ukf_task(0,0,0,0,0.02);

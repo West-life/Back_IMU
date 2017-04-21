@@ -5,7 +5,7 @@
 #include "my_math.h"
 #include "filter.h"
 #include "kf_oldx_yaw.h"
-float Kp =0.3f;//2.25f;//0.6f   ;             	// proportional gain governs rate of convergence to accelerometer/magnetometer
+float Kp =0.625f;//2.25f;//0.6f   ;             	// proportional gain governs rate of convergence to accelerometer/magnetometer
 float Ki =0.001f    ;            	// 0.001  integral gain governs rate of convergence of gyroscope biases
 
 #define IMU_INTEGRAL_LIM  ( 2.0f *ANGLE_TO_RADIAN )

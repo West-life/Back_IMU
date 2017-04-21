@@ -60,20 +60,19 @@ int main(void)
 	Delay_ms(10);
   I2c_Soft_Init();					//初始化模拟I2C
   IIC_IMU1_Init();
+	HMC5883L_SetUp();	
+	if(mpu6050.good){
 	Delay_ms(10);
 	MS5611_Init();						//气压计初始化
 	Delay_ms(10);						//延时
 	MPU6050_Init(20);   			//加速度计、陀螺仪初始化，配置20hz低通
 	Delay_ms(10);						//延时
+	}
   //LSM303DLHC_AccInit(0);LSM303DLHC_MagInit(0);
-  Delay_ms(10);						//延时	
 	#if IMU_UPDATE
 	LIS3MDL_enableDefault();
 	Delay_ms(10);						//延时
 	#endif
-	HMC5883L_SetUp();	
-	Delay_ms(10);
-	MS5611_Init();						//气压计初始化
 	altUkfInit();
 	LED_Init();								//LED功能初始化
 	Delay_ms(10);
