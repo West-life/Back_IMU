@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\OBJ\UCOSII-3.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\UCOSII-3.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Thu Apr 20 16:25:58 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Fri Apr 21 21:30:33 2017
 <BR><P>
 <H3>Maximum Stack Usage =       1384 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -2995,7 +2995,7 @@ Global Symbols
 <LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIC_Stop
 <LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIC_Start
 </UL>
-<BR>[Called By]<UL><LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
+<BR>[Called By]<UL><LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
 </UL>
 
 <P><STRONG><a name="[1a7]"></a>IICwriteBytes</STRONG> (Thumb, 70 bytes, Stack size 24 bytes, iic_fc.o(.text))
@@ -3183,7 +3183,7 @@ Global Symbols
 <LI><a href="#[1b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIC_IMU1writeBitsm
 </UL>
 
-<P><STRONG><a name="[1b9]"></a>IIC_IMU1writeBitsm</STRONG> (Thumb, 124 bytes, Stack size 32 bytes, iic1.o(.text), UNUSED)
+<P><STRONG><a name="[1b9]"></a>IIC_IMU1writeBitsm</STRONG> (Thumb, 128 bytes, Stack size 32 bytes, iic1.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIC_IMU1writeByte
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIC_IMU1readByte
 </UL>
@@ -3403,7 +3403,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[266]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_set_SMPLRT_DIV
 <LI><a href="#[265]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IICwriteBits
 <LI><a href="#[264]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IICwriteBit
-<LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Run
+<LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Run
 </UL>
 
 <P><STRONG><a name="[1d3]"></a>IIC_Read_1Byte</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, iic_soft.o(.text), UNUSED)
@@ -3514,7 +3514,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[1e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;W25QXX_Write
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Data_Offset
-<LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_CalOffset_Mag
+<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_CalOffset_Mag
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Offset
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_CalOffset_Mag
 </UL>
@@ -4376,57 +4376,59 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 </UL>
 
-<P><STRONG><a name="[8f]"></a>LIS_Data_Prepare</STRONG> (Thumb, 1480 bytes, Stack size 80 bytes, lis3mdl.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 312<LI>Call Chain = LIS_Data_Prepare &rArr; Data_conversion &rArr; __hardfp_acos &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+<P><STRONG><a name="[8f]"></a>LIS_Data_Prepare</STRONG> (Thumb, 1838 bytes, Stack size 104 bytes, lis3mdl.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 248<LI>Call Chain = LIS_Data_Prepare &rArr; LIS_CalOffset_Mag &rArr; WRITE_PARM &rArr; W25QXX_Write &rArr; W25QXX_Write_NoCheck &rArr; W25QXX_Write_Page &rArr; W25QXX_Wait_Busy &rArr; W25QXX_ReadSR &rArr; SPI1_ReadWriteByte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Offset
+<BR>[Calls]<UL><LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
+<LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Offset
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_CalOffset_Mag
-<LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
-<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Transform
+<LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Transform
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inner_task
 </UL>
 
-<P><STRONG><a name="[247]"></a>ANO_AK8975_Run</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, hml_sample.o(.text), UNUSED)
+<P><STRONG><a name="[248]"></a>ANO_AK8975_Run</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, hml_sample.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[1d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIC_Write_1Byte
 </UL>
 
 <P><STRONG><a name="[411]"></a>XYZ_STRUCT_COPY</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, hml_sample.o(.text), UNUSED)
 
-<P><STRONG><a name="[248]"></a>ANO_AK8975_CalOffset_Mag</STRONG> (Thumb, 938 bytes, Stack size 16 bytes, hml_sample.o(.text))
+<P><STRONG><a name="[249]"></a>ANO_AK8975_CalOffset_Mag</STRONG> (Thumb, 938 bytes, Stack size 16 bytes, hml_sample.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = ANO_AK8975_CalOffset_Mag &rArr; WRITE_PARM &rArr; W25QXX_Write &rArr; W25QXX_Write_NoCheck &rArr; W25QXX_Write_Page &rArr; W25QXX_Wait_Busy &rArr; W25QXX_ReadSR &rArr; SPI1_ReadWriteByte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WRITE_PARM
 </UL>
-<BR>[Called By]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
+<BR>[Called By]<UL><LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
 </UL>
 
-<P><STRONG><a name="[24a]"></a>HMC58X3_newValues</STRONG> (Thumb, 240 bytes, Stack size 20 bytes, hml_sample.o(.text))
+<P><STRONG><a name="[24b]"></a>HMC58X3_newValues</STRONG> (Thumb, 240 bytes, Stack size 20 bytes, hml_sample.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = HMC58X3_newValues
 </UL>
-<BR>[Called By]<UL><LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
+<BR>[Called By]<UL><LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
 </UL>
 
-<P><STRONG><a name="[249]"></a>HMC58X3_getRaw</STRONG> (Thumb, 120 bytes, Stack size 32 bytes, hml_sample.o(.text))
+<P><STRONG><a name="[24a]"></a>HMC58X3_getRaw</STRONG> (Thumb, 120 bytes, Stack size 32 bytes, hml_sample.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136 + Unknown Stack Size
 <LI>Call Chain = HMC58X3_getRaw &rArr; IICreadBytes &rArr; IIC_Read_Byte &rArr; IIC_NAck &rArr; Delay_us &rArr; delay_us &rArr; OSSchedUnlock &rArr; OS_Sched
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IICreadBytes
-<LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_newValues
+<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_newValues
 </UL>
 <BR>[Called By]<UL><LI><a href="#[251]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_mgetValues
 <LI><a href="#[24f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_FIFO_init
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
+<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
 </UL>
 
-<P><STRONG><a name="[24b]"></a>ANO_AK8975_Read_Mag_Data</STRONG> (Thumb, 414 bytes, Stack size 40 bytes, hml_sample.o(.text))
+<P><STRONG><a name="[24c]"></a>ANO_AK8975_Read_Mag_Data</STRONG> (Thumb, 414 bytes, Stack size 40 bytes, hml_sample.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184 + Unknown Stack Size
 <LI>Call Chain = ANO_AK8975_Read_Mag_Data &rArr; ANO_AK8975_CalOffset_Mag &rArr; WRITE_PARM &rArr; W25QXX_Write &rArr; W25QXX_Write_NoCheck &rArr; W25QXX_Write_Page &rArr; W25QXX_Wait_Busy &rArr; W25QXX_ReadSR &rArr; SPI1_ReadWriteByte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
-<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
-<LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_CalOffset_Mag
+<BR>[Calls]<UL><LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
+<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_CalOffset_Mag
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 </UL>
@@ -4439,7 +4441,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 192 + Unknown Stack Size
 <LI>Call Chain = ANO_AK8975_Read &rArr; ANO_AK8975_Read_Mag_Data &rArr; ANO_AK8975_CalOffset_Mag &rArr; WRITE_PARM &rArr; W25QXX_Write &rArr; W25QXX_Write_NoCheck &rArr; W25QXX_Write_Page &rArr; W25QXX_Wait_Busy &rArr; W25QXX_ReadSR &rArr; SPI1_ReadWriteByte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
+<BR>[Calls]<UL><LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
 </UL>
 <BR>[Called By]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inner_task
 </UL>
@@ -4453,7 +4455,7 @@ Global Symbols
 <LI>Call Chain = HMC58X3_FIFO_init &rArr; HMC58X3_getRaw &rArr; IICreadBytes &rArr; IIC_Read_Byte &rArr; IIC_NAck &rArr; Delay_us &rArr; delay_us &rArr; OSSchedUnlock &rArr; OS_Sched
 </UL>
 <BR>[Calls]<UL><LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay_us
-<LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
+<LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC5883L_SetUp
 </UL>
@@ -4473,7 +4475,7 @@ Global Symbols
 <P><STRONG><a name="[413]"></a>HMC58X3_getlastValues</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, hml_sample.o(.text), UNUSED)
 
 <P><STRONG><a name="[251]"></a>HMC58X3_mgetValues</STRONG> (Thumb, 136 bytes, Stack size 24 bytes, hml_sample.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
+<BR><BR>[Calls]<UL><LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HMC58X3_getRaw
 </UL>
 
 <P><STRONG><a name="[252]"></a>HMC58X3_setGain</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, hml_sample.o(.text))
@@ -4787,7 +4789,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[270]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Transform
 <LI><a href="#[26f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Data_Offset
-<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
@@ -5080,8 +5082,8 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> alt_kf.o(.text)
 </UL>
 <P><STRONG><a name="[72]"></a>gpsUpdate</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, alt_kf.o(.text))
-<BR>[Address Reference Count : 2]<UL><LI> ukf_task.o(.text)
-<LI> alt_kf.o(.text)
+<BR>[Address Reference Count : 2]<UL><LI> alt_kf.o(.text)
+<LI> ukf_task.o(.text)
 </UL>
 <P><STRONG><a name="[290]"></a>sonar_filter_oldx</STRONG> (Thumb, 424 bytes, Stack size 64 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = sonar_filter_oldx &rArr; __aeabi_ddiv
@@ -5191,7 +5193,7 @@ Global Symbols
 <LI><a href="#[25d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
 </UL>
 
-<P><STRONG><a name="[24c]"></a>IIR_I_Filter</STRONG> (Thumb, 326 bytes, Stack size 72 bytes, fliter.o(.text))
+<P><STRONG><a name="[246]"></a>IIR_I_Filter</STRONG> (Thumb, 326 bytes, Stack size 72 bytes, fliter.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = IIR_I_Filter &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -5199,7 +5201,8 @@ Global Symbols
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Data_Prepare
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
+<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
 </UL>
 
 <P><STRONG><a name="[29f]"></a>KalmanFilter</STRONG> (Thumb, 272 bytes, Stack size 120 bytes, fliter.o(.text), UNUSED)
@@ -5945,10 +5948,8 @@ Global Symbols
 <LI><a href="#[2fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
 </UL>
 
-<P><STRONG><a name="[245]"></a>__hardfp_acos</STRONG> (Thumb, 738 bytes, Stack size 72 bytes, acos.o(i.__hardfp_acos))
-<BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = __hardfp_acos &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<P><STRONG><a name="[245]"></a>__hardfp_acos</STRONG> (Thumb, 738 bytes, Stack size 72 bytes, acos.o(i.__hardfp_acos), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
 <LI><a href="#[2f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sqrt
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
@@ -6328,6 +6329,7 @@ Global Symbols
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Data_Prepare
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_sample
@@ -6377,7 +6379,7 @@ Global Symbols
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
-<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureF
 <LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
 <LI><a href="#[2d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
@@ -6485,7 +6487,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_d2iz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM3_IRQHandler
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
+<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
 <LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Get
 <LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;data_per_uart4
 <LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_GPS
@@ -6502,7 +6504,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
 <LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ubloxPublish
 <LI><a href="#[25d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
+<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANO_AK8975_Read_Mag_Data
 <LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Get
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
@@ -6575,7 +6577,7 @@ Global Symbols
 <LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[25d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[240]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeFeet
 <LI><a href="#[23d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeMeters
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureF
@@ -6720,7 +6722,7 @@ Global Symbols
 <LI><a href="#[29a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
-<LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;euler_to_q
 <LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
@@ -6758,6 +6760,7 @@ Global Symbols
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MadgwickAHRSupdate
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Data_Prepare
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM3_IRQHandler
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
@@ -7152,22 +7155,18 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_IMU_NAV
 </UL>
 
-<P><STRONG><a name="[246]"></a>Transform</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, lis3mdl.o(.text))
+<P><STRONG><a name="[247]"></a>Transform</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, lis3mdl.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 </UL>
 
-<P><STRONG><a name="[243]"></a>Data_conversion</STRONG> (Thumb, 710 bytes, Stack size 88 bytes, lis3mdl.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 232<LI>Call Chain = Data_conversion &rArr; __hardfp_acos &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
+<P><STRONG><a name="[243]"></a>Data_conversion</STRONG> (Thumb, 710 bytes, Stack size 88 bytes, lis3mdl.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[245]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_acos
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-</UL>
-<BR>[Called By]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 </UL>
 
 <P><STRONG><a name="[289]"></a>srcdkfCalcSigmaPoints</STRONG> (Thumb, 236 bytes, Stack size 36 bytes, alt_kf.o(.text))

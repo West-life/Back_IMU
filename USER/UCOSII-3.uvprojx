@@ -613,14 +613,14 @@
               <FilePath>..\HARDWARE\IIC\iic_fc.c</FilePath>
             </File>
             <File>
-              <FileName>iic_imu1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_imu1.c</FilePath>
-            </File>
-            <File>
               <FileName>iic1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\iic1.c</FilePath>
+            </File>
+            <File>
+              <FileName>iic_imu1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\iic_imu1.c</FilePath>
             </File>
             <File>
               <FileName>iic_sonar.c</FileName>

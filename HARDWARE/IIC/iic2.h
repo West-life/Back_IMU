@@ -2,7 +2,7 @@
 #define __IOI2C_H
 #include "stm32f4xx.h"
 #include "include.h"
-#define  NEW_IMU 0
+#define  NEW_IMU 1
 #if NEW_IMU
 #define SDA_IMU1_IN()  {GPIOB->MODER&=~(3<<(6*2));GPIOB->MODER|=0<<6*2;}	//PB9输入模式
 #define SDA_IMU1_OUT() {GPIOB->MODER&=~(3<<(6*2));GPIOB->MODER|=1<<6*2;} //PB9输出模式

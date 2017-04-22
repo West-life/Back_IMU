@@ -4,6 +4,7 @@
 #include "iic_imu1.h"
 #include "iic2.h"
 #include "hml5833l.h"
+#include "filter.h"
 #include  <math.h> 
 u8 IMU1_Fast;
 LIS3MDL_S lis3mdl;
@@ -239,7 +240,7 @@ void LIS_CalOffset_Mag(void)
 			MagMIN.y = MIN(lis3mdl.Mag_Adc.y, MagMIN.y);
 			MagMIN.z = MIN(lis3mdl.Mag_Adc.z, MagMIN.z);		
 			
-			if(cnt_m >= CALIBRATING_MAG_CYCLES*3)
+			if(cnt_m >= CALIBRATING_MAG_CYCLES*6)
 			{ init=0;
 				lis3mdl.Mag_Offset.x = (int16_t)((MagMAX.x + MagMIN.x) * 0.5f);
 				lis3mdl.Mag_Offset.y = (int16_t)((MagMAX.y + MagMIN.y) * 0.5f);
@@ -375,6 +376,17 @@ static float Data_conversion(float *AccBuffer,float *MagBuffer)
 	    return HeadingValue ;
 }
 
+#define  IIR_ORDER     4      //使用IIR滤波器的阶数
+static double b_IIR[IIR_ORDER+1] ={ 0.0004  ,  0.0017  ,  0.0025  ,  0.0017 ,   0.0004};  //系数b
+static double a_IIR[IIR_ORDER+1] ={ 1.0000   ,-3.1806   , 3.8612  , -2.1122  ,  0.4383};//系数a
+static double InPut_IIR[3][IIR_ORDER+1] = {0};
+static double OutPut_IIR[3][IIR_ORDER+1] = {0};
+
+static double b_IIR_gro[IIR_ORDER+1] ={0.0008f, 0.0032f, 0.0048f, 0.0032f, 0.0008f};  //系数b
+static double a_IIR_gro[IIR_ORDER+1] ={1.0000f, -3.0176f, 3.5072f, -1.8476f, 0.3708f};//系数a
+static double InPut_IIR_gro[3][IIR_ORDER+1] = {0};
+static double OutPut_IIR_gro[3][IIR_ORDER+1] = {0};
+
 static float lis3mdl_tmp[7],mpu_fil_tmp[7];
 static s16 FILT_BUF[7][(FILTER_NUM + 1)];
 static uint8_t filter_cnt = 0,filter_cnt_old = 0;
@@ -407,13 +419,14 @@ void LIS_Data_Prepare(float T)
 	/* 得出校准后的数据 */
 	
 
-	lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x) ;
-	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y) ;
-	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z) ;
+	lis3mdl_tmp[A_X] = IIR_I_Filter(lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
+	lis3mdl_tmp[A_Y] = IIR_I_Filter(lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
+	lis3mdl_tmp[A_Z] = IIR_I_Filter(lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
 	
-	lis3mdl_tmp[G_X] = Gyro_tmp[0] - lis3mdl.Gyro_Offset.x ;//
-	lis3mdl_tmp[G_Y] = Gyro_tmp[1] - lis3mdl.Gyro_Offset.y ;//
-	lis3mdl_tmp[G_Z] = Gyro_tmp[2] - lis3mdl.Gyro_Offset.z ;//
+	lis3mdl_tmp[G_X] = IIR_I_Filter(Gyro_tmp[0] - lis3mdl.Gyro_Offset.x , InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
+	lis3mdl_tmp[G_Y] = IIR_I_Filter(Gyro_tmp[1] - lis3mdl.Gyro_Offset.y , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
+	lis3mdl_tmp[G_Z] = IIR_I_Filter(Gyro_tmp[2] - lis3mdl.Gyro_Offset.z , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
+
 	
 
 	/* 更新滤波滑动窗口数组 */
@@ -450,7 +463,7 @@ float AccBuffer[3],MagBuffer[3];
 	MagBuffer[1]=lis3mdl.Mag_Adc.y;
 	MagBuffer[2]=lis3mdl.Mag_Adc.z;
 	
-	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
+	//lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
 	
 	/*坐标转换*/
 	Transform(mpu_fil_tmp[A_X],mpu_fil_tmp[A_Y],mpu_fil_tmp[A_Z],&lis3mdl.Acc.x,&lis3mdl.Acc.y,&lis3mdl.Acc.z);

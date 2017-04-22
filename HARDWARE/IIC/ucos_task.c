@@ -566,13 +566,13 @@ void flow_task1(void *pdata)
 		tmp[1] = a_br[1];
 		tmp[2] = a_br[2];
 
-		acc_temp[0] = tmp[1]*reference_vr_imd_down[2]  - tmp[2]*reference_vr_imd_down[1] ;
-		acc_temp[1] = tmp[2]*reference_vr_imd_down[0]  - tmp[0]*reference_vr_imd_down[2] ;
+		acc_temp[0] = tmp[1]*reference_vr[2]  - tmp[2]*reference_vr[1] ;
+		acc_temp[1] = tmp[2]*reference_vr[0]  - tmp[0]*reference_vr[2] ;
 		float accIn[3],acc_body_temp[3];
 		accIn[0] =(float) imu_fushion.Acc.x/4096.*9.8;//16438.;
 		accIn[1] =(float) imu_fushion.Acc.y/4096.*9.8;//16438.;
 		accIn[2] =(float) imu_fushion.Acc.z/4096.*9.8;//16438.;
-    body_to_NEZ(acc_body_temp, accIn, ref_q_imd_down);
+    body_to_NEZ(acc_body_temp, accIn, ref_q);
 		
 		
 		acc_neo[0]=(float)(-acc_temp[0])*9.87;
@@ -603,86 +603,6 @@ void uart_task(void *pdata)
 {	static u8 cnt[4];					 		
  	while(1)
 	{
-//			#if !EN_TIM_INNER
-//		#if EN_DMA_UART2 			
-//			     if(DMA_GetFlagStatus(DMA1_Stream6,DMA_FLAG_TCIF6)!=RESET)//等待DMA2_Steam7传输完成
-//								{ 
-//							DMA_ClearFlag(DMA1_Stream6,DMA_FLAG_TCIF6);//清除DMA2_Steam7传输完成标志
-//							clear_nrf_uart();		
-//							GOL_LINK_TASK_DMA();
-//					    USART_DMACmd(USART2,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送     
-//							MYDMA_Enable(DMA1_Stream6,SEND_BUF_SIZE2+2);     //开始一次DMA传输！	
-//								}							
-//					#else
-//								 GOL_LINK_TASK();
-//					#endif
-//		
-//		en_ble_debug=1;
-//	if(cnt[1]++>1-1){cnt[1]=0;	
-//							
-//								if(en_ble_debug){//!GOL_LINK_BUSY[0]){
-//								//GOL_LINK_BUSY[1]=1;
-//								switch(UART_UP_LOAD_SEL)
-//								{
-//								case 0://海拔速度
-//								Send_BLE_DEBUG((int16_t)(0),flow_rad.integrated_y*100, flow_rad.integrated_ygyro*100,
-//								0,flow.flow_x.origin,flow.flow_y.origin,
-//								0,flow_m[0]*1000,flow_m[1]*1000);break;
-//								case 1://海拔速度
-//								Send_BLE_DEBUG((int16_t)(0),flow.flow_x.origin,flow.flow_y.origin,
-//								0,ALT_VEL_SONAR*1000,flow_ground_temp[3]*1000,
-//								0,ALT_VEL_BMP*1000,flow_ground_temp[2]*1000);break;
-//								case 2://海拔速度
-//								Send_BLE_DEBUG((int16_t)(0),x_flow_orign_temp,0,
-//								0,flow.flow_x.origin,0,
-//								0,0,flow.flow_y.origin);break;
-//								case 3://海拔速度
-//								Send_BLE_DEBUG((int16_t)(baroAlt),ALT_POS_BMP*1000,ALT_POS_BMP_EKF*1000,
-//								0,-ALT_VEL_BMP*100,ALT_VEL_BMP_EKF*100,
-//								0,acc_z_view[1],acc_z_view[0]);break;		
-//								case 4://海拔速度
-//								Send_BLE_DEBUG((int16_t)(0),flow_matlab_data[0]*1000,0,
-//								0,0*100,flow_matlab_data[1]*1000,
-//								0,0,v_test[1]*1000);break;		
-//								case 5://海拔速度
-//								Send_BLE_DEBUG((int16_t)(0*100),X_ukf[0]*1000,X_ukf[3]*1000,
-//								0,X_ukf[1]*1000,flow_matlab_data[2]*1000*K_spd_flow,
-//								FLOW_VEL_Y*000,X_ukf[4]*1000,flow_matlab_data[3]*1000*K_spd_flow);break;	
-//								case 6://海拔速度
-//								Send_BLE_DEBUG((int16_t)(X_ukf_baro[3]*100),baro_matlab_data[0]*100,X_ukf_baro[0]*100,
-//								X_ukf_baro[4]*100,X_ukf_baro[1]*100,ALT_VEL_BMP_EKF*100,
-//								0,ALT_VEL_BMP_UNION*100,X_kf_sonar[1]*100);break;	
-//								case 7:
-//								Send_BLE_DEBUG((int16_t)(laser_buf[1]),Laser_avoid[1],Laser_avoid[2],
-//								(int16_t)(Laser_avoid[3]),Laser_avoid[4],Laser_avoid[5],
-//								(int16_t)(Laser_avoid[6]),Laser_avoid[7],Laser_avoid[8]);break;	
-//								case 8:
-//								Send_BLE_DEBUG(0,accumulated_flow_y*1000,flow_rad.integrated_y*1000,
-//								0,accumulated_gyro_z*1000,flow_rad.integrated_zgyro*1000,
-//								0,0,0);break;	
-//								case 9:
-//								Send_BLE_DEBUG(0,0,ALT_POS_SONAR3*1000,
-//								0,ultra_distance,0,
-//								0,0,ALT_POS_SONAR2*1000);break;
-//								case 10:
-//								Send_BLE_DEBUG(0,0,X_kf_yaw[0],
-//								0,ultra_distance,0,
-//								0,0,yaw_mag_view[4]);break;
-//								case 11:
-//								Send_BLE_DEBUG(velNorth*1000,velNorth_gps*1000,0*X_KF_NAV[0][1]*1000,
-//								velEast*1000,velEast_gps*1000,0*X_KF_NAV[1][1]*1000,
-//								flow_matlab_data[0]*100,flow_matlab_data[1]*100,Yaw);break;
-//								case 12:
-//								Send_BLE_DEBUG(flow_rad.integrated_xgyro*1000,accumulated_flow_x*1000,accumulated_gyro_x*1000,
-//								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
-//								0,flow_rad.integrated_x*1000,accumulated_flow_x*1000);break;
-//								}				
-//								//GOL_LINK_BUSY[1]=0;		
-//								} 
-//								
-//								
-//				}				
-//	#endif
 		delay_ms(5);  
 	}
 }	

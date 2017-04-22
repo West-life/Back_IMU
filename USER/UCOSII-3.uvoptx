@@ -1131,8 +1131,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\IIC\iic_imu1.c</PathWithFileName>
-      <FilenameWithoutPath>iic_imu1.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\IIC\iic1.c</PathWithFileName>
+      <FilenameWithoutPath>iic1.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1143,8 +1143,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\IIC\iic1.c</PathWithFileName>
-      <FilenameWithoutPath>iic1.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\IIC\iic_imu1.c</PathWithFileName>
+      <FilenameWithoutPath>iic_imu1.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
