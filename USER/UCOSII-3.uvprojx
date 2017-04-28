@@ -683,9 +683,9 @@
               <FilePath>..\HARDWARE\IIC\LIS3MDL.c</FilePath>
             </File>
             <File>
-              <FileName>flow.c</FileName>
+              <FileName>mpu6050.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\mpu6050.c</FilePath>
             </File>
             <File>
               <FileName>hml_sample.c</FileName>
@@ -693,19 +693,19 @@
               <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
             </File>
             <File>
+              <FileName>ms5611_2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\ms5611_2.c</FilePath>
+            </File>
+            <File>
               <FileName>ultrasonic.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
             </File>
             <File>
-              <FileName>mpu6050.c</FileName>
+              <FileName>flow.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\mpu6050.c</FilePath>
-            </File>
-            <File>
-              <FileName>ms5611_2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ms5611_2.c</FilePath>
+              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
             </File>
             <File>
               <FileName>bmp_adc.c</FileName>
@@ -747,15 +747,10 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\error.c</FilePath>
             </File>
-            <File>
-              <FileName>kf_oldx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>EKF</GroupName>
+          <GroupName>EKF&amp;IMU</GroupName>
           <Files>
             <File>
               <FileName>imu.c</FileName>
@@ -803,6 +798,11 @@
               <FilePath>..\HARDWARE\IIC\ekf_math.c</FilePath>
             </File>
             <File>
+              <FileName>kf_oldx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
+            </File>
+            <File>
               <FileName>baro_ekf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\KF\baro_ekf.c</FilePath>
@@ -815,12 +815,22 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>UKF_POS</GroupName>
+          <GroupName>UKF&amp;POS</GroupName>
           <Files>
             <File>
               <FileName>ukf_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_OLDX\ukf_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ukf_oldx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\ukf_oldx.c</FilePath>
+            </File>
+            <File>
+              <FileName>KF_OLDX_NAV.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
             </File>
             <File>
               <FileName>rt_nonfinite.c</FileName>
@@ -836,16 +846,6 @@
               <FileName>rtGetNaN.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_OLDX\rtGetNaN.c</FilePath>
-            </File>
-            <File>
-              <FileName>ukf_oldx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\ukf_oldx.c</FilePath>
-            </File>
-            <File>
-              <FileName>KF_OLDX_NAV.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
             </File>
           </Files>
         </Group>

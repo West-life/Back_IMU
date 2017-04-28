@@ -71,8 +71,8 @@ void inner_task(void *pdata)
   LIS3MDL_read(0);//80hz
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
-	if(cnt3++>=7){cnt3=0;
-//		if(!mpu6050.good)
+	if(cnt3++>=10){cnt3=0;
+	if(!mpu6050.good)
 	LP_readbmp(0);//25hz
 	}
 	#endif
@@ -103,12 +103,11 @@ void outer_task(void *pdata)
  // if(cal_sel){cal_sel=0;
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
 	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0),
-		imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);		
+	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);		
 	if(mode.en_imu_ekf==0){
 	Yaw=YawR;
 	Pitch=PitchR;
 	Roll=RollR;}
-	//}else{cal_sel=1;
 	#define SEL_1 1
 	#if SEL_1//1 梯度
 	MadgwickAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
@@ -179,18 +178,14 @@ void ekf_task(void *pdata)
 	float fRPYr[3] = {0};
  	while(1)
 	{	
-		
-		ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
+ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
 if(cnt_init++>2&&!init){cnt_init=101;
 		init=1;
 #ifdef USE_EKF
-	//Create a new EKF object;
 	EKF_New(&ekf);
 #elif defined USE_UKF
-	//Create a new UKF object;
 	UKF_New(&ukf);
 #elif defined USE_CKF
-	//Create a new CKF object;
 	CKF_New(&ckf);
 #elif defined USE_SRCKF
 	SRCKF_New(&srckf);
@@ -210,29 +205,15 @@ if(cnt_init++>2&&!init){cnt_init=101;
 #elif defined USE_9AXIS_EKF
 				EKF_AHRSInit(fRealAccel, fRealMag);
 #endif		
-
 	}
 	else{
-	  if(ekf_loop_time<0.000002)ekf_loop_time=0.02;
-//	u16 i,rxlen;
-//	u16 lenx;
-//	if(USART3_RX_STA&0X8000)		//接收到一次数据了
-//		{
-//			rxlen=USART3_RX_STA&0X7FFF;	//得到数据长度
-//			for(i=0;i<rxlen;i++)USART1_TX_BUF[i]=USART3_RX_BUF[i];	   
-// 			USART3_RX_STA=0;		   	//启动下一次接收
-//			USART1_TX_BUF[i]=0;			//自动添加结束符
-//			GPS_Analysis(&gpsx,(u8*)USART1_TX_BUF);//分析字符串
-// 		}
-	
-		
+	if(ekf_loop_time<0.000002)ekf_loop_time=0.02;
 	static u8 ekf_gps_cnt;	
 	//if(ekf_gps_cnt++>1){ekf_gps_cnt=0;	
 	//EKF_INS_GPS_Run(0.015);		
 		//GpsUkfProcess(0.05);
 	//}
 		ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
- 
 }
 	/*
 		    fRealGyro[0] = my_deathzoom_2(mpu6050.Gyro_deg.x,0.0) * DEG_RAD*1;
@@ -337,9 +318,9 @@ void sonar_task(void *pdata)
 {							  
  	while(1)
 	{
-
 		#if defined(SONAR_USE_SCL) 
-			if(!Thr_Low)Ultra_Duty_SCL();delay_ms(100);
+			if(!Thr_Low)Ultra_Duty_SCL();
+		  delay_ms(100);
 		#else
 			if(fly_ready||en_ble_debug)
 				Ultra_Duty(); 
@@ -373,7 +354,6 @@ float accumulated_gyro_z = 0;
 uint16_t accumulated_framecount = 0;
 uint16_t accumulated_quality = 0;
 uint32_t integration_timespan = 0;
-//float k_flow_acc=0.1;
 float k_flow_acc[2]={0.1,0.1};
 float k_gro_acc=0.1;
 float flt_gro=0.03;//1;
@@ -384,29 +364,16 @@ uint32_t deltatime=Get_Cycle_T(GET_T_FLOW_SAMPLE)*1000000;
 float x_rate = imu_fushion.Gyro_deg.y; // change x and y rates
 float y_rate = imu_fushion.Gyro_deg.x;
 float z_rate = -imu_fushion.Gyro_deg.z; // z is correct
-if (1)
-				{
+
 					integration_timespan = deltatime*k_time_use;
 					accumulated_flow_x = qr.spdx  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
 					accumulated_flow_y = qr.spdy / focal_length_px * 1.0f*k_flow_acc[1];//rad
 					accumulated_gyro_x = LIMIT(x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro),-fabs(accumulated_flow_x*5),fabs(accumulated_flow_x*5));	//rad
 					accumulated_gyro_y = LIMIT(y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro),-fabs(accumulated_flow_y*5),fabs(accumulated_flow_y*5));	//rad
 					accumulated_gyro_z = z_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_z*(1-flt_gro);	//rad
-				}
-
 }
-void body_to_NEZ(float *vr, float *v, float *q) {
-    float w, x, y, z;
 
-    w = q[0];
-    x = q[1];
-    y = q[2];
-    z = q[3];
 
-    vr[0] = w*w*v[0] + 2.0f*y*w*v[2] - 2.0f*z*w*v[1] + x*x*v[0] + 2.0f*y*x*v[1] + 2.0f*z*x*v[2] - z*z*v[0] - y*y*v[0];
-    vr[1] = 2.0f*x*y*v[0] + y*y*v[1] + 2.0f*z*y*v[2] + 2.0f*w*z*v[0] - z*z*v[1] + w*w*v[1] - 2.0f*x*w*v[2] - x*x*v[1];
-    vr[2] = 2.0f*x*z*v[0] + 2.0f*y*z*v[1] + z*z*v[2] - 2.0f*w*y*v[0] - y*y*v[2] + 2.0f*w*x*v[1] - x*x*v[2] + w*w*v[2];
-}
 
 //=======================FLOW 任务函数==================
 OS_STK FLOW_TASK_STK[FLOW_STK_SIZE];
@@ -430,7 +397,7 @@ float scale_pix=0.0055*K_PIX;//0.002;//.003;//0.005;
 #endif
 
 float k_acc_forward=0;
-u8 MID_CNT_SPD=10;
+u8 MID_CNT_SPD=5;
 float k_flp=1-0.1; 
 //px4
 double rate_threshold = 0.15f; 
@@ -458,10 +425,9 @@ void flow_task1(void *pdata)
 	 else
 	 temp_sonar=ALT_POS_SONAR2;
 	 float spd_temp[2];
-	 flow_height_fliter=temp_sonar;//sonar_filter_bmp((float)temp_sonar/1000,0.01);
-	 //flow_height_fliter=sonar_filter_bmp((float)temp_sonar,0.01);
-	 //px4
-	  flow_sample();
+	 flow_height_fliter=temp_sonar;
+	 
+	 flow_sample();
 	 if(qr.use_spd==0)//flow_rad_sel)
 	 {
 	 flow_rad_use.integration_time_us=flow_rad.integration_time_us;
@@ -478,9 +444,8 @@ void flow_task1(void *pdata)
 	 flow_rad_use.integrated_ygyro=accumulated_gyro_y;
    flow_rad_use.integrated_zgyro=accumulated_gyro_z;		 
 	 flow_rad_use.integrated_x=accumulated_flow_x;
-	 flow_rad_use.integrated_y=accumulated_flow_y;//*1.3333333333333333333333333333333;
+	 flow_rad_use.integrated_y=accumulated_flow_y;
 	 }	 
-	 
 	 
 		flow_gyrospeed[0] = flow_rad_use.integrated_xgyro / (float)flow_rad_use.integration_time_us * 1000000.0f;  
 		flow_gyrospeed[1] = flow_rad_use.integrated_ygyro / (float)flow_rad_use.integration_time_us * 1000000.0f;  
@@ -489,7 +454,6 @@ void flow_task1(void *pdata)
 	  static float gyro_offset_filtered[3],att_gyrospeed_filtered[3],flow_gyrospeed_filtered[3];
 		float flow_ang[2];
 		if(flow_rad_use.integration_time_us){
-		//if (fabs(mpu6050.Gyro_deg.y/57.3) < rate_threshold) {  
 		if (fabs(flow_gyrospeed[0]) < rate_threshold) {  
 		flow_ang[0] = (flow_rad_use.integrated_x / (float)flow_rad_use.integration_time_us * 1000000.0f) * flow_k;//for now the flow has to be scaled (to small)  
 		}  
@@ -498,8 +462,6 @@ void flow_task1(void *pdata)
 		flow_ang[0] = ((flow_rad_use.integrated_x - LIMIT(flow_rad_use.integrated_xgyro*k_gro_off,-fabs(flow_rad_use.integrated_x),fabs(flow_rad_use.integrated_x))) / (float)flow_rad_use.integration_time_us * 1000000.0f  
 		+ gyro_offset_filtered[0]*0) * flow_k;//for now the flow has to be scaled (to small)  
 		}  
-
-		//if (fabs(mpu6050.Gyro_deg.x/57.3) < rate_threshold) {  
 		if (fabs(flow_gyrospeed[1]) < rate_threshold) {  
 		flow_ang[1] = (flow_rad_use.integrated_y/ (float)flow_rad_use.integration_time_us  * 1000000.0f) * flow_k;//for now the flow has to be scaled (to small)  
 		}  
@@ -508,16 +470,12 @@ void flow_task1(void *pdata)
 		+ gyro_offset_filtered[1]*0) * flow_k;//for now the flow has to be scaled (to small)  
 		}  
 		
-
 		yaw_comp[0] = - flow_module_offset_y * (flow_gyrospeed[2] - gyro_offset_filtered[2]);  
 		yaw_comp[1] = flow_module_offset_x * (flow_gyrospeed[2] - gyro_offset_filtered[2]);  
-
 		/* flow measurements vector */  
-
 		flow_m[0] = -flow_ang[0];  
 		flow_m[1] = -flow_ang[1] ;  
 		
-	
 		if(flow_px_sel){
 		x_flow_orign_temp=flow_m[1]*scale_px4_flow;
 		y_flow_orign_temp=flow_m[0]*scale_px4_flow;		
@@ -525,17 +483,15 @@ void flow_task1(void *pdata)
 		x_flow_orign_temp=flow.flow_x.origin;
 		y_flow_orign_temp=flow.flow_y.origin;		
 		}
-	}
+		}
 		//x
 		flow_rad_fix[0]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.x,dead_rad_fix[0])*flow_rad_fix_k[0];
 		if(fabs(imu_fushion.Gyro_deg.x)<dead_rad_fix[0]*0.7)
 		flow_rad_fix[0]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.x,0)*flow_rad_fix_k2; 
-
 		//y
 		flow_rad_fix[1]=y_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.y,dead_rad_fix[0])*flow_rad_fix_k[0];
 		if(fabs(imu_fushion.Gyro_deg.y)<dead_rad_fix[0]*0.7)
 		flow_rad_fix[1]=y_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.y,0)*flow_rad_fix_k2; 
-
 		//z
 		flow_rad_fix[2]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.z,dead_rad_fix[1])*flow_rad_fix_k[1];
 		flow_rad_fix[3]=y_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.z,dead_rad_fix[1])*flow_rad_fix_k[1];
@@ -547,15 +503,11 @@ void flow_task1(void *pdata)
 		if (fabsf(flow_gyrospeed[2]) < rate_threshold) {
     flow_ground_temp[2]=my_deathzoom_2(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2],0)*flow_height_fliter*scale_pix;
 		flow_ground_temp[3]=my_deathzoom_2(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3],0)*flow_height_fliter*scale_pix;
-		} else {//偏航较大时，补偿其安装位置引起的偏差；
+		} else {
 		flow_ground_temp[2]=my_deathzoom_2(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2],0)*flow_height_fliter*scale_pix - yaw_comp[1] * flow_k;//1
 		flow_ground_temp[3]=my_deathzoom_2(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3],0)*flow_height_fliter*scale_pix - yaw_comp[0] * flow_k;//0
-		//		flow_m[0] = -flow_ang[0] * flow_dist - yaw_comp[0] * params.flow_k;
-		//		flow_m[1] = -flow_ang[1] * flow_dist - yaw_comp[1] * params.flow_k;
 		}
-										
-		//flow_ground_temp[2]=my_deathzoom_2(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2],0)*flow_height_fliter*scale_pix;
-		//flow_ground_temp[3]=my_deathzoom_2(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3],0)*flow_height_fliter*scale_pix;
+
 		float a_br[3],tmp[3];	
 		float acc_temp[3];
 		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
@@ -568,13 +520,7 @@ void flow_task1(void *pdata)
 
 		acc_temp[0] = tmp[1]*reference_vr[2]  - tmp[2]*reference_vr[1] ;
 		acc_temp[1] = tmp[2]*reference_vr[0]  - tmp[0]*reference_vr[2] ;
-		float accIn[3],acc_body_temp[3];
-		accIn[0] =(float) imu_fushion.Acc.x/4096.*9.8;//16438.;
-		accIn[1] =(float) imu_fushion.Acc.y/4096.*9.8;//16438.;
-		accIn[2] =(float) imu_fushion.Acc.z/4096.*9.8;//16438.;
-    body_to_NEZ(acc_body_temp, accIn, ref_q);
-		
-		
+	
 		acc_neo[0]=(float)(-acc_temp[0])*9.87;
 		acc_neo[1]=(float)(-acc_temp[1])*9.87;
 		flow_matlab_data[0]=acc_neo[0];
@@ -582,13 +528,11 @@ void flow_task1(void *pdata)
 		acc_neo[2]=((float)((int)((acc_temp[2]-1.0f)*200)))/200*9.87;	
 		flow_matlab_data[2]=-flow_ground_temp[2];
 		flow_matlab_data[3]=-flow_ground_temp[3];
-		//ukf_task(flow_matlab_data[2],flow_matlab_data[3],flow_matlab_data[0],flow_matlab_data[1],0.02);
 		flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
-		//ukf_task(0,0,0,0,0.02);
 		FlowUkfProcess(0);
 		float temp_spd[2];
-		temp_spd[0]=Moving_Median(16,MID_CNT_SPD,FLOW_VEL_X);//ALT_VEL_BMP+acc_neo[0]*k_acc_forward;
-		temp_spd[1]=Moving_Median(17,MID_CNT_SPD,FLOW_VEL_Y);//ALT_VEL_SONAR+acc_neo[1]*k_acc_forward;
+		temp_spd[0]=Moving_Median(16,MID_CNT_SPD,FLOW_VEL_X);
+		temp_spd[1]=Moving_Median(17,MID_CNT_SPD,FLOW_VEL_Y);
 		imu_nav.flow.speed.x=imu_nav.flow.speed.x*(1-k_flp)+k_flp*temp_spd[0];
 		imu_nav.flow.speed.y=imu_nav.flow.speed.y*(1-k_flp)+k_flp*temp_spd[1];
 		delay_ms(20); 
@@ -606,6 +550,7 @@ void uart_task(void *pdata)
 		delay_ms(5);  
 	}
 }	
+
 u8 UART_UP_LOAD_SEL=6;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
@@ -638,10 +583,9 @@ void TIM3_IRQHandler(void)
 								 GOL_LINK_TASK();
 					#endif
 						 		
-	        //en_ble_debug=1;
+  //en_ble_debug=1;
 	if(cnt++>4-1){cnt=0;	
-							
-								if(en_ble_debug){//!GOL_LINK_BUSY[0]){
+								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
 								switch(UART_UP_LOAD_SEL)
 								{

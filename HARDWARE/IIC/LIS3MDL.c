@@ -34,10 +34,10 @@ LIS3MDL_S lis3mdl;
 uint8_t id[3] ;
 void LIS3MDL_enableDefault(void)
 {
- //init hml
+ //------------init hml
    // 0x70 = 0b01110000
     // OM = 11 (ultra-high-performance mode for X and Y); DO = 100 (10 Hz ODR)
-    IIC_IMU1writeByte(LIS3MDL_IIC_ID,CTRL_REG1, 0x7C);
+    IIC_IMU1writeByte(LIS3MDL_IIC_ID,CTRL_REG1, 0x74);//20hz
 
     // 0x00 = 0b00000000
     // FS = 00 (+/- 4 gauss full scale)
@@ -51,21 +51,18 @@ void LIS3MDL_enableDefault(void)
     // OMZ = 11 (ultra-high-performance mode for Z)
     IIC_IMU1writeByte(LIS3MDL_IIC_ID,CTRL_REG4, 0x0C);
   
-	
-	  
-  
     id[0] = I2C_IMU1_ReadOneByte(LIS3MDL_IIC_ID,WHO_AM_I);
 		
-//init acc gro		
+//---------------init acc & gro		
 		// 0x80 = 0b10000000
     // ODR = 1000 (1.66 kHz (high performance)); FS_XL = 00 (+/-2 g full scale)
-    IIC_IMU1writeByte(DS33_IIC_ID,CTRL1_XL, 0x88);
+    IIC_IMU1writeByte(DS33_IIC_ID,CTRL1_XL, 0x4f);//50hz 8g  0x88);
 
     // Gyro
 
     // 0x80 = 0b010000000
     // ODR = 1000 (1.66 kHz (high performance)); FS_XL = 00 (245 dps)
-    IIC_IMU1writeByte(DS33_IIC_ID,CTRL2_G, 0x8c);
+    IIC_IMU1writeByte(DS33_IIC_ID,CTRL2_G, 0x4c);//2000 50hz
 
     // Common
 
@@ -75,10 +72,10 @@ void LIS3MDL_enableDefault(void)
 		
 		
 		id[1] = I2C_IMU1_ReadOneByte(DS33_IIC_ID,WHO_AM_I);
-		//init bmp
+//------------------------init bmp
 		// 0xB0 = 0b10110000
     // PD = 1 (active mode);  ODR = 011 (12.5 Hz pressure & temperature output data rate)
-		IIC_IMU1writeByte(LPS_IIC_ID,CTRL_REG1, 0xC4);//0xB4);
+		IIC_IMU1writeByte(LPS_IIC_ID,CTRL_REG1, 0xB4);//0xB4);
 		id[2] = I2C_IMU1_ReadOneByte(LPS_IIC_ID,WHO_AM_I);
 }
 
@@ -282,15 +279,13 @@ void LIS_Data_Offset(void)
 {static u8 acc_cal_temp=0,gro_cal_temp=0;
 static u8 state_cal_acc,state_cal_gro;
 static u8 init;
-
-
-
+	
 	if(lis3mdl.Acc_CALIBRATE == 1)
 	{
     acc_sum_cnt++;
 		sum_temp[A_X] += lis3mdl.Acc_I16.x;
 		sum_temp[A_Y] += lis3mdl.Acc_I16.y;
-		sum_temp[A_Z] += lis3mdl.Acc_I16.z - 65536/4/2;   // +-8G
+		sum_temp[A_Z] += lis3mdl.Acc_I16.z - 65536/16;   // +-8G
 		sum_temp[TEM] += lis3mdl.Tempreature;
 
     if( acc_sum_cnt >= OFFSET_AV_NUM )
@@ -368,7 +363,7 @@ static float Data_conversion(float *AccBuffer,float *MagBuffer)
 			else
 				HeadingValue =360-(float)(acos(fcosf)*180/PI);
 			
-      //HeadingValue = (float) ((atan2f((float)fTiltedY,(float)fTiltedX))*180)/PI;
+      HeadingValue = (float) ((atan2f((float)fTiltedY,(float)fTiltedX))*180)/PI;
       HeadingValue+=11;//地磁的北极和地球的北极相差11度左右。
 			if(HeadingValue>360)
 				HeadingValue=HeadingValue-360;
@@ -417,8 +412,8 @@ void LIS_Data_Prepare(float T)
 	}
 //10 170 4056
 	/* 得出校准后的数据 */
-	
-
+#define EN_ODR_MINE 0	
+#if EN_ODR_MINE
 	lis3mdl_tmp[A_X] = IIR_I_Filter(lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
 	lis3mdl_tmp[A_Y] = IIR_I_Filter(lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
 	lis3mdl_tmp[A_Z] = IIR_I_Filter(lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
@@ -426,7 +421,15 @@ void LIS_Data_Prepare(float T)
 	lis3mdl_tmp[G_X] = IIR_I_Filter(Gyro_tmp[0] - lis3mdl.Gyro_Offset.x , InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Y] = IIR_I_Filter(Gyro_tmp[1] - lis3mdl.Gyro_Offset.y , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Z] = IIR_I_Filter(Gyro_tmp[2] - lis3mdl.Gyro_Offset.z , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-
+#else
+  lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x);//, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
+	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y);//, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
+	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z);//, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
+	
+	lis3mdl_tmp[G_X] = (Gyro_tmp[0] - lis3mdl.Gyro_Offset.x );//, InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
+	lis3mdl_tmp[G_Y] = (Gyro_tmp[1] - lis3mdl.Gyro_Offset.y );//, InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
+	lis3mdl_tmp[G_Z] = (Gyro_tmp[2] - lis3mdl.Gyro_Offset.z );//, InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
+#endif	
 	
 
 	/* 更新滤波滑动窗口数组 */
@@ -463,7 +466,7 @@ float AccBuffer[3],MagBuffer[3];
 	MagBuffer[1]=lis3mdl.Mag_Adc.y;
 	MagBuffer[2]=lis3mdl.Mag_Adc.z;
 	
-	//lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
+	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
 	
 	/*坐标转换*/
 	Transform(mpu_fil_tmp[A_X],mpu_fil_tmp[A_Y],mpu_fil_tmp[A_Z],&lis3mdl.Acc.x,&lis3mdl.Acc.y,&lis3mdl.Acc.z);
@@ -474,9 +477,9 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Gyro_deg.z = lis3mdl.Gyro.z *TO_ANGLE;
 	
 	
-	lis3mdl.Acc_t.x=lis3mdl.Acc.y/2;
-	lis3mdl.Acc_t.y=-lis3mdl.Acc.x/2;
-  lis3mdl.Acc_t.z=lis3mdl.Acc.z/2;
+	lis3mdl.Acc_t.x=lis3mdl.Acc.y;
+	lis3mdl.Acc_t.y=-lis3mdl.Acc.x;
+  lis3mdl.Acc_t.z=lis3mdl.Acc.z;
 	
 	lis3mdl.Gyro_t.x=lis3mdl.Gyro.y;
 	lis3mdl.Gyro_t.y=-lis3mdl.Gyro.x;
@@ -528,5 +531,4 @@ float AccBuffer[3],MagBuffer[3];
 	    { state[2]=0; imu_fushion.Mag_CALIBRATED=0;}
 			break;
   }
-//======================================================================
 }

@@ -38,28 +38,22 @@ void ins_outdoor_update(float T)
 	gyro[1] = imu_fushion.Gyro_deg.y*DEG_RAD*1;
 	gyro[2] = imu_fushion.Gyro_deg.z*DEG_RAD*1;
 
-	accel[0] = imu_fushion.Acc.x/4096* 1*9.8;
-	accel[1] = imu_fushion.Acc.y/4096* 1*9.8;
-	accel[2] = imu_fushion.Acc.z/4096* 1*9.8;
+	accel[0] = imu_fushion.Acc.x/4096.* 1*9.8;
+	accel[1] = imu_fushion.Acc.y/4096.* 1*9.8;
+	accel[2] = imu_fushion.Acc.z/4096.* 1*9.8;
 
 	mag_data.scaled.axis[0]= ekf_hml_flag[0]*imu_fushion.Mag_Val.x;///float)Global_Mag_Val[0];
 	mag_data.scaled.axis[1]= ekf_hml_flag[1]*imu_fushion.Mag_Val.y;//(float)Global_Mag_Val[1];
 	mag_data.scaled.axis[2]= ekf_hml_flag[2]*imu_fushion.Mag_Val.z;//(float)Global_Mag_Val[2];
-//	gyro[0] = Mpu.gyro_data.filtered.x;
-//	gyro[1] = gyro_data.filtered.y;
-//	gyro[2] = gyro_data.filtered.z;
-//	accel[0] = accel_data.filtered.x,
-//	accel[1] = accel_data.filtered.y,
-//	accel[2] = accel_data.filtered.z,
-		
+
 	INSStatePrediction(gyro, accel, T);
 	attitude_data.quaternion.q1 = Nav.q[0];
 	attitude_data.quaternion.q2 = Nav.q[1];
 	attitude_data.quaternion.q3 = Nav.q[2];
 	attitude_data.quaternion.q4 = Nav.q[3];		
-angle_ins[0] = fast_atan2(2*(Nav.q[0]*Nav.q[1] + Nav.q[2]*Nav.q[3]),1 - 2*(Nav.q[1]*Nav.q[1] + Nav.q[2]*Nav.q[2])) *57.3f;
-angle_ins[1] = asin(2*(ref_q[1]*Nav.q[3] - Nav.q[0]*Nav.q[2])) *57.3f;
-angle_ins[2] = fast_atan2(2*(-Nav.q[1]*Nav.q[2] - Nav.q[0]*Nav.q[3]), 2*(Nav.q[0]*Nav.q[0] + Nav.q[1]*Nav.q[1]) - 1) *57.3f  ;// 
+  angle_ins[0] = fast_atan2(2*(Nav.q[0]*Nav.q[1] + Nav.q[2]*Nav.q[3]),1 - 2*(Nav.q[1]*Nav.q[1] + Nav.q[2]*Nav.q[2])) *57.3f;
+  angle_ins[1] = asin(2*(ref_q[1]*Nav.q[3] - Nav.q[0]*Nav.q[2])) *57.3f;
+  angle_ins[2] = fast_atan2(2*(-Nav.q[1]*Nav.q[2] - Nav.q[0]*Nav.q[3]), 2*(Nav.q[0]*Nav.q[0] + Nav.q[1]*Nav.q[1]) - 1) *57.3f  ;// 
 	
 //	send_attitude();  // get message out quickly
 //	send_velocity();
@@ -204,11 +198,7 @@ void ins_init_algorithm()
 
 
 
-
-
-
-
-
+//For  Qr  mark
 #define NAV_USE_KF 1
 #if USE_FLOW_FLY_ROBOT
 float q_flow[3]={0.005,0.005,0.005};//{1,1,1};//0.6;///1;
@@ -217,79 +207,10 @@ float q_flow[3]={0.02,0.01,0.01};//{1,1,1};//0.6;///1;
 #endif
 float r_flow[3]={10,1,0.1};//{1,1,1};//0.6;///1;
 float flow_gain=1;//2;
-double P_flow[36]={
-	     1,0,0,0,0,0,
-       0,1,0,0,0,0,
-       0,0,1,0,0,0,
-       0,0,0,1,0,0,
-       0,0,0,0,1,0,
-       0,0,0,0,0,1};
 double X_ukf[6];
 double X_ukf_baro[6];
-
 int acc_flag_flow[2]={1,1};
 float X_ukf_Pos[2];
-
-void ukf_flow(float flowx,float flowy,float accx,float accy,float T)
-{
-static u8 init;
-if(!init){init=1;
- ukf_oldx_initialize();
-}	
-double A_flow[36]=
-			 {1,     0,    0,    0,    0,    0,
-				T,     1,    0,    0,    0,    0,
-				T*T/2, T,    1,    0,    0,    0,
-				0,     0,    0,    1,    0,    0,
-				0,     0,    0,    T,    1,    0,
-				0,     0,    0,    T*T/2,T,    1
-				 };
-double H_flow[36]={
-			 0,0,0,0,0,0,
-       0,1,0,0,0,0,
-       0,0,1,0,0,0,
-       0,0,0,0,0,0,
-       0,0,0,0,1,0,
-       0,0,0,0,0,1};
-double Q_flow[36]={
-			 q_flow[0],0,0,0,0,0,
-       0,q_flow[1],0,0,0,0,
-       0,0,q_flow[2],0,0,0,
-       0,0,0,q_flow[0],0,0,
-       0,0,0,0,q_flow[1],0,
-       0,0,0,0,0,q_flow[2]};
-double R_flow[36]={
-			 r_flow[0],0,0,0,0,0,
-       0,r_flow[1],0,0,0,0,
-       0,0,r_flow[2],0,0,0,
-       0,0,0,r_flow[0],0,0,
-       0,0,0,0,r_flow[1],0,
-       0,0,0,0,0,r_flow[2]};
-
-			 
-double Z_flow[6];
-Z_flow[0]=0;
-Z_flow[1]=flowx*flow_gain;
-Z_flow[2]=accx*acc_flag_flow[0];
-Z_flow[3]=0;
-Z_flow[4]=flowy*flow_gain;
-Z_flow[5]=accy*acc_flag_flow[1];	 
-ukf_oldx(A_flow, X_ukf, P_flow, H_flow, Z_flow, Q_flow, R_flow);		 
-X_ukf_Pos[0]=-X_ukf[0];//X
-X_ukf_Pos[1]=-X_ukf[3];//Y
-
-}
-
-void ukf_pos_task(double JIN,double WEI,float Yaw,float flowx,float flowy,float accx,float accy,float T)
-{
-
-
-
-	
-  ukf_flow( flowx, flowy, accx, accy,T);
-
-
-}
 float r1,r2;
 float posNorth,posEast;
 float local_Lat,local_Lon;
@@ -543,9 +464,6 @@ if(kf_data_sel_temp==1){//GPS
 				state_init_flow_pos=0;
 			break; 
 	 }
-	 
-	 
-	 
 	 double Zy[3]={Posy,Sdpy,0};
 	 if(1)//bei 
    KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);

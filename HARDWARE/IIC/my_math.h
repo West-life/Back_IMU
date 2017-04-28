@@ -34,7 +34,7 @@
 #define LIMIT( x,min,max ) ( (x) < (min)  ? (min) : ( (x) > (max) ? (max) : (x) ) )
 #define _MIN(a, b) ((a) < (b) ? (a) : (b))
 #define _MAX(a, b) ((a) > (b) ? (a) : (b))
-
+void body_to_NEZ(float *vr, float *v, float *q) ;
 
 int sign_flow(float in,float dead);
 float my_abs(float f);
