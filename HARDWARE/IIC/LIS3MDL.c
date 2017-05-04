@@ -237,7 +237,7 @@ void LIS_CalOffset_Mag(void)
 			MagMIN.y = MIN(lis3mdl.Mag_Adc.y, MagMIN.y);
 			MagMIN.z = MIN(lis3mdl.Mag_Adc.z, MagMIN.z);		
 			
-			if(cnt_m >= CALIBRATING_MAG_CYCLES*6)
+			if(cnt_m >= CALIBRATING_MAG_CYCLES*4.5)
 			{ init=0;
 				lis3mdl.Mag_Offset.x = (int16_t)((MagMAX.x + MagMIN.x) * 0.5f);
 				lis3mdl.Mag_Offset.y = (int16_t)((MagMAX.y + MagMIN.y) * 0.5f);

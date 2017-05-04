@@ -431,7 +431,8 @@ if(kf_data_sel_temp==1){//GPS
    float accNorth=ACCY*cos(Yaw_qr*0.0173)-ACCX*sin(Yaw_qr*0.0173);
    float SPDY=flowy*K_spd_flow;
 	 float SPDX=flowx*K_spd_flow;
-		
+	 float acc_bias[2]={0};
+	 H[8]=1;  //no acc bias
 //	 if(par[0]!=0)g_pos_flow=(float)par[0]/1000.;
 //   if(par[1]!=0)
 //		 g_spd_flow=(float)par[1]/1000.;
@@ -464,10 +465,10 @@ if(kf_data_sel_temp==1){//GPS
 				state_init_flow_pos=0;
 			break; 
 	 }
-	 double Zy[3]={Posy,Sdpy,0};
+	 double Zy[3]={Posy,Sdpy,acc_bias[1]};
 	 if(1)//bei 
    KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
-	 double Zx[3]={Posx,Sdpx,0};
+	 double Zx[3]={Posx,Sdpx,acc_bias[0]};
 	 if(1)//dong
    KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
 	 X_ukf[0]=X_KF_NAV[0][0];//East pos

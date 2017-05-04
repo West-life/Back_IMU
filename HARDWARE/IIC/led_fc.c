@@ -1,5 +1,5 @@
 
-
+#include "LIS3MDL.h"
 #include "led_fc.h"
 #include "include.h"
 #include "mpu6050.h"
@@ -150,24 +150,17 @@ u8 mode_control;
 	
 	
 mode_control=mode.mode_fly;
-switch(main_state)
-{ 
-	
-	case IDLE:
-	if(mpu6050.Gyro_CALIBRATE)
-	{idle_state=0;main_state=CAL_MPU;
 
-	}
-	else if(Mag_CALIBRATED)
-	{idle_state=0;main_state=CAL_M;
+if(lis3mdl.Gyro_CALIBRATE||lis3mdl.Acc_CALIBRATE)
+{idle_state=0;mpu_state=main_state=CAL_MPU;
 
-	}
-	break;
-	case CAL_MPU:
-  break;
-	case CAL_M:
-  break;
 }
+else if(lis3mdl.Mag_CALIBRATED)
+{idle_state=0;mpu_state=main_state=CAL_M;
+}
+else
+main_state=0;	
+
 //   | | | |    | | | |   | | | |   | | | |   | | | |
 //    ARM          GPS1     GPS2      GPS3      MODE  
 #define RGB_DELAY 3
@@ -308,35 +301,25 @@ switch(idle_state)
 	break;
 }
 
-switch(mpu_state){
-	case 0:if(main_state==CAL_MPU)
-	  {mpu_state=1;LEDRGB_COLOR(YELLOW);}
-	       break;
-	case 1:
-		if(!mpu6050.Gyro_CALIBRATE)
-		{	mpu_state=2;LEDRGB_COLOR(BLACK);}
+switch(main_state){
+	case CAL_MPU:
+			mpu_state=3;LEDRGB_COLOR(YELLOW);
 		    break;
-	case 2:
+	case CAL_M:
+			mpu_state=3;LEDRGB_COLOR(BLUE);
+	     break;
+	case 3:
 		 if(cnt++>10)
-		 {mpu_state=0;cnt=0;main_state=IDLE;}
+		 {cnt=0;
+		 if(mpu_state==CAL_MPU)
+		 main_state=CAL_MPU;
+		 else
+		 main_state=CAL_M;	 
+		 }
 		 break;
-	default:mpu_state=0;break;
 	 }	 
 
-switch(m_state){
-	case 0:if(main_state==CAL_M)
-	  {m_state=1;LEDRGB_COLOR(BLUE);}
-	       break;
-	case 1:
-			if(!Mag_CALIBRATED)
-		{	m_state=2;LEDRGB_COLOR(GREEN);}
-		  break;
-	case 2:
-		 if(cnt++>10)
-		 {m_state=0;cnt=0;main_state=IDLE;}
-		 break;
-	default:m_state=0;break;
-	 }	 	 
+
 }
 
 /******************* (C) COPYRIGHT 2014 ANO TECH *****END OF FILE************/

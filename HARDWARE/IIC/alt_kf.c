@@ -1283,8 +1283,9 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	 #elif defined(SONAR_SAMPLE3)
 	  y = (float)(Moving_Median(1,10,ultra_distance))/1000;
 	 #endif
-	  
-
+	  #if SONAR_USE_FLOW
+    y=flow.hight.originf;
+	  #endif
 		#if USE_UKF_SONAR
 		noise = ALT_PRES_NOISE_SONAR;
 		Moving_Average( (float)( y),sonar_h_arr,SONAR_HIHG_NUM, sonar_h_cnt ,&sonar_temp);	 
@@ -1307,7 +1308,12 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		uint8_t zFlag[2] = {1, 1};
 		
 	
-		float oldx_sonar=sonar_filter_oldx((float)ultra_distance/1000);//<<----------------start
+		float oldx_sonar;
+		#if SONAR_USE_FLOW
+    oldx_sonar=sonar_filter_oldx(flow.hight.originf);
+		#else
+		oldx_sonar=sonar_filter_oldx((float)ultra_distance/1000.);//<<----------------start
+	  #endif
 		ultra.relative_height =oldx_sonar*100;
 		fusion_prepare(dt,sonar_av_arr,SONAR_AV_NUM,&sonar_av_cnt,0,&ultra,&sonar);
 		//acc_fusion(dt,&sonar_f_set,baro_matlab_data[1]*1000,&sonar,&sonar_fusion);

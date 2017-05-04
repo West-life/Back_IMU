@@ -1,4 +1,4 @@
-
+#include "LIS3MDL.h"
 #include "include.h"
 #include "usart_fc.h"
 #include "ultrasonic.h"
@@ -153,7 +153,12 @@ float k_flow_opencv=0.88;
 		par[10]=((int16_t)(*(data_buf+24)<<8)|*(data_buf+25));
 		par[11]=((int16_t)(*(data_buf+26)<<8)|*(data_buf+27));
 		//kf_data_sel=*(data_buf+28);
-		
+		if(!lis3mdl.Acc_CALIBRATE&&*(data_buf+29)==1)
+		lis3mdl.Acc_CALIBRATE=1;
+		if(!lis3mdl.Gyro_CALIBRATE&&*(data_buf+30)==1)
+		lis3mdl.Gyro_CALIBRATE=1;
+		if(!lis3mdl.Mag_CALIBRATED&&*(data_buf+31)==1)
+		lis3mdl.Mag_CALIBRATED=1;
 	
 	}		
 }
@@ -902,6 +907,9 @@ switch(sel){
 	_temp = (vs16)(ALT_VEL_SONAR*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	#if SONAR_USE_FLOW
+	sys.sonar=1;
+	#endif
 	if(sys.sonar)
 	_temp = (vs16)(ALT_POS_SONAR2*1000);//navUkfData.posE[0]*1000;
 	else

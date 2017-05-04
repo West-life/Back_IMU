@@ -1,5 +1,6 @@
 ..\obj\led_fc.o: ..\HARDWARE\IIC\led_fc.c
-..\obj\led_fc.o: ..\HARDWARE\IIC\led_fc.h
+..\obj\led_fc.o: ..\HARDWARE\IIC\LIS3MDL.h
+..\obj\led_fc.o: ..\HARDWARE\IIC\parameter.h
 ..\obj\led_fc.o: ..\USER\stm32f4xx.h
 ..\obj\led_fc.o: ..\CORE\core_cm4.h
 ..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
@@ -35,6 +36,8 @@
 ..\obj\led_fc.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\led_fc.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\led_fc.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+..\obj\led_fc.o: ..\HARDWARE\IIC\led_fc.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\include.h
 ..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
@@ -44,7 +47,6 @@
 ..\obj\led_fc.o: ..\HARDWARE\IIC\time.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\include.h
-..\obj\led_fc.o: ..\HARDWARE\IIC\parameter.h
 ..\obj\led_fc.o: ..\SYSTEM\delay\delay.h
 ..\obj\led_fc.o: ..\SYSTEM\sys\sys.h
 ..\obj\led_fc.o: ..\MALLOC\malloc.h
