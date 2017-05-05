@@ -3,9 +3,9 @@
 <title>Static Call Graph - [..\OBJ\UCOSII-3.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\UCOSII-3.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Tue May 02 15:38:16 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Fri May 05 11:42:27 2017
 <BR><P>
-<H3>Maximum Stack Usage =       1392 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       1320 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 ekf_task &rArr; ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 <P>
@@ -319,7 +319,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
 <P><STRONG><a name="[68]"></a>ekf_task</STRONG> (Thumb, 424 bytes, Stack size 24 bytes, ucos_task.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1392 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 1320 + Unknown Stack Size
 <LI>Call Chain = ekf_task &rArr; ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
@@ -363,7 +363,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 </UL>
 
-<P><STRONG><a name="[69]"></a>flow_task1</STRONG> (Thumb, 3678 bytes, Stack size 240 bytes, ucos_task.o(.text))
+<P><STRONG><a name="[69]"></a>flow_task1</STRONG> (Thumb, 3698 bytes, Stack size 240 bytes, ucos_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 548 + Unknown Stack Size
 <LI>Call Chain = flow_task1 &rArr; FlowUkfProcess &rArr; flow_ukf_Update &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
@@ -391,7 +391,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 </UL>
 
-<P><STRONG><a name="[2f]"></a>TIM3_IRQHandler</STRONG> (Thumb, 2948 bytes, Stack size 48 bytes, ucos_task.o(.text))
+<P><STRONG><a name="[2f]"></a>TIM3_IRQHandler</STRONG> (Thumb, 2960 bytes, Stack size 48 bytes, ucos_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 168 + Unknown Stack Size
 <LI>Call Chain = TIM3_IRQHandler &rArr; Send_BLE_DEBUG &rArr; Send_Data_GOL_LINK &rArr; UsartSend_GOL_LINK
 </UL>
@@ -3853,7 +3853,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[20c]"></a>Data_Receive_Anl</STRONG> (Thumb, 704 bytes, Stack size 40 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[20c]"></a>Data_Receive_Anl</STRONG> (Thumb, 1018 bytes, Stack size 40 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Data_Receive_Anl &rArr; __aeabi_ddiv
 </UL>
 <BR>[Calls]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -3863,7 +3863,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 </UL>
 
-<P><STRONG><a name="[38]"></a>USART2_IRQHandler</STRONG> (Thumb, 412 bytes, Stack size 8 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[38]"></a>USART2_IRQHandler</STRONG> (Thumb, 348 bytes, Stack size 8 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80 + Unknown Stack Size
 <LI>Call Chain = USART2_IRQHandler &rArr; Data_Receive_Anl &rArr; __aeabi_ddiv
 </UL>
@@ -3884,7 +3884,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Data_GOL_LINK
 </UL>
 
-<P><STRONG><a name="[213]"></a>Send_UKF1</STRONG> (Thumb, 1300 bytes, Stack size 88 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[213]"></a>Send_UKF1</STRONG> (Thumb, 1302 bytes, Stack size 88 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Data_GOL_LINK
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
@@ -3892,25 +3892,25 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GOL_LINK_TASK
 </UL>
 
-<P><STRONG><a name="[214]"></a>Send_CAL</STRONG> (Thumb, 748 bytes, Stack size 72 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[214]"></a>Send_CAL</STRONG> (Thumb, 756 bytes, Stack size 72 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Data_GOL_LINK
 </UL>
 <BR>[Called By]<UL><LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GOL_LINK_TASK
 </UL>
 
-<P><STRONG><a name="[215]"></a>Send_MEMS</STRONG> (Thumb, 866 bytes, Stack size 80 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[215]"></a>Send_MEMS</STRONG> (Thumb, 896 bytes, Stack size 80 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Data_GOL_LINK
 </UL>
 <BR>[Called By]<UL><LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GOL_LINK_TASK
 </UL>
 
-<P><STRONG><a name="[216]"></a>Send_ATT</STRONG> (Thumb, 924 bytes, Stack size 72 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[216]"></a>Send_ATT</STRONG> (Thumb, 938 bytes, Stack size 72 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Data_GOL_LINK
 </UL>
 <BR>[Called By]<UL><LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GOL_LINK_TASK
 </UL>
 
-<P><STRONG><a name="[b0]"></a>Send_BLE_DEBUG</STRONG> (Thumb, 452 bytes, Stack size 96 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[b0]"></a>Send_BLE_DEBUG</STRONG> (Thumb, 408 bytes, Stack size 96 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = Send_BLE_DEBUG &rArr; Send_Data_GOL_LINK &rArr; UsartSend_GOL_LINK
 </UL>
 <BR>[Calls]<UL><LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Data_GOL_LINK
@@ -3932,7 +3932,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GOL_LINK_TASK
 </UL>
 
-<P><STRONG><a name="[219]"></a>GOL_LINK_TASK</STRONG> (Thumb, 150 bytes, Stack size 8 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[219]"></a>GOL_LINK_TASK</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[218]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_GPS
 <LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Laser
 <LI><a href="#[216]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_ATT
@@ -3941,7 +3941,7 @@ Global Symbols
 <LI><a href="#[213]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_UKF1
 </UL>
 
-<P><STRONG><a name="[21a]"></a>data_per_uart4</STRONG> (Thumb, 4292 bytes, Stack size 40 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[21a]"></a>data_per_uart4</STRONG> (Thumb, 4270 bytes, Stack size 40 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = data_per_uart4 &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -3962,7 +3962,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM3_IRQHandler
 </UL>
 
-<P><STRONG><a name="[d4]"></a>Uart5_Init</STRONG> (Thumb, 246 bytes, Stack size 40 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[d4]"></a>Uart5_Init</STRONG> (Thumb, 208 bytes, Stack size 40 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = Uart5_Init &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[20b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ITConfig
@@ -3981,7 +3981,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLOW_MAVLINK
 </UL>
 
-<P><STRONG><a name="[21b]"></a>FLOW_MAVLINK</STRONG> (Thumb, 1016 bytes, Stack size 16 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[21b]"></a>FLOW_MAVLINK</STRONG> (Thumb, 1034 bytes, Stack size 16 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = FLOW_MAVLINK
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ByteToFloat
@@ -4028,7 +4028,7 @@ Global Symbols
 
 <P><STRONG><a name="[406]"></a>Data_Receive_Anl_odroid</STRONG> (Thumb, 168 bytes, Stack size 12 bytes, usart_fc.o(.text), UNUSED)
 
-<P><STRONG><a name="[21f]"></a>IMU_DJ_ANGLE</STRONG> (Thumb, 426 bytes, Stack size 8 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[21f]"></a>IMU_DJ_ANGLE</STRONG> (Thumb, 482 bytes, Stack size 8 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = IMU_DJ_ANGLE &rArr; NMEA_GPRMC_Analysis &rArr; NMEA_Str2num &rArr; NMEA_Pow
 </UL>
 <BR>[Calls]<UL><LI><a href="#[17c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMEA_GPRMC_Analysis
@@ -4037,7 +4037,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_IRQHandler
 </UL>
 
-<P><STRONG><a name="[37]"></a>USART1_IRQHandler</STRONG> (Thumb, 242 bytes, Stack size 8 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[37]"></a>USART1_IRQHandler</STRONG> (Thumb, 166 bytes, Stack size 8 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160 + Unknown Stack Size
 <LI>Call Chain = USART1_IRQHandler &rArr; IMU_DJ_ANGLE &rArr; NMEA_GPRMC_Analysis &rArr; NMEA_Str2num &rArr; NMEA_Pow
 </UL>
@@ -4066,7 +4066,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[220]"></a>Laser_Get</STRONG> (Thumb, 254 bytes, Stack size 20 bytes, usart_fc.o(.text))
+<P><STRONG><a name="[220]"></a>Laser_Get</STRONG> (Thumb, 340 bytes, Stack size 20 bytes, usart_fc.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = Laser_Get
 </UL>
 <BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_IRQHandler
@@ -4119,11 +4119,11 @@ Global Symbols
 <LI><a href="#[224]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_ReportMotion
 </UL>
 
-<P><STRONG><a name="[224]"></a>UART2_ReportMotion</STRONG> (Thumb, 450 bytes, Stack size 40 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[224]"></a>UART2_ReportMotion</STRONG> (Thumb, 400 bytes, Stack size 40 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[223]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Put_Char
 </UL>
 
-<P><STRONG><a name="[225]"></a>UART2_ReportIMU</STRONG> (Thumb, 300 bytes, Stack size 40 bytes, usart_fc.o(.text), UNUSED)
+<P><STRONG><a name="[225]"></a>UART2_ReportIMU</STRONG> (Thumb, 326 bytes, Stack size 40 bytes, usart_fc.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[223]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Put_Char
 </UL>
 
@@ -5104,7 +5104,7 @@ Global Symbols
 <LI><a href="#[295]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;anotc_filter_1
 </UL>
 
-<P><STRONG><a name="[9a]"></a>altUkfProcess</STRONG> (Thumb, 1608 bytes, Stack size 104 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[9a]"></a>altUkfProcess</STRONG> (Thumb, 1622 bytes, Stack size 104 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1288<LI>Call Chain = altUkfProcess &rArr; altDoPresUpdate &rArr; kf_oldx &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Cycle_T
@@ -5124,7 +5124,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;baro_task
 </UL>
 
-<P><STRONG><a name="[a6]"></a>FlowUkfProcess</STRONG> (Thumb, 422 bytes, Stack size 24 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[a6]"></a>FlowUkfProcess</STRONG> (Thumb, 410 bytes, Stack size 24 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 308<LI>Call Chain = FlowUkfProcess &rArr; flow_ukf_Update &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Cycle_T
@@ -5134,7 +5134,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 </UL>
 
-<P><STRONG><a name="[29b]"></a>GpsUkfProcess</STRONG> (Thumb, 820 bytes, Stack size 80 bytes, alt_kf.o(.text), UNUSED)
+<P><STRONG><a name="[29b]"></a>GpsUkfProcess</STRONG> (Thumb, 828 bytes, Stack size 80 bytes, alt_kf.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[29a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
 <LI><a href="#[29c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
@@ -5146,7 +5146,7 @@ Global Symbols
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 
-<P><STRONG><a name="[cd]"></a>altUkfInit</STRONG> (Thumb, 536 bytes, Stack size 68 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[cd]"></a>altUkfInit</STRONG> (Thumb, 646 bytes, Stack size 68 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = altUkfInit &rArr; srcdkfInit &rArr; matrixInit &rArr; aqDataCalloc
 </UL>
 <BR>[Calls]<UL><LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfSetVariance
@@ -5603,8 +5603,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[99]"></a>ukf_pos_task_qr</STRONG> (Thumb, 9598 bytes, Stack size 384 bytes, ukf_task.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1368<LI>Call Chain = ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+<P><STRONG><a name="[99]"></a>ukf_pos_task_qr</STRONG> (Thumb, 9590 bytes, Stack size 312 bytes, ukf_task.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1296<LI>Call Chain = ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
 <LI><a href="#[2d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
@@ -6405,6 +6405,7 @@ Global Symbols
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
 <LI><a href="#[17c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMEA_GPRMC_Analysis
 <LI><a href="#[29a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[277]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
 <LI><a href="#[269]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
@@ -7146,7 +7147,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FlowUkfProcess
 </UL>
 
-<P><STRONG><a name="[296]"></a>altDoPresUpdate</STRONG> (Thumb, 1440 bytes, Stack size 120 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[296]"></a>altDoPresUpdate</STRONG> (Thumb, 1492 bytes, Stack size 120 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1184<LI>Call Chain = altDoPresUpdate &rArr; kf_oldx &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Median
@@ -7162,6 +7163,7 @@ Local Symbols
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4

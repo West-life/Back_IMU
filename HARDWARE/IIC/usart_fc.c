@@ -99,6 +99,7 @@ u8 NAV_BOARD_CONNECT=0;
 u8 force_fly_ready;
 int par[12];
 float k_flow_opencv=0.88;
+float sonar_fc;
  void Data_Receive_Anl(u8 *data_buf,u8 num)
 { static u8 flag;
 	vs16 rc_value_temp;
@@ -125,6 +126,7 @@ float k_flow_opencv=0.88;
 		qr.connect=*(data_buf+29);
 		qr.check=*(data_buf+30);
 		qr.use_spd=*(data_buf+31);
+		sonar_fc=(float)((int16_t)(*(data_buf+32)<<8)|*(data_buf+33))/1000.;
 
 	}
 		else if(*(data_buf+2)==0x14)//IMU_FRAME
@@ -160,7 +162,14 @@ float k_flow_opencv=0.88;
 		if(!lis3mdl.Mag_CALIBRATED&&*(data_buf+31)==1)
 		lis3mdl.Mag_CALIBRATED=1;
 	
-	}		
+	}	
+		else if(*(data_buf+2)==0x83)//
+  {
+	 k_flow_devide=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/1000.;
+   flow_module_offset_x=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/1000.;
+	 flow_module_offset_y=(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/1000.;
+	}
+  	
 }
  
 

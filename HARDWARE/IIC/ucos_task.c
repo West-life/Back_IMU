@@ -411,7 +411,7 @@ float flow_matlab_data[4];
 float baro_matlab_data[2];
 float flow_loop_time;
 u8 flow_rad_sel;//=1;
-
+float k_flow_devide=1;
 void flow_task1(void *pdata)
 {		float temp_sonar;			
  FLOW_RAD flow_rad_use;  
@@ -526,8 +526,14 @@ void flow_task1(void *pdata)
 		flow_matlab_data[0]=acc_neo[0];
 		flow_matlab_data[1]=acc_neo[1];
 		acc_neo[2]=((float)((int)((acc_temp[2]-1.0f)*200)))/200*9.87;	
-		flow_matlab_data[2]=-flow_ground_temp[2];
-		flow_matlab_data[3]=-flow_ground_temp[3];
+//		#if FLOW_USE_FLY_LAB
+//		k_flow_devide=1;
+//		#else
+//		k_flow_devide=0.8;
+//		#endif
+		
+		flow_matlab_data[2]=-flow_ground_temp[2]*k_flow_devide;
+		flow_matlab_data[3]=-flow_ground_temp[3]*k_flow_devide;
 		flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
 		FlowUkfProcess(0);
 		float temp_spd[2];
@@ -551,7 +557,7 @@ void uart_task(void *pdata)
 	}
 }	
 
-u8 UART_UP_LOAD_SEL=6;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=5;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -583,7 +589,7 @@ void TIM3_IRQHandler(void)
 								 GOL_LINK_TASK();
 					#endif
 						 		
-  //en_ble_debug=1;
+ // en_ble_debug=1;
 	if(cnt++>4-1){cnt=0;	
 								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
@@ -611,8 +617,8 @@ void TIM3_IRQHandler(void)
 								0,0,v_test[1]*1000);break;		
 								case 5://海拔速度
 								Send_BLE_DEBUG((int16_t)(0*100),X_ukf[0]*1000,X_ukf[3]*1000,
-								0,X_ukf[1]*1000,flow_matlab_data[2]*1000*K_spd_flow,
-								FLOW_VEL_Y*000,X_ukf[4]*1000,flow_matlab_data[3]*1000*K_spd_flow);break;	
+								FLOW_VEL_X*1000,X_ukf[1]*1000,flow_matlab_data[2]*1000*K_spd_flow,
+								0,X_ukf[4]*1000,flow_matlab_data[3]*1000*K_spd_flow);break;	
 								case 6://海拔速度
 								Send_BLE_DEBUG((int16_t)(X_ukf_baro[3]*100),baro_matlab_data[0]*100,X_ukf_baro[0]*100,
 								X_ukf_baro[4]*100,X_ukf_baro[1]*100,ALT_VEL_BMP_EKF*100,

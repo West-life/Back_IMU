@@ -1348,6 +1348,9 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		}	
 		
 		//ALT_POS_SONAR2=ALT_POS_SONAR3;
+		if(sonar_fc!=0&&!ultra_ok)
+		ALT_POS_SONAR2=sonar_fc;
+		else
 		ALT_POS_SONAR2=X_kf_sonar[0]*0.2+ALT_POS_SONAR3*0.8;
 	
 		//ALT_POS_SONAR3=sonar_temp*K_SONAR/10+(1-K_SONAR/10)*(ALT_POS_SONAR3-dt*ALT_VEL_BMP_EKF);

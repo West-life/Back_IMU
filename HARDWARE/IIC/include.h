@@ -32,8 +32,9 @@
 //================传感器===================
 #define IMU_UPDATE 1
 #define NEW_IMU 0  //1使用LSD IMU
+#define FLOW_USE_FLY_LAB 0 //
 
-#define SONAR_USE_FLOW 1 //使用光流超声波
+#define SONAR_USE_FLOW 0 //使用光流超声波
 #define USE_US100           //使用us100型号超声波 
 //#define USE_KS103					//使用ks103型号超声波
 //#define SONAR_SAMPLE1					//0-5m 32ms  no fix

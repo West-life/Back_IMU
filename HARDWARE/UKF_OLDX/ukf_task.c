@@ -244,7 +244,7 @@ double P_KF_NAV[2][9];
 float ga_nav= 0.1; 
 float gwa_nav=0.1;
 float g_pos_flow= 0.0086;//0.0051;
-float g_spd_flow= 0.006/2;
+float g_spd_flow= 0.0006;
 
 float K_pos_qr=0.01;
 float K_spd_flow=0.86;//1.2;//0.86;
@@ -258,6 +258,10 @@ float g_spd_gps= 0.1;//0.1;
 float velNorth_gps,velEast_gps;
 
 u8 force_test;
+static double H[9]={
+			 1,0,0,
+       0,1,0,
+       0,0,0};
 void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,float accx,float accy,float T)
 {
 static u8 gps_init;
@@ -269,10 +273,7 @@ double A[9]=
 			 {1,       0,    0,
 				T,       1,    0,
 				-T*T/2, -T,    1};
-double H[9]={
-			 1,0,0,
-       0,1,0,
-       0,0,0};
+
 double B[3]={T*T/2,T,0}; 
  
 
@@ -432,7 +433,7 @@ if(kf_data_sel_temp==1){//GPS
    float SPDY=flowy*K_spd_flow;
 	 float SPDX=flowx*K_spd_flow;
 	 float acc_bias[2]={0};
-	 H[8]=1;  //no acc bias
+	 //H[8]=1;  //no acc bias
 //	 if(par[0]!=0)g_pos_flow=(float)par[0]/1000.;
 //   if(par[1]!=0)
 //		 g_spd_flow=(float)par[1]/1000.;

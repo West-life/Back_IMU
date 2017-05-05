@@ -302,6 +302,11 @@ void data_per_uart4(u8 sel);
 #define SEND_IMU_DEBUG 5
 #define SEND_IMU_QR 6
 #define SEND_IMU_MEMS 7
+
+extern float sonar_fc;
+extern float k_flow_devide;
+extern float flow_module_offset_y,flow_module_offset_x;//光流安装位移 单位米
+
 void GOL_LINK_TASK_DMA(void);
 extern u8 en_ble_debug;
 extern void GOL_LINK_BLE_DEBUG(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,int16_t gz,
@@ -318,7 +323,6 @@ void Send_BLE_DEBUG(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,int16
 	float originf;
 	int16_t origin;
 }FLOW_DATA;
-
 
   typedef struct
 {
