@@ -48,6 +48,8 @@
 ..\obj\ms5611_2.o: ..\SYSTEM\sys\sys.h
 ..\obj\ms5611_2.o: ..\MALLOC\malloc.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\ms5611_2.o: ..\HARDWARE\IIC\flow.h
+..\obj\ms5611_2.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\nrf.h
@@ -64,4 +66,3 @@
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\dma.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\ms5611_2.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\iic.h
-..\obj\ms5611_2.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

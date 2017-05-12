@@ -44,6 +44,7 @@
 ..\obj\ukf_task.o: ..\HARDWARE\UKF_OLDX\ukf_oldx_types.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\my_math.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\ukf_task.o: ..\HARDWARE\IIC\flow.h
 ..\obj\ukf_task.o: ..\HARDWARE\GPS\gps.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\include.h
 ..\obj\ukf_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

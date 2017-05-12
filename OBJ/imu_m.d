@@ -52,6 +52,8 @@
 ..\obj\imu_m.o: ..\SYSTEM\sys\sys.h
 ..\obj\imu_m.o: ..\MALLOC\malloc.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\imu_m.o: ..\HARDWARE\IIC\flow.h
+..\obj\imu_m.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\nrf.h
@@ -66,4 +68,3 @@
 ..\obj\imu_m.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\my_math.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\filter.h
-..\obj\imu_m.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

@@ -1,7 +1,10 @@
 #ifndef _USART_H
 #define _USART_H
-
+#include "flow.h"
 #include "stm32f4xx.h"
+
+extern FLOW flow;
+extern FLOW_RAD flow_rad,flow_rad_mine;
 extern int par[12];
 extern u8 Rx_Buf[], force_fly_ready;;
 void Usart2_Init(u32 br_num);
@@ -314,49 +317,9 @@ extern void GOL_LINK_BLE_DEBUG(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16
 
 void Send_BLE_DEBUG(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,int16_t gz,
 					int16_t hx,int16_t hy,int16_t hz);
-//----px4flow
 
-  typedef struct
-{
-	float average;//Flow in m in x-sensor direction, angular-speed compensated
-	float averager;//Flow in m in x-sensor direction, angular-speed compensated
-	float originf;
-	int16_t origin;
-}FLOW_DATA;
-
-  typedef struct
-{
-	uint64_t  time_sec;
-	u32 flow_cnt;
-	float rate;
-	u8   id;
-	FLOW_DATA flow_x;
-	FLOW_DATA flow_y;
-	FLOW_DATA flow_comp_x;//Flow in m in x-sensor direction, angular-speed compensated
-	FLOW_DATA flow_comp_y;
-	u8 quality; //Optical flow quality / confidence. 0: bad, 255: maximum quality
-	FLOW_DATA hight;//ground_distance	float	Ground distance in m. Positive value: distance known. Negative value: Unknown distance    
-  u8 new_data_flag;	
-}FLOW;
-
- typedef struct
-{
- uint64_t time_usec; ///< Timestamp (microseconds, synced to UNIX time or since system boot)
- uint32_t integration_time_us; ///< Integration time in microseconds. Divide integrated_x and integrated_y by the integration time to obtain average flow. The integration time also indicates the.
- float integrated_x; ///< Flow in radians around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along the positive Y axis induces a negative flow.)
- float integrated_y; ///< Flow in radians around Y axis (Sensor RH rotation about the Y axis induces a positive flow. Sensor linear motion along the positive X axis induces a positive flow.)
- float integrated_xgyro; ///< RH rotation around X axis (rad)
- float integrated_ygyro; ///< RH rotation around Y axis (rad)
- float integrated_zgyro; ///< RH rotation around Z axis (rad)
- uint32_t time_delta_distance_us; ///< Time in microseconds since the distance was sampled.
- float distance; ///< Distance to the center of the flow field in meters. Positive value (including zero): distance known. Negative value: Unknown distance.
- int16_t temperature; ///< Temperature * 100 in centi-degrees Celsius
- uint8_t sensor_id; ///< Sensor ID
- uint8_t quality; ///< Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
-}FLOW_RAD;
-extern FLOW flow;
 extern FLOW_RAD flow_rad,flow_rad_mine;
-void FLOW_MAVLINK(unsigned char data);
+
 
 //GPS
 #define USART3_MAX_RECV_LEN		800					//最大接收缓存字节数

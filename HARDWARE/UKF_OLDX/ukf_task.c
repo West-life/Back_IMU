@@ -256,17 +256,14 @@ float K_spd_gps=1;
 float g_pos_gps= 10;
 float g_spd_gps= 0.1;//0.1;                          
 float velNorth_gps,velEast_gps;
-
+int flag_kf1[2]={1,1};
 u8 force_test;
-static double H[9]={
-			 1,0,0,
-       0,1,0,
-       0,0,0};
+float Posx,Posy;
 void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,float accx,float accy,float T)
 {
 static u8 gps_init;
-float Posx,Sdpx,Accx;
-float Posy,Sdpy,Accy;
+float Sdpx,Accx;
+float Sdpy,Accy;
 u8 gps_data_vaild=0;
 u8 pos_vaild=0;
 double A[9]=
@@ -275,7 +272,10 @@ double A[9]=
 				-T*T/2, -T,    1};
 
 double B[3]={T*T/2,T,0}; 
- 
+double H[9]={
+			 1,0,0,
+       0,1,0,
+       0,0,0}; 
 
  if((gpsx.latitude!=0||force_test) && gps_init==0){
  gps_init=1;
@@ -446,11 +446,11 @@ if(kf_data_sel_temp==1){//GPS
    Qr_y=-qr.y;
 	 Posy=Qr_y*K_pos_qr;
 	 Sdpy=velNorth*K_spd_gps;
-	 Accy=accNorth;
+	 Accy=accNorth*flag_kf1[1];
 	 Qr_x=qr.x;
 	 Posx=Qr_x*K_pos_qr;
 	 Sdpx=velEast*K_spd_gps;
-	 Accx=accEast;
+	 Accx=accEast*flag_kf1[0];
 	 static u8 state_init_flow_pos;
 	 switch(state_init_flow_pos)
 	 {

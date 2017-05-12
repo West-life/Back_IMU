@@ -1,5 +1,6 @@
 ..\obj\laser.o: ..\HARDWARE\IIC\laser.c
 ..\obj\laser.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\laser.o: ..\HARDWARE\IIC\flow.h
 ..\obj\laser.o: ..\USER\stm32f4xx.h
 ..\obj\laser.o: ..\CORE\core_cm4.h
 ..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
@@ -35,6 +36,7 @@
 ..\obj\laser.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\laser.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\laser.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\laser.o: ..\HARDWARE\IIC\include.h
 ..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

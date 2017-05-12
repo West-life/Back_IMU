@@ -52,6 +52,7 @@
 ..\obj\lis3mdl.o: ..\SYSTEM\sys\sys.h
 ..\obj\lis3mdl.o: ..\MALLOC\malloc.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\lis3mdl.o: ..\HARDWARE\IIC\flow.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\nrf.h

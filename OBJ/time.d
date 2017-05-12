@@ -48,6 +48,8 @@
 ..\obj\time.o: ..\SYSTEM\sys\sys.h
 ..\obj\time.o: ..\MALLOC\malloc.h
 ..\obj\time.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\time.o: ..\HARDWARE\IIC\flow.h
+..\obj\time.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\time.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\time.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\time.o: ..\HARDWARE\IIC\nrf.h

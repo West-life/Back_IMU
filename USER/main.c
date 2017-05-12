@@ -53,7 +53,7 @@ void cpuidGetId(void)
 
 
 int main(void)
-{ 
+ { 
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();

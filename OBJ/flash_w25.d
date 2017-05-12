@@ -50,6 +50,8 @@
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\parameter.h
 ..\obj\flash_w25.o: ..\MALLOC\malloc.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\flash_w25.o: ..\HARDWARE\IIC\flow.h
+..\obj\flash_w25.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\nrf.h

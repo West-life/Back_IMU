@@ -50,6 +50,8 @@
 ..\obj\baro_ekf.o: ..\SYSTEM\sys\sys.h
 ..\obj\baro_ekf.o: ..\MALLOC\malloc.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\baro_ekf.o: ..\HARDWARE\IIC\flow.h
+..\obj\baro_ekf.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\nrf.h

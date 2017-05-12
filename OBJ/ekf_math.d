@@ -49,6 +49,8 @@
 ..\obj\ekf_math.o: ..\SYSTEM\sys\sys.h
 ..\obj\ekf_math.o: ..\MALLOC\malloc.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\ekf_math.o: ..\HARDWARE\IIC\flow.h
+..\obj\ekf_math.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\nrf.h

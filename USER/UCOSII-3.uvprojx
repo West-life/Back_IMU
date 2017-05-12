@@ -693,6 +693,11 @@
               <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
             </File>
             <File>
+              <FileName>flow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
+            </File>
+            <File>
               <FileName>ms5611_2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\ms5611_2.c</FilePath>
@@ -701,11 +706,6 @@
               <FileName>ultrasonic.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
-            </File>
-            <File>
-              <FileName>flow.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
             </File>
             <File>
               <FileName>bmp_adc.c</FileName>

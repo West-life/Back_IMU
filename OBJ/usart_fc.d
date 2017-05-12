@@ -50,6 +50,7 @@
 ..\obj\usart_fc.o: ..\SYSTEM\sys\sys.h
 ..\obj\usart_fc.o: ..\MALLOC\malloc.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\usart_fc.o: ..\HARDWARE\IIC\flow.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\nrf.h
@@ -81,11 +82,9 @@
 ..\obj\usart_fc.o: ..\UCOSII\CONFIG\os_cfg.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\circle.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\error.h
-..\obj\usart_fc.o: ..\HARDWARE\IIC\flow.h
 ..\obj\usart_fc.o: ..\HARDWARE\GPS\gps.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\ublox.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_OLDX\ukf_task.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_BARO\ukf_baro.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\sonar_avoid.h
-..\obj\usart_fc.o: ..\HARDWARE\IIC\led_fc.h

@@ -51,6 +51,7 @@
 ..\obj\led_fc.o: ..\SYSTEM\sys\sys.h
 ..\obj\led_fc.o: ..\MALLOC\malloc.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\led_fc.o: ..\HARDWARE\IIC\flow.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\nrf.h

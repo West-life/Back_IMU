@@ -48,6 +48,8 @@
 ..\obj\mpu6050.o: ..\SYSTEM\sys\sys.h
 ..\obj\mpu6050.o: ..\MALLOC\malloc.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\mpu6050.o: ..\HARDWARE\IIC\flow.h
+..\obj\mpu6050.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\include.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\rc_mine.h
@@ -66,6 +68,5 @@
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\iic_soft.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\filter.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\LIS3MDL.h
-..\obj\mpu6050.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\hml5833l.h
 ..\obj\mpu6050.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

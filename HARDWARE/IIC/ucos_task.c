@@ -24,6 +24,8 @@
 #include "ukf_baro.h"
 #include "avoid.h"
 #include "LIS3MDL.h"
+#include "flow.h"
+#include "filter.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -100,26 +102,26 @@ void outer_task(void *pdata)
 	outer_loop_time=0.01;
 	}
 	else{
- // if(cal_sel){cal_sel=0;
+
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
-	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0),
+	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),
 	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);		
 	if(mode.en_imu_ekf==0){
-	Yaw=YawR;
-	Pitch=PitchR;
-	Roll=RollR;}
-	#define SEL_1 1
-	#if SEL_1//1 梯度
-	MadgwickAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
-	my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)/57.3,(float)imu_fushion.Acc.x/4096., (float)imu_fushion.Acc.y/4096., (float)imu_fushion.Acc.z/4096.,
-	0,0,0,
-	&Roll_mid_down,&Pitch_mid_down,&Yaw_mid_down);
-	#else //0 互补
-	MahonyAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
-	my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)/57.3,(float)imu_fushion.Acc.x/4096., (float)imu_fushion.Acc.y/4096., (float)imu_fushion.Acc.z/4096.,
-	0,0,0,
-	&Roll_mid_down,&Pitch_mid_down,&Yaw_mid_down);
-	#endif
+	Yaw_mid_down=Yaw=YawR;
+	Pitch_mid_down=Pitch=PitchR;
+	Roll_mid_down=Roll=RollR;}
+//	#define SEL_1 1
+//	#if SEL_1//1 梯度
+//	MadgwickAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
+//	my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)/57.3,(float)imu_fushion.Acc.x/4096., (float)imu_fushion.Acc.y/4096., (float)imu_fushion.Acc.z/4096.,
+//	0,0,0,
+//	&Roll_mid_down,&Pitch_mid_down,&Yaw_mid_down);
+//	#else //0 互补
+//	MahonyAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
+//	my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)/57.3,(float)imu_fushion.Acc.x/4096., (float)imu_fushion.Acc.y/4096., (float)imu_fushion.Acc.z/4096.,
+//	0,0,0,
+//	&Roll_mid_down,&Pitch_mid_down,&Yaw_mid_down);
+//	#endif
 	//}
   }
 	IWDG_Feed();//喂狗
@@ -315,15 +317,22 @@ void baro_task(void *pdata)
 //=======================超声波 任务函数==================
 OS_STK SONAR_TASK_STK[SONAR_STK_SIZE];
 void sonar_task(void *pdata)
-{							  
+{static u16 cnt_ground;							  
  	while(1)
 	{
 		#if defined(SONAR_USE_SCL) 
-			if(!Thr_Low)Ultra_Duty_SCL();
+		 if(fly_ready||en_ble_debug)
+				Ultra_Duty_SCL(); 
+			else if(cnt_ground++>1/0.1){cnt_ground=0;
+				Ultra_Duty_SCL(); 
+			}
 		  delay_ms(100);
 		#else
 			if(fly_ready||en_ble_debug)
 				Ultra_Duty(); 
+			else if(cnt_ground++>1/0.1){cnt_ground=0;
+				Ultra_Duty(); 
+			}
 		#if defined(USE_KS103)
 			 #if defined(SONAR_SAMPLE1)
 				delay_ms(40);
@@ -333,7 +342,6 @@ void sonar_task(void *pdata)
 				delay_ms(70);
 			 #endif
 		#elif defined(USE_US100)
-			
 			  #if USE_FLOW_SONAR
 			 	ultra_distance=flow.hight.originf*1000;//Moving_Median(1,5,temp);
 		    sys.sonar=ultra_ok = 1;
@@ -365,70 +373,51 @@ float x_rate = imu_fushion.Gyro_deg.y; // change x and y rates
 float y_rate = imu_fushion.Gyro_deg.x;
 float z_rate = -imu_fushion.Gyro_deg.z; // z is correct
 
-					integration_timespan = deltatime*k_time_use;
-					accumulated_flow_x = qr.spdx  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
-					accumulated_flow_y = qr.spdy / focal_length_px * 1.0f*k_flow_acc[1];//rad
-					accumulated_gyro_x = LIMIT(x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro),-fabs(accumulated_flow_x*5),fabs(accumulated_flow_x*5));	//rad
-					accumulated_gyro_y = LIMIT(y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro),-fabs(accumulated_flow_y*5),fabs(accumulated_flow_y*5));	//rad
-					accumulated_gyro_z = z_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_z*(1-flt_gro);	//rad
+integration_timespan = deltatime*k_time_use;
+accumulated_flow_x = qr.spdx  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
+accumulated_flow_y = qr.spdy / focal_length_px * 1.0f*k_flow_acc[1];//rad
+accumulated_gyro_x = LIMIT(x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro),-fabs(accumulated_flow_x*5),fabs(accumulated_flow_x*5));	//rad
+accumulated_gyro_y = LIMIT(y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro),-fabs(accumulated_flow_y*5),fabs(accumulated_flow_y*5));	//rad
+accumulated_gyro_z = z_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_z*(1-flt_gro);	//rad
 }
 
 
 
 //=======================FLOW 任务函数==================
 OS_STK FLOW_TASK_STK[FLOW_STK_SIZE];
-float acc_neo[3],flow_ground_temp[4];
-float flow_filter[4],flow_rad_fix[4];
-float flow_rad_fix_k[2]={0.8,1},flow_rad_fix_k2=0.0;
-float dead_rad_fix[2]={40,50};
-float flow_height_fliter;
-float wz_speed_flow[2];
-float w_acc_spd=0.815;
-float w_acc_fix=0.8;
-
-#if USE_FLOW_FLY_ROBOT//使用飞行实验室的光流模块
-#define K_PIX 1.8*0.7
-float k_scale_pix=K_PIX;
-float scale_pix=0.0055*K_PIX;//0.002;//.003;//0.005;
-#else
-#define K_PIX 1
-float k_scale_pix=K_PIX;
-float scale_pix=0.0055*K_PIX;//0.002;//.003;//0.005;
-#endif
-
-float k_acc_forward=0;
 u8 MID_CNT_SPD=5;
 float k_flp=1-0.1; 
-//px4
-double rate_threshold = 0.15f; 
-float flow_k=0.15f;float k_gro_off=1;
-float flow_m[3];  
-float flow_module_offset_y=0,flow_module_offset_x=-0.05;//光流安装位移 单位米
-float flow_gyrospeed[3];
-u8 flow_px_sel=1;
-float scale_px4_flow=1300;	float x_flow_orign_temp,y_flow_orign_temp;	
+static double b_IIR_acc[4+1] ={ 0.0004  ,  0.0017  ,  0.0025  ,  0.0017 ,   0.0004};  //系数b
+static double a_IIR_acc[4+1] ={ 1.0000   ,-3.1806   , 3.8612  , -2.1122  ,  0.4383};//系数a
+static double InPut_IIR_acc[3][4+1] = {0};
+static double OutPut_IIR_acc[3][4+1] = {0};
+float b[3] = {0.8122  ,  1.6244  ,  0.8122};
+float a[3] = {1.0000  ,  1.5888  ,  0.6600};
+float xBuf1[3];
+float yBuf1[3];
+float xBuf2[3];
+float yBuf2[3];
+float xBuf3[3];
+float yBuf3[3];
+float acc_neo[3],flow_ground_temp[4];
 float flow_matlab_data[4];
 float baro_matlab_data[2];
 float flow_loop_time;
-u8 flow_rad_sel;//=1;
-float k_flow_devide=1;
 void flow_task1(void *pdata)
-{		float temp_sonar;			
+{float flow_height_fliter;		
+ static float acc_neo_off[3];
  FLOW_RAD flow_rad_use;  
  	while(1)
-	{float yaw_comp[2];
-	 scale_pix=0.0055*k_scale_pix;
-	 if(ALT_POS_SONAR2==0)
-	 temp_sonar=0.7;
+	{
+	 if(!ultra_ok)
+	 flow_height_fliter=0.666;
 	 else if(ALT_POS_SONAR2>4)
-	 temp_sonar=4;
+	 flow_height_fliter=4;
 	 else
-	 temp_sonar=ALT_POS_SONAR2;
-	 float spd_temp[2];
-	 flow_height_fliter=temp_sonar;
-	 
+	 flow_height_fliter=ALT_POS_SONAR2;
+
 	 flow_sample();
-	 if(qr.use_spd==0)//flow_rad_sel)
+	 if(qr.use_spd==0)
 	 {
 	 flow_rad_use.integration_time_us=flow_rad.integration_time_us;
 	 flow_rad_use.integrated_xgyro=flow_rad.integrated_xgyro;
@@ -446,96 +435,58 @@ void flow_task1(void *pdata)
 	 flow_rad_use.integrated_x=accumulated_flow_x;
 	 flow_rad_use.integrated_y=accumulated_flow_y;
 	 }	 
+	  flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
+	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
 	 
-		flow_gyrospeed[0] = flow_rad_use.integrated_xgyro / (float)flow_rad_use.integration_time_us * 1000000.0f;  
-		flow_gyrospeed[1] = flow_rad_use.integrated_ygyro / (float)flow_rad_use.integration_time_us * 1000000.0f;  
-		flow_gyrospeed[2] = flow_rad_use.integrated_zgyro / (float)flow_rad_use.integration_time_us * 1000000.0f;  
-	  static u8 n_flow;
-	  static float gyro_offset_filtered[3],att_gyrospeed_filtered[3],flow_gyrospeed_filtered[3];
-		float flow_ang[2];
-		if(flow_rad_use.integration_time_us){
-		if (fabs(flow_gyrospeed[0]) < rate_threshold) {  
-		flow_ang[0] = (flow_rad_use.integrated_x / (float)flow_rad_use.integration_time_us * 1000000.0f) * flow_k;//for now the flow has to be scaled (to small)  
-		}  
-		else {  
-		//calculate flow [rad/s] and compensate for rotations (and offset of flow-gyro)  
-		flow_ang[0] = ((flow_rad_use.integrated_x - LIMIT(flow_rad_use.integrated_xgyro*k_gro_off,-fabs(flow_rad_use.integrated_x),fabs(flow_rad_use.integrated_x))) / (float)flow_rad_use.integration_time_us * 1000000.0f  
-		+ gyro_offset_filtered[0]*0) * flow_k;//for now the flow has to be scaled (to small)  
-		}  
-		if (fabs(flow_gyrospeed[1]) < rate_threshold) {  
-		flow_ang[1] = (flow_rad_use.integrated_y/ (float)flow_rad_use.integration_time_us  * 1000000.0f) * flow_k;//for now the flow has to be scaled (to small)  
-		}  
-		else {  
-		flow_ang[1] = ((flow_rad_use.integrated_y- LIMIT(flow_rad_use.integrated_ygyro*k_gro_off,-fabs(flow_rad_use.integrated_y),fabs(flow_rad_use.integrated_y))) / (float)flow_rad_use.integration_time_us  * 1000000.0f  
-		+ gyro_offset_filtered[1]*0) * flow_k;//for now the flow has to be scaled (to small)  
-		}  
-		
-		yaw_comp[0] = - flow_module_offset_y * (flow_gyrospeed[2] - gyro_offset_filtered[2]);  
-		yaw_comp[1] = flow_module_offset_x * (flow_gyrospeed[2] - gyro_offset_filtered[2]);  
-		/* flow measurements vector */  
-		flow_m[0] = -flow_ang[0];  
-		flow_m[1] = -flow_ang[1] ;  
-		
-		if(flow_px_sel){
-		x_flow_orign_temp=flow_m[1]*scale_px4_flow;
-		y_flow_orign_temp=flow_m[0]*scale_px4_flow;		
-		}else{
-		x_flow_orign_temp=flow.flow_x.origin;
-		y_flow_orign_temp=flow.flow_y.origin;		
-		}
-		}
-		//x
-		flow_rad_fix[0]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.x,dead_rad_fix[0])*flow_rad_fix_k[0];
-		if(fabs(imu_fushion.Gyro_deg.x)<dead_rad_fix[0]*0.7)
-		flow_rad_fix[0]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.x,0)*flow_rad_fix_k2; 
-		//y
-		flow_rad_fix[1]=y_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.y,dead_rad_fix[0])*flow_rad_fix_k[0];
-		if(fabs(imu_fushion.Gyro_deg.y)<dead_rad_fix[0]*0.7)
-		flow_rad_fix[1]=y_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.y,0)*flow_rad_fix_k2; 
-		//z
-		flow_rad_fix[2]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.z,dead_rad_fix[1])*flow_rad_fix_k[1];
-		flow_rad_fix[3]=y_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.z,dead_rad_fix[1])*flow_rad_fix_k[1];
-		flow_filter[0]=Moving_Median(18,10,my_deathzoom_2(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2],0));
-		flow_filter[1]=Moving_Median(19,10,my_deathzoom_2(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3],0));
+		flow_ground_temp[0]=flow_per_out[0];
+		flow_ground_temp[1]=flow_per_out[1];
+		flow_ground_temp[2]=flow_per_out[2];
+	  flow_ground_temp[3]=flow_per_out[3];
 
-		flow_ground_temp[0]=flow_filter[0]*flow_height_fliter*scale_pix;
-		flow_ground_temp[1]=flow_filter[1]*flow_height_fliter*scale_pix;
-		if (fabsf(flow_gyrospeed[2]) < rate_threshold) {
-    flow_ground_temp[2]=my_deathzoom_2(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2],0)*flow_height_fliter*scale_pix;
-		flow_ground_temp[3]=my_deathzoom_2(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3],0)*flow_height_fliter*scale_pix;
-		} else {
-		flow_ground_temp[2]=my_deathzoom_2(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2],0)*flow_height_fliter*scale_pix - yaw_comp[1] * flow_k;//1
-		flow_ground_temp[3]=my_deathzoom_2(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3],0)*flow_height_fliter*scale_pix - yaw_comp[0] * flow_k;//0
-		}
-
-		float a_br[3],tmp[3];	
-		float acc_temp[3];
+		static float a_br[3]={0};	
+		static float acc_temp[3]={0};
 		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
 		a_br[1] =(float) imu_fushion.Acc.y/4096.;//16438.;
 		a_br[2] =(float) imu_fushion.Acc.z/4096.;//16438.;
 		// acc
-		tmp[0] = a_br[0];
-		tmp[1] = a_br[1];
-		tmp[2] = a_br[2];
-
-		acc_temp[0] = tmp[1]*reference_vr[2]  - tmp[2]*reference_vr[1] ;
-		acc_temp[1] = tmp[2]*reference_vr[0]  - tmp[0]*reference_vr[2] ;
-	
-		acc_neo[0]=(float)(-acc_temp[0])*9.87;
-		acc_neo[1]=(float)(-acc_temp[1])*9.87;
-		flow_matlab_data[0]=acc_neo[0];
-		flow_matlab_data[1]=acc_neo[1];
-		acc_neo[2]=((float)((int)((acc_temp[2]-1.0f)*200)))/200*9.87;	
-//		#if FLOW_USE_FLY_LAB
-//		k_flow_devide=1;
-//		#else
-//		k_flow_devide=0.8;
-//		#endif
+	  if(fabs(a_br[0])<1.5&&fabs(a_br[1])<1.5){
+		acc_temp[0] = a_br[1]*reference_vr[2]  - a_br[2]*reference_vr[1] ;
+		acc_temp[1] = a_br[2]*reference_vr[0]  - a_br[0]*reference_vr[2] ;
+	  acc_temp[2] =(reference_vr[2] *a_br[2] + reference_vr[0] *a_br[0] + reference_vr[1] *a_br[1]);
+    if(fabs(acc_temp[0])<1.5&&fabs(acc_temp[1])<1.5){
+		static float acc_neo_temp[3]={0};
+	  acc_neo_temp[0]=-acc_temp[0]*9.87;
+		acc_neo_temp[1]=-acc_temp[1]*9.87;
+		acc_neo_temp[2]=(acc_temp[2]-1.0f)*9.87;		
+	  if(en_ble_debug)
+			;
+		else if(!fly_ready){
+	  acc_neo_off[0]+= ( 1 / ( 1 + 1 / ( 2.2f *3.14f *0.04 ) ) ) *(acc_neo_temp[0]- acc_neo_off[0]) ;
+		acc_neo_off[1]+= ( 1 / ( 1 + 1 / ( 2.2f *3.14f *0.04 ) ) ) *(acc_neo_temp[1]- acc_neo_off[1]) ;
+		acc_neo_off[2]+= ( 1 / ( 1 + 1 / ( 2.2f *3.14f *0.04 ) ) ) *(acc_neo_temp[2]- acc_neo_off[2]) ;
+		}
+		static float acc_neo_temp1[3]={0};
+	  acc_neo_temp1[0]=IIR_I_Filter(acc_neo_temp[0]-acc_neo_off[0], InPut_IIR_acc[0], OutPut_IIR_acc[0], b_IIR_acc, 4+1, a_IIR_acc, 4+1);
+	  acc_neo_temp1[1]=IIR_I_Filter(acc_neo_temp[1]-acc_neo_off[1], InPut_IIR_acc[1], OutPut_IIR_acc[1], b_IIR_acc, 4+1, a_IIR_acc, 4+1);
+	  acc_neo_temp1[2]=IIR_I_Filter(acc_neo_temp[2]-acc_neo_off[2], InPut_IIR_acc[2], OutPut_IIR_acc[2], b_IIR_acc, 4+1, a_IIR_acc, 4+1);
+    static float acc_flt[3];
+		acc_flt[0] += ( 1 / ( 1 + 1 / ( 15 *3.14f *flow_loop_time ) ) ) *( acc_neo_temp1[0] - acc_flt[0] );
+	  acc_flt[1] += ( 1 / ( 1 + 1 / ( 15 *3.14f *flow_loop_time ) ) ) *( acc_neo_temp1[1] - acc_flt[1] );
+		acc_flt[2] += ( 1 / ( 1 + 1 / ( 15 *3.14f *flow_loop_time ) ) ) *( acc_neo_temp1[2] - acc_flt[2] );
+		if(fabs(acc_neo_temp1[0])<8.6&&fabs(acc_neo_temp1[1])<8.6){
+		acc_neo[0]=Moving_Median(5,5,acc_flt[0]);
+		acc_neo[1]=Moving_Median(6,5,acc_flt[1]);
+		acc_neo[2]=Moving_Median(7,5,acc_flt[2]);
+	 	flow_matlab_data[0]=acc_neo[0];
+		flow_matlab_data[1]=acc_neo[1];}
+	  }
+	 }
+		flow_matlab_data[2]=flow_ground_temp[2];
+		flow_matlab_data[3]=flow_ground_temp[3];
 		
-		flow_matlab_data[2]=-flow_ground_temp[2]*k_flow_devide;
-		flow_matlab_data[3]=-flow_ground_temp[3]*k_flow_devide;
-		flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
-		FlowUkfProcess(0);
+
+		FlowUkfProcess(0);//FK filter
+		
 		float temp_spd[2];
 		temp_spd[0]=Moving_Median(16,MID_CNT_SPD,FLOW_VEL_X);
 		temp_spd[1]=Moving_Median(17,MID_CNT_SPD,FLOW_VEL_Y);
@@ -578,9 +529,6 @@ void TIM3_IRQHandler(void)
 								{ 
 							DMA_ClearFlag(DMA1_Stream6,DMA_FLAG_TCIF6);//清除DMA2_Steam7传输完成标志
 							clear_nrf_uart();		
-							//data_per_uart4(SEND_IMU_MEMS);
-							//data_per_uart4(SEND_IMU_ATT);		
-							//data_per_uart4(SEND_IMU_FLOW);
 							GOL_LINK_TASK_DMA();
 					    USART_DMACmd(USART2,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送     
 							MYDMA_Enable(DMA1_Stream6,nrf_uart_cnt+2);     //开始一次DMA传输！	
@@ -588,8 +536,8 @@ void TIM3_IRQHandler(void)
 					#else
 								 GOL_LINK_TASK();
 					#endif
-						 		
- // en_ble_debug=1;
+//		SPI_ReadWriteByte(0xaa); 				 		
+  //en_ble_debug=1;
 	if(cnt++>4-1){cnt=0;	
 								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
@@ -598,13 +546,13 @@ void TIM3_IRQHandler(void)
 								case 0://海拔速度
 								Send_BLE_DEBUG((int16_t)(0),flow_rad.integrated_y*100, flow_rad.integrated_ygyro*100,
 								0,flow.flow_x.origin,flow.flow_y.origin,
-								0,flow_m[0]*1000,flow_m[1]*1000);break;
+								acc_neo[0]*100,acc_neo[1]*100,acc_neo[2]*100);break;
 								case 1://海拔速度
 								Send_BLE_DEBUG((int16_t)(0),flow.flow_x.origin,flow.flow_y.origin,
 								0,ALT_VEL_SONAR*1000,flow_ground_temp[3]*1000,
 								0,ALT_VEL_BMP*1000,flow_ground_temp[2]*1000);break;
 								case 2://海拔速度
-								Send_BLE_DEBUG((int16_t)(0),x_flow_orign_temp,0,
+								Send_BLE_DEBUG((int16_t)(0),0,0,
 								0,flow.flow_x.origin,0,
 								0,0,flow.flow_y.origin);break;
 								case 3://海拔速度
@@ -655,7 +603,6 @@ void TIM3_IRQHandler(void)
 								GOL_LINK_BUSY[1]=0;		
 								} 
 							}								
-
 	}
 	TIM_ClearITPendingBit(TIM3,TIM_IT_Update);  //清除中断标志位
 	}
@@ -668,7 +615,6 @@ void error_task(void *pdata)
 {							  
  	while(1)
 	{
-		
 		if(gps_loss_cnt++>1/0.2)
 			gps_good=0;
 		flow.rate=flow.flow_cnt;

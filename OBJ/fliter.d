@@ -48,6 +48,8 @@
 ..\obj\fliter.o: ..\SYSTEM\sys\sys.h
 ..\obj\fliter.o: ..\MALLOC\malloc.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\fliter.o: ..\HARDWARE\IIC\flow.h
+..\obj\fliter.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\nrf.h

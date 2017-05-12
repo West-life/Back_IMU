@@ -48,6 +48,8 @@
 ..\obj\ucos_task.o: ..\SYSTEM\sys\sys.h
 ..\obj\ucos_task.o: ..\MALLOC\malloc.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\flow.h
+..\obj\ucos_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\nrf.h
@@ -94,7 +96,6 @@
 ..\obj\ucos_task.o: ..\HARDWARE\UKF_BARO\ukf_baro.h
 ..\obj\ucos_task.o: ..\HARDWARE\AVOID\avoid.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LIS3MDL.h
-..\obj\ucos_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LSM303.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\FastMath.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Double.h

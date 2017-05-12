@@ -48,6 +48,8 @@
 ..\obj\main.o: ..\SYSTEM\sys\sys.h
 ..\obj\main.o: ..\MALLOC\malloc.h
 ..\obj\main.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\main.o: ..\HARDWARE\IIC\flow.h
+..\obj\main.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\main.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\main.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\main.o: ..\HARDWARE\IIC\nrf.h
@@ -85,5 +87,4 @@
 ..\obj\main.o: ..\HARDWARE\IIC\dog.h
 ..\obj\main.o: ..\HARDWARE\UKF_OLDX\ukf_task.h
 ..\obj\main.o: ..\HARDWARE\IIC\LSM303.h
-..\obj\main.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\main.o: ..\HARDWARE\IIC\LIS3MDL.h

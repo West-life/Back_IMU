@@ -48,6 +48,8 @@
 ..\obj\ultrasonic.o: ..\SYSTEM\sys\sys.h
 ..\obj\ultrasonic.o: ..\MALLOC\malloc.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\ultrasonic.o: ..\HARDWARE\IIC\flow.h
+..\obj\ultrasonic.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\nrf.h

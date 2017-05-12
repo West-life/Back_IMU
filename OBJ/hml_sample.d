@@ -48,6 +48,8 @@
 ..\obj\hml_sample.o: ..\SYSTEM\sys\sys.h
 ..\obj\hml_sample.o: ..\MALLOC\malloc.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\hml_sample.o: ..\HARDWARE\IIC\flow.h
+..\obj\hml_sample.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\nrf.h

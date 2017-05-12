@@ -49,6 +49,8 @@
 ..\obj\bmp_adc.o: ..\SYSTEM\sys\sys.h
 ..\obj\bmp_adc.o: ..\MALLOC\malloc.h
 ..\obj\bmp_adc.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\bmp_adc.o: ..\HARDWARE\IIC\flow.h
+..\obj\bmp_adc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\bmp_adc.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\bmp_adc.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\bmp_adc.o: ..\HARDWARE\IIC\nrf.h

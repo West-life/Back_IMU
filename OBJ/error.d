@@ -48,6 +48,8 @@
 ..\obj\error.o: ..\SYSTEM\sys\sys.h
 ..\obj\error.o: ..\MALLOC\malloc.h
 ..\obj\error.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\error.o: ..\HARDWARE\IIC\flow.h
+..\obj\error.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\error.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\error.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\error.o: ..\HARDWARE\IIC\nrf.h

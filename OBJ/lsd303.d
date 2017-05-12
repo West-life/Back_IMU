@@ -54,6 +54,7 @@
 ..\obj\lsd303.o: ..\SYSTEM\sys\sys.h
 ..\obj\lsd303.o: ..\MALLOC\malloc.h
 ..\obj\lsd303.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\lsd303.o: ..\HARDWARE\IIC\flow.h
 ..\obj\lsd303.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\lsd303.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\lsd303.o: ..\HARDWARE\IIC\nrf.h

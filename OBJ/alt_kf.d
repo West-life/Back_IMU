@@ -49,6 +49,8 @@
 ..\obj\alt_kf.o: ..\SYSTEM\sys\sys.h
 ..\obj\alt_kf.o: ..\MALLOC\malloc.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\usart_fc.h
+..\obj\alt_kf.o: ..\HARDWARE\IIC\flow.h
+..\obj\alt_kf.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\spi_nrf.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\rc_mine.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\nrf.h
@@ -71,7 +73,6 @@
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\ms5611_2.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\iic.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\kf_oldx.h
-..\obj\alt_kf.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rt_nonfinite.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rtwtypes.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\kf_oldx_types.h
