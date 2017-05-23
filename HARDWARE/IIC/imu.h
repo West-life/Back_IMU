@@ -27,5 +27,11 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 extern float Roll,Pitch,Yaw;
 void IMU_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) ;
 extern float ref_q[4] , q_nav[4];
+
+
+void MargAHRSupdate(float gx, float gy, float gz,
+                    float ax, float ay, float az,
+                    float mx, float my, float mz,
+                    float accelCutoff, uint8_t magDataUpdate, float dt,float *rol,float *pit,float *yaw);
 #endif
 

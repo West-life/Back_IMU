@@ -31,7 +31,9 @@ float Ftempreature;
 
 xyz_s16_t Mag_Adc;			//采样值
 xyz_f_t   Mag_Offset;		//偏移值
-xyz_f_t 	Mag_Gain;			//比例缩放	
+xyz_f_t   Mag_Offset_c;		//偏移值
+xyz_f_t   Mag_Gain;		//偏移值
+xyz_f_t 	Mag_Gain_c;			//比例缩放	
 xyz_f_t 	Mag_Val,Mag_Val_t;			//纠正后的值
 u8 Mag_CALIBRATED;
 float yaw;

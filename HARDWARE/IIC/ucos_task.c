@@ -104,8 +104,14 @@ void outer_task(void *pdata)
 	else{
 
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
-	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),
-	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);		
+//	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),
+//	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
+
+  MargAHRSupdate(imu_fushion.Gyro_deg.x*0.0173, imu_fushion.Gyro_deg.y*0.0173,imu_fushion.Gyro_deg.z*0.0173,
+                    imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+                    imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+                    1, 1, outer_loop_time,&RollR,&PitchR,&YawR);
+											
 	if(mode.en_imu_ekf==0){
 	Yaw_mid_down=Yaw=YawR;
 	Pitch_mid_down=Pitch=PitchR;

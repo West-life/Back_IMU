@@ -286,7 +286,7 @@ void data_per_uart1(int16_t ax,int16_t ay, int16_t az, int16_t gx,int16_t  gy, i
 	int16_t yaw,int16_t pitch,int16_t roll,int16_t alt,int16_t tempr,int16_t press,int16_t IMUpersec);
 
 
-#define SEND_BUF_SIZE2 64*4	//发送数据长度,最好等于sizeof(TEXT_TO_SEND)+2的整数倍.
+#define SEND_BUF_SIZE2 64*6	//发送数据长度,最好等于sizeof(TEXT_TO_SEND)+2的整数倍.
 extern u8 SendBuff2[SEND_BUF_SIZE2];	//发送数据缓冲区
 void data_per_uart2(void);
 extern u16 nrf_uart_cnt;

@@ -248,3 +248,292 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	//*yaw =X_kf_yaw[0];// yaw_mag;
 }
 
+
+
+
+//------------------------------------------????----------------------------------------------------
+// Variable definitions
+float Mag_P,Mag_R,Mag_Y;
+float exAcc    = 0.0f,    eyAcc = 0.0f,    ezAcc = 0.0f; // accel error
+float exAccInt = 0.0f, eyAccInt = 0.0f, ezAccInt = 0.0f; // accel integral error
+
+float exMag    = 0.0f, eyMag    = 0.0f, ezMag    = 0.0f; // mag error
+float exMagInt = 0.0f, eyMagInt = 0.0f, ezMagInt = 0.0f; // mag integral error
+
+float kpAcc, kiAcc;
+
+float q0_m1 = 1.0f, q1_m1 = 0.0f, q2_m1 = 0.0f, q3_m1 = 0.0f;
+float ref_q_m1[4];
+// auxiliary variables to reduce number of repeated operations
+float q0q0, q0q1, q0q2, q0q3;
+float q1q1, q1q2, q1q3;
+float q2q2, q2q3;
+float q3q3;
+
+float halfT;
+
+uint8_t MargAHRSinitialized = 0;
+
+//----------------------------------------------------------------------------------------------------
+float KpAcc = 1.0f;    // proportional gain governs rate of convergence to accelerometer
+float KiAcc = 0.0f;    // integral gain governs rate of convergence of gyroscope biases
+float KpMag = 5.0f;    // proportional gain governs rate of convergence to magnetometer
+float KiMag = 0.0f;    // integral gain governs rate of convergence of gyroscope biases
+float accConfidenceDecay = 0.0f;
+float accConfidence      = 1.0f;
+
+#define HardFilter(O,N)  ((O)*0.9f+(N)*0.1f)
+#define accelOneG 9.8
+void calculateAccConfidence(float accMag)
+{
+	// G.K. Egan (C) computes confidence in accelerometers when
+	// aircraft is being accelerated over and above that due to gravity
+
+	static float accMagP = 1.0f;
+
+	accMag /= accelOneG;  // HJI Added to convert MPS^2 to G's
+
+	accMag  = HardFilter(accMagP, accMag );
+	accMagP = accMag;
+
+	accConfidence
+			= LIMIT(1.0 - (accConfidenceDecay * sqrt(fabs(accMag - 1.0f))), 0.0f, 1.0f);
+
+}
+float To_180_degrees_imu(float x)
+{
+	return (x>180?(x-360):(x<-180?(x+360):x));
+}
+//----------------------------------------------------------------------------------------------------
+
+//====================================================================================================
+// Initialization
+//====================================================================================================
+void euler_to_q_m1(float angle[3],float q[4]) {
+	float roll=angle[0];
+	float pitch=angle[1];
+	float yaw=angle[2];	
+	double cosPhi_2 = cos((roll) / 2.0);
+	double sinPhi_2 = sin((roll) / 2.0);
+	double cosTheta_2 = cos((pitch) / 2.0);
+	double sinTheta_2 = sin((pitch) / 2.0);
+	double cosPsi_2 = cos((yaw) / 2.0);
+	double sinPsi_2 = sin((yaw) / 2.0);
+
+	/* operations executed in double to avoid loss of precision through
+	 * consecutive multiplications. Result stored as float.
+	 */
+	q[0] = (cosPhi_2 * cosTheta_2 * cosPsi_2 + sinPhi_2 * sinTheta_2 * sinPsi_2);
+	q[1] = (sinPhi_2 * cosTheta_2 * cosPsi_2 - cosPhi_2 * sinTheta_2 * sinPsi_2);
+	q[2] = (cosPhi_2 * sinTheta_2 * cosPsi_2 + sinPhi_2 * cosTheta_2 * sinPsi_2);
+	q[3] = (cosPhi_2 * cosTheta_2 * sinPsi_2 - sinPhi_2 * sinTheta_2 * cosPsi_2);
+}
+
+void MargAHRSinit(float ax, float ay, float az, float mx, float my, float mz)
+{
+
+    float Pit,Rol;
+    Pit=atan(ax/az)*57.3;
+		Rol=atan(ay/az)*57.3;
+			
+		float magTmp2 [3];	
+		magTmp2[0]=mx;
+		magTmp2[1]=my;
+		magTmp2[2]=mz;
+		float euler[2]; 	
+		euler[1]=Pit*0.0173  ;
+		euler[0]=Rol*0.0173  ;
+		float calMagY = magTmp2[0] * cos(euler[1]) + magTmp2[1] * sin(euler[1])* sin(euler[0])+magTmp2[2] * sin(euler[1]) * cos(euler[0]); 
+		float calMagX = magTmp2[1] * cos(euler[0]) + magTmp2[2] * sin(euler[0]);
+		float yaw_mag=To_180_degrees(fast_atan2(calMagX,calMagY)* 57.3 );
+		float angle_cal[3];
+		angle_cal[0]=euler[0];
+		angle_cal[1]=euler[1];
+		angle_cal[2]=yaw_mag;
+		float q_temp[4];
+		euler_to_q_m1(angle_cal,q_temp);
+	  q0_m1=-q_temp[1];
+	  q1_m1=q_temp[0];
+	  q2_m1=-q_temp[3];
+	  q3_m1=q_temp[2];	
+
+    // auxillary variables to reduce number of repeated operations, for 1st pass
+    q0q0 = q0_m1 * q0_m1;
+    q0q1 = q0_m1 * q1_m1;
+    q0q2 = q0_m1 * q2_m1;
+    q0q3 = q0_m1 * q3_m1;
+    q1q1 = q1_m1 * q1_m1;
+    q1q2 = q1_m1 * q2_m1;
+    q1q3 = q1_m1 * q3_m1;
+    q2q2 = q2_m1 * q2_m1;
+    q2q3 = q2_m1 * q3_m1;
+    q3q3 = q3_m1 * q3_m1;
+}
+
+//====================================================================================================
+// Function
+//====================================================================================================
+
+void MargAHRSupdate(float gx, float gy, float gz,
+                    float ax, float ay, float az,
+                    float mx, float my, float mz,
+                    float accelCutoff, uint8_t magDataUpdate, float dt,float *rol,float *pit,float *yaw)
+{   static u16 init;
+    float norm, normR;
+    float hx, hy, hz, bx, bz;
+    float vx, vy, vz, wx, wy, wz;
+    float q0i, q1i, q2i, q3i;
+  
+    //-------------------------------------------
+
+    if ((MargAHRSinitialized == 0) && (magDataUpdate == 1) && init++>200)
+    {
+        MargAHRSinit(ax, ay, az, mx, my, mz);
+
+        MargAHRSinitialized = 1;
+    }
+
+    //-------------------------------------------
+
+    if (MargAHRSinitialized == 1)
+    {
+        halfT = dt * 0.5f;
+
+        norm = sqrt(ax*(ax) + ay*(ay) + az*az);
+
+        if (norm != 0.0f)
+        {
+			calculateAccConfidence(norm);
+            kpAcc = KpAcc * accConfidence;
+            kiAcc = KiAcc * accConfidence;
+
+            normR = 1.0f / norm;
+            ax *= normR;
+            ay *= normR;
+            az *= normR;
+
+            // estimated direction of gravity (v)
+            vx = 2.0f * (q1q3 - q0q2);
+            vy = 2.0f * (q0q1 + q2q3);
+            vz = q0q0 - q1q1 - q2q2 + q3q3;
+
+            // error is sum of cross product between reference direction
+		    // of fields and direction measured by sensors
+		    exAcc = vy * az - vz * ay;
+            eyAcc = vz * ax - vx * az;
+            ezAcc = vx * ay - vy * ax;
+
+            gx += exAcc * kpAcc;
+            gy += eyAcc * kpAcc;
+            gz += ezAcc * kpAcc;
+
+            if (kiAcc > 0.0f)
+            {
+		    	exAccInt += exAcc * kiAcc;
+                eyAccInt += eyAcc * kiAcc;
+                ezAccInt += ezAcc * kiAcc;
+
+                gx += exAccInt;
+                gy += eyAccInt;
+                gz += ezAccInt;
+		    }
+	    }
+
+        //-------------------------------------------
+
+        norm = sqrt(mx*(mx) + my*(my) + mz*(mz));
+
+        if (( magDataUpdate == 1) && (norm != 0.0f))
+        {
+            normR = 1.0f / norm;
+            mx *= normR;
+            my *= normR;
+            mz *= normR;
+
+            // compute reference direction of flux
+            hx = 2.0f * (mx * (0.5f - q2q2 - q3q3) + my * (q1q2 - q0q3) + mz * (q1q3 + q0q2));
+
+            hy = 2.0f * (mx * (q1q2 + q0q3) + my * (0.5f - q1q1 - q3q3) + mz * (q2q3 - q0q1));
+
+            hz = 2.0f * (mx * (q1q3 - q0q2) + my * (q2q3 + q0q1) + mz * (0.5f - q1q1 - q2q2));
+
+            bx = sqrt((hx * hx) + (hy * hy));
+
+            bz = hz;
+
+            // estimated direction of flux (w)
+            wx = 2.0f * (bx * (0.5f - q2q2 - q3q3) + bz * (q1q3 - q0q2));
+
+            wy = 2.0f * (bx * (q1q2 - q0q3) + bz * (q0q1 + q2q3));
+
+            wz = 2.0f * (bx * (q0q2 + q1q3) + bz * (0.5f - q1q1 - q2q2));
+
+            exMag = my * wz - mz * wy;
+            eyMag = mz * wx - mx * wz;
+            ezMag = mx * wy - my * wx;
+
+			// use un-extrapolated old values between magnetometer updates
+			// dubious as dT does not apply to the magnetometer calculation so
+			// time scaling is embedded in KpMag and KiMag
+			gx += exMag * KpMag;
+			gy += eyMag * KpMag;
+			gz += ezMag * KpMag;
+
+			if (KiMag > 0.0f)
+			{
+				exMagInt += exMag * KiMag;
+				eyMagInt += eyMag * KiMag;
+				ezMagInt += ezMag * KiMag;
+
+				gx += exMagInt;
+				gy += eyMagInt;
+				gz += ezMagInt;
+			}
+        }
+
+        //-------------------------------------------
+
+        // integrate quaternion rate
+        q0i = (-q1_m1 * gx - q2_m1 * gy - q3_m1 * gz) * halfT;
+        q1i = ( q0_m1 * gx + q2_m1 * gz - q3_m1 * gy) * halfT;
+        q2i = ( q0_m1 * gy - q1_m1 * gz + q3_m1 * gx) * halfT;
+        q3i = ( q0_m1 * gz + q1_m1 * gy - q2_m1 * gx) * halfT;
+        q0_m1 += q0i;
+        q1_m1 += q1i;
+        q2_m1 += q2i;
+        q3_m1 += q3i;
+
+        // normalise quaternion
+        normR = 1.0f / sqrt(q0_m1 * q0_m1 + q1_m1 * q1_m1 + q2_m1 * q2_m1 + q3_m1 * q3_m1);
+        q0_m1 *= normR;
+        q1_m1 *= normR;
+        q2_m1 *= normR;
+        q3_m1 *= normR;
+
+        // auxiliary variables to reduce number of repeated operations
+        q0q0 = q0_m1 * q0_m1;
+        q0q1 = q0_m1 * q1_m1;
+        q0q2 = q0_m1 * q2_m1;
+        q0q3 = q0_m1 * q3_m1;
+        q1q1 = q1_m1 * q1_m1;
+        q1q2 = q1_m1 * q2_m1;
+        q1q3 = q1_m1 * q3_m1;
+        q2q2 = q2_m1 * q2_m1;
+        q2q3 = q2_m1 * q3_m1;
+        q3q3 = q3_m1 * q3_m1;
+				
+       ref_q[0]=q_nav[0]=ref_q_m1[0]=q1_m1;
+			 ref_q[1]=q_nav[1]=ref_q_m1[1]=-q0_m1;
+			 ref_q[2]=q_nav[2]=ref_q_m1[2]=q3_m1;
+			 ref_q[3]=q_nav[3]=ref_q_m1[3]=-q2_m1;
+
+			reference_vr[0]=reference_v.x = 2*(ref_q[1]*ref_q[3] - ref_q[0]*ref_q[2]);
+			reference_vr[1]=reference_v.y = 2*(ref_q[0]*ref_q[1] + ref_q[2]*ref_q[3]);
+			reference_vr[2]=reference_v.z = 1 - 2*(ref_q[1]*ref_q[1] + ref_q[2]*ref_q[2]);
+			*rol = fast_atan2(2*(ref_q_m1[0]*ref_q_m1[1] + ref_q_m1[2]*ref_q_m1[3]),1 - 2*(ref_q_m1[1]*ref_q_m1[1] + ref_q_m1[2]*ref_q_m1[2])) *57.3f;
+			*pit = asin(2*(ref_q_m1[1]*ref_q_m1[3] - ref_q_m1[0]*ref_q_m1[2])) *57.3f;
+			*yaw = fast_atan2(2*(-ref_q_m1[1]*ref_q_m1[2] - ref_q_m1[0]*ref_q_m1[3]), 2*(ref_q_m1[0]*ref_q_m1[0] + ref_q_m1[1]*ref_q_m1[1]) - 1) *57.3f  ;// 
+	
+    }
+}
+

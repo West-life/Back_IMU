@@ -287,7 +287,7 @@ void Send_UKF1(void)
 	vs32 _temp32;
   data_to_send[_cnt++]=0xAA;
 	data_to_send[_cnt++]=0xAF;
-	data_to_send[_cnt++]=0x01;//功能字
+	data_to_send[_cnt++]=0x12;//功能字
 	data_to_send[_cnt++]=0;//数据量
 	
 	_temp = (vs16) (flow.rate);
@@ -562,9 +562,6 @@ void Send_ATT(void)
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 
-  _temp = (vs16)( ALT_VEL_BMP_EKF*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
-	data_to_send[_cnt++]=BYTE1(_temp);
-	data_to_send[_cnt++]=BYTE0(_temp);
 
 	data_to_send[3] = _cnt-4;
 
@@ -711,13 +708,13 @@ if(cnt[1]++>=2-1){//5ms
 //姿态解算
 	cnt[1]=0;
 Send_ATT();
-goto end_gol_link;
+//goto end_gol_link;
 }
 
 if(cnt[2]++>=4-1)//10ms
 {cnt[2]=0;
 Send_UKF1();
-goto end_gol_link;
+//goto end_gol_link;
 }
 
 if(cnt[3]++>=10-1)//100ms
@@ -727,19 +724,19 @@ goto end_gol_link;
 }
 
 
-if(cnt[4]++>=20-1)//50ms
-{cnt[4]=0;
-Send_Laser();
-goto end_gol_link;
-}
+//if(cnt[4]++>=20-1)//50ms
+//{cnt[4]=0;
+//Send_Laser();
+//goto end_gol_link;
+//}
 
 
 
-if(cnt[5]++>60)
-{cnt[5]=0;
-Send_CAL();
-goto end_gol_link;
-}
+//if(cnt[5]++>60)
+//{cnt[5]=0;
+//Send_CAL();
+//goto end_gol_link;
+//}
 
 
 

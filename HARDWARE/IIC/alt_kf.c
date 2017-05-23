@@ -1165,6 +1165,51 @@ float sonar_filter_oldx(float in)
     return  (float)UltrasonicWave_Distance1/1000.; //转化为米为单位的浮点数
 }
 
+
+
+static float sonar_values[3] = { 0.0f };
+static unsigned insert_index = 0;
+
+static void sonar_bubble_sort(float sonar_values[], unsigned n);
+
+void sonar_bubble_sort(float sonar_values[], unsigned n)
+{
+	float t;
+
+	for (unsigned i = 0; i < (n - 1); i++) {
+		for (unsigned j = 0; j < (n - i - 1); j++) {
+			if (sonar_values[j] > sonar_values[j+1]) {
+				/* swap two values */
+				t = sonar_values[j];
+				sonar_values[j] = sonar_values[j + 1];
+				sonar_values[j + 1] = t;
+			}
+		}
+	}
+}
+
+float insert_sonar_value_and_get_mode_value(float insert)
+{
+	const unsigned sonar_count = sizeof(sonar_values) / sizeof(sonar_values[0]);
+
+	sonar_values[insert_index] = insert;
+	insert_index++;
+	if (insert_index == sonar_count) {
+		insert_index = 0;
+	}
+
+	/* sort and return mode */
+
+	/* copy ring buffer */
+	float sonar_temp[sonar_count];
+	memcpy(sonar_temp, sonar_values, sizeof(sonar_values));
+
+	sonar_bubble_sort(sonar_temp, sonar_count);
+
+	/* the center element represents the mode after sorting */
+	return sonar_temp[sonar_count / 2];
+}
+
 void fusion_prepare(float dT,float av_arr[],u16 av_num,u16 *av_cnt,float deadzone,_height_st *data,_fusion_p_st *pre_data)
 {
 	pre_data->dis_deadzone = my_deathzoom1(data->relative_height,pre_data->dis_deadzone,deadzone);	
@@ -1310,9 +1355,11 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	
 		float oldx_sonar;
 		#if SONAR_USE_FLOW
-    oldx_sonar=sonar_filter_oldx(flow.hight.originf);
+    //oldx_sonar=sonar_filter_oldx(flow.hight.originf);
+		oldx_sonar=insert_sonar_value_and_get_mode_value(flow.hight.originf);
 		#else
-		oldx_sonar=sonar_filter_oldx((float)ultra_distance/1000.);//<<----------------start
+		//oldx_sonar=sonar_filter_oldx((float)ultra_distance/1000.);//<<----------------start
+		oldx_sonar=insert_sonar_value_and_get_mode_value((float)ultra_distance/1000.);
 	  #endif
 		ultra.relative_height =oldx_sonar*100;
 		fusion_prepare(dt,sonar_av_arr,SONAR_AV_NUM,&sonar_av_cnt,0,&ultra,&sonar);

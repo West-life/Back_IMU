@@ -6,6 +6,7 @@
 #include "hml5833l.h"
 #include "filter.h"
 #include  <math.h> 
+#include "calibrationRoutines.h"
 u8 IMU1_Fast;
 LIS3MDL_S lis3mdl;
 #define LIS3MDL_SA1_HIGH_ADDRESS  0x1E
@@ -209,7 +210,7 @@ void LP_readbmp(u8 fast)
 }
 #define CALIBRATING_MAG_CYCLES              1000  //校准时间持续20s
 void LIS_CalOffset_Mag(void)
-{
+{ static xyz_f_t	Mag_Reg;
 	static xyz_f_t	MagMAX = { -100 , -100 , -100 }, MagMIN = { 100 , 100 , 100 }, MagSum;
 	static uint16_t cnt_m=0;
 	static u8 hml_cal_temp=0;
@@ -219,6 +220,7 @@ void LIS_CalOffset_Mag(void)
 	if(lis3mdl.Mag_CALIBRATED)
 	{	
 		if(!init){init=1;
+		lsq_init(&hml_lsq)	;
 		MagMAX.x=MagMAX.y=MagMAX.z=-100;MagMIN.x=MagMIN.y=MagMIN.z=100;		
 		}
 		
@@ -228,7 +230,9 @@ void LIS_CalOffset_Mag(void)
 		
 		#else
 		if(ABS(lis3mdl.Mag_Adc.x)<1500&&ABS(lis3mdl.Mag_Adc.y)<1500&&ABS(lis3mdl.Mag_Adc.z)<1500)
-		{
+		{ if(hml_lsq.size<250&&(fabs(Mag_Reg.x-lis3mdl.Mag_Adc.x)>11||fabs(Mag_Reg.y-lis3mdl.Mag_Adc.y)>11||fabs(Mag_Reg.z-lis3mdl.Mag_Adc.z)>11))
+			lsq_accumulate(&hml_lsq, (float)lis3mdl.Mag_Adc.x/1000.,(float)lis3mdl.Mag_Adc.y/1000.,(float)lis3mdl.Mag_Adc.z/1000.);
+			
 			MagMAX.x = MAX(lis3mdl.Mag_Adc.x, MagMAX.x);
 			MagMAX.y = MAX(lis3mdl.Mag_Adc.y, MagMAX.y);
 			MagMAX.z = MAX(lis3mdl.Mag_Adc.z, MagMAX.z);
@@ -237,15 +241,27 @@ void LIS_CalOffset_Mag(void)
 			MagMIN.y = MIN(lis3mdl.Mag_Adc.y, MagMIN.y);
 			MagMIN.z = MIN(lis3mdl.Mag_Adc.z, MagMIN.z);		
 			
-			if(cnt_m >= CALIBRATING_MAG_CYCLES*4.5)
-			{ init=0;
+			if(cnt_m >= CALIBRATING_MAG_CYCLES*3)
+			{ float sphere_x,sphere_y,sphere_z,sphere_r;
+				init=0;
+				lsq_calculate_oldx(&hml_lsq, 1000,0.00,  &sphere_x, &sphere_y, &sphere_z, &sphere_r);
+				if(fabs(sphere_r)>0){
+				lis3mdl.Mag_Offset_c.x=(int)(sphere_x*1000);
+				lis3mdl.Mag_Offset_c.y=(int)(sphere_y*1000);
+				lis3mdl.Mag_Offset_c.z=(int)(sphere_z*1000);
+				}
 				lis3mdl.Mag_Offset.x = (int16_t)((MagMAX.x + MagMIN.x) * 0.5f);
 				lis3mdl.Mag_Offset.y = (int16_t)((MagMAX.y + MagMIN.y) * 0.5f);
 				lis3mdl.Mag_Offset.z = (int16_t)((MagMAX.z + MagMIN.z) * 0.5f);
-	
+	      
 				MagSum.x = MagMAX.x - MagMIN.x;
 				MagSum.y = MagMAX.y - MagMIN.y;
 				MagSum.z = MagMAX.z - MagMIN.z;
+				if(fabs(sphere_r)>0){
+				lis3mdl.Mag_Gain_c.x =  (int)(sphere_r*2000)/MagSum.x ;
+				lis3mdl.Mag_Gain_c.y =  (int)(sphere_r*2000)/MagSum.y ;
+				lis3mdl.Mag_Gain_c.z =  (int)(sphere_r*2000)/MagSum.z ;
+				}
 				float temp_max=MagSum.x ;
 				if( MagSum.y>temp_max)
 					temp_max=MagSum.y;
@@ -255,12 +271,21 @@ void LIS_CalOffset_Mag(void)
 				lis3mdl.Mag_Gain.x =  temp_max/MagSum.x ;
 				lis3mdl.Mag_Gain.y =  temp_max/MagSum.y ;
 				lis3mdl.Mag_Gain.z =  temp_max/MagSum.z ;
-				
-				
-			  WRITE_PARM();//Param_SaveMagOffset(&ak8975.Mag_Offset);//param_Save();//保存数据
+					
+				lis3mdl.Mag_Gain.x =  lis3mdl.Mag_Gain_c.x;
+				lis3mdl.Mag_Gain.y =  lis3mdl.Mag_Gain_c.y;
+				lis3mdl.Mag_Gain.z =  lis3mdl.Mag_Gain_c.z;
+				lis3mdl.Mag_Offset.x =  lis3mdl.Mag_Offset_c.x;
+				lis3mdl.Mag_Offset.y =  lis3mdl.Mag_Offset_c.y;
+				lis3mdl.Mag_Offset.z =  lis3mdl.Mag_Offset_c.z;
+			  WRITE_PARM();
 				cnt_m = 0;
 				lis3mdl.Mag_CALIBRATED = 0;
 			}
+			Mag_Reg.x=lis3mdl.Mag_Adc.x;
+			Mag_Reg.y=lis3mdl.Mag_Adc.y;
+			Mag_Reg.z=lis3mdl.Mag_Adc.z;
+			
 		}
 		#endif
 		cnt_m++;
@@ -462,11 +487,11 @@ float AccBuffer[3],MagBuffer[3];
 	AccBuffer[0]=lis3mdl.Acc_I16.x;
 	AccBuffer[1]=lis3mdl.Acc_I16.y;
 	AccBuffer[2]=lis3mdl.Acc_I16.z;
-	MagBuffer[0]=lis3mdl.Mag_Adc.x;
-	MagBuffer[1]=lis3mdl.Mag_Adc.y;
-	MagBuffer[2]=lis3mdl.Mag_Adc.z;
+	MagBuffer[0]=lis3mdl.Mag_Val.x;
+	MagBuffer[1]=lis3mdl.Mag_Val.y;
+	MagBuffer[2]=lis3mdl.Mag_Val.z;
 	
-	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
+	
 	
 	/*坐标转换*/
 	Transform(mpu_fil_tmp[A_X],mpu_fil_tmp[A_Y],mpu_fil_tmp[A_Z],&lis3mdl.Acc.x,&lis3mdl.Acc.y,&lis3mdl.Acc.z);
@@ -497,6 +522,7 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Mag_Val_t.y=-lis3mdl.Mag_Val.x;
 	lis3mdl.Mag_Val_t.z=lis3mdl.Mag_Val.z;
 	
+	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
 	static u8 state[3];
 	switch (state[0]){
 		case 0:

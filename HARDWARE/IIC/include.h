@@ -107,10 +107,7 @@ extern float dj_angle_set,dj_angle_offset[3],Angle_Yun[2];
 #define EN_DMA_UART2 1  //GOL_LINK
 #define EN_DMA_UART3 0  //GPS
 #define EN_DMA_UART4 0 //SD
-//===============PID »úÐÍÐý×ª====================
-#define   ZHOU_550          
-//#define   ZHOU_350
-//#define   ZHOU_300
+
 
 #define USE_MINI_BOARD 1
 

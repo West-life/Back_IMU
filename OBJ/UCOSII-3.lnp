@@ -57,6 +57,7 @@
 "..\obj\bmp_adc.o"
 "..\obj\lsd303.o"
 "..\obj\laser.o"
+"..\obj\cycle_cal.o"
 "..\obj\alt_kf.o"
 "..\obj\fliter.o"
 "..\obj\my_math.o"
