@@ -26,6 +26,7 @@
 #include "LIS3MDL.h"
 #include "flow.h"
 #include "filter.h"
+#include "imu_oldx.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -73,7 +74,7 @@ void inner_task(void *pdata)
   LIS3MDL_read(0);//80hz
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
-	if(cnt3++>=10){cnt3=0;
+	if(cnt3++>=5){cnt3=0;
 	if(!mpu6050.good)
 	LP_readbmp(0);//25hz
 	}
@@ -107,11 +108,18 @@ void outer_task(void *pdata)
 //	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),
 //	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
 
-  MargAHRSupdate(imu_fushion.Gyro_deg.x*0.0173, imu_fushion.Gyro_deg.y*0.0173,imu_fushion.Gyro_deg.z*0.0173,
-                    imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-                    imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
-                    1, 1, outer_loop_time,&RollR,&PitchR,&YawR);
-											
+  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
+						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+						1,&RollR,&PitchR,&YawR,outer_loop_time);
+	reference_vr[0]=reference_v.x=reference_v_m1[0];
+	reference_vr[1]=reference_v.y=reference_v_m1[1];
+  reference_vr[2]=reference_v.z=reference_v_m1[2];
+	q_nav[0]=ref_q[0]=ref_q_m1[0];
+	q_nav[1]=ref_q[1]=ref_q_m1[1];
+	q_nav[2]=ref_q[2]=ref_q_m1[2];
+	q_nav[3]=ref_q[3]=ref_q_m1[3];	
+		
 	if(mode.en_imu_ekf==0){
 	Yaw_mid_down=Yaw=YawR;
 	Pitch_mid_down=Pitch=PitchR;
@@ -223,86 +231,6 @@ if(cnt_init++>2&&!init){cnt_init=101;
 	//}
 		ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
 }
-	/*
-		    fRealGyro[0] = my_deathzoom_2(mpu6050.Gyro_deg.x,0.0) * DEG_RAD*1;
-				fRealGyro[1] = my_deathzoom_2(mpu6050.Gyro_deg.y,0.0) * DEG_RAD*1;
-				fRealGyro[2] = my_deathzoom_2(mpu6050.Gyro_deg.z,0.0) * DEG_RAD*1;
-			
-				fRealAccel[0] = mpu6050.Acc.x/ 4096;
-				fRealAccel[1] = mpu6050.Acc.y/ 4096;
-				fRealAccel[2] = mpu6050.Acc.z/ 4096;
-
-	 fRealMag[0]=flag_mag[0]*ak8975.Mag_Val.x;
-	 fRealMag[1]=flag_mag[1]*ak8975.Mag_Val.y;
-	 fRealMag[2]=flag_mag[2]*ak8975.Mag_Val.z;
-		
-		Quaternion_From6AxisData(fRealQ, fRealAccel, fRealMag);
-		float fDeltaTime;		
-				if(ekf_loop_time!=0)fDeltaTime=ekf_loop_time;
-				else
-				fDeltaTime=0.01;	
-#ifdef USE_EKF
-				EFK_Update(&ekf, fRealQ, fRealGyro, fRealAccel, fRealMag, fDeltaTime);
-#elif defined USE_UKF
-				UKF_Update(&ukf, fRealQ, fRealGyro, fRealAccel, fRealMag, fDeltaTime);
-#elif defined USE_CKF
-				CKF_Update(&ckf, fRealQ, fRealGyro, fRealAccel, fRealMag, fDeltaTime);
-#elif defined USE_SRCKF
-				SRCKF_Update(&srckf, fRealGyro, fRealAccel, fRealMag, fDeltaTime);
-#elif defined USE_6AXIS_EKF
-				EKF_IMUUpdate(fRealGyro, fRealAccel, fDeltaTime);
-#elif defined USE_6AXIS_FP_EKF
-				FP_EKF_IMUUpdate(fRealGyro, fRealAccel, fDeltaTime);
-#elif defined USE_9AXIS_EKF
-				EKF_AHRSUpdate(fRealGyro, fRealAccel, fRealMag, fDeltaTime);
-#endif	
-#ifdef USE_EKF
-			EKF_GetAngle(&ekf, fRPYr);
-			EKF_GetQ(&ekf, fQ);
-#elif defined USE_UKF
-			UKF_GetAngle(&ukf, fRPYr);
-			UKF_GetQ(&ukf, fQ);
-#elif defined USE_CKF
-			CKF_GetAngle(&ckf, fRPYr);
-			CKF_GetQ(&ckf, fQ);
-#elif defined USE_SRCKF
-			SRCKF_GetAngle(&srckf, fRPYr);
-			SRCKF_GetQ(&srckf, fQ);
-#elif defined USE_6AXIS_EKF
-			EKF_IMUGetAngle(fRPYr);
-			EKF_IMUGetQ(fQ);
-#elif defined USE_6AXIS_FP_EKF
-			FP_EKF_IMUGetAngle(fRPYr);
-			FP_EKF_IMUGetQ(fQ);
-#elif defined USE_9AXIS_EKF
-			EKF_AHRSGetAngle(fRPYr);
-			EKF_AHRSGetQ(fQ);
-#endif
-			lQuat[0] = (long)(fQ[0] * 2147483648.0f);
-			lQuat[1] = (long)(fQ[1] * 2147483648.0f);
-			lQuat[2] = (long)(fQ[2] * 2147483648.0f);
-			lQuat[3] = (long)(fQ[3] * 2147483648.0f);
-	 fRPY[0] += Kp_ekf_pr *0.1f *(-fRPY[0]+(fRPYr[0]));
-	 fRPY[1] += Kp_ekf_pr *0.1f *(-fRPY[1]+(-fRPYr[1]));
-	 fRPY[2]  =-fRPYr[2];
-	reference_v_ekf[0]= 2*(fQ[1]*fQ[3] - fQ[0]*fQ[2]);
-	reference_v_ekf[1]= 2*(fQ[0]*fQ[1] + fQ[2]*fQ[3]);
-	reference_v_ekf[2] = 1 - 2*(fQ[1]*fQ[1] + fQ[2]*fQ[2]);
-#if NOT_DEBUG_EKF
-if(mode.en_imu_ekf) {
-	q_nav[0]=fQ[0];
-	q_nav[1]=fQ[1];
-	q_nav[2]=fQ[2];
-	q_nav[3]=fQ[3];
-  reference_vr[0]=reference_v.x =reference_v_ekf[0];// 2*(ref_q[1]*ref_q[3] - ref_q[0]*ref_q[2]);
-	reference_vr[1]=reference_v.y =reference_v_ekf[1];// 2*(ref_q[0]*ref_q[1] + ref_q[2]*ref_q[3]);
-	reference_vr[2]=reference_v.z =reference_v_ekf[2];// 1 - 2*(ref_q[1]*ref_q[1] + ref_q[2]*ref_q[2]);//ref_q[0]*ref_q[0] - ref_q[1]*ref_q[1] - ref_q[2]*ref_q[2] + r
-	Pitch= fRPY[1] ;
-	Roll=  fRPY[0] ;
-	Yaw=   fRPY[2] ;
-}
-#endif
-*/
 	delay_ms(20);
 	}
 }		
@@ -472,17 +400,18 @@ void flow_task1(void *pdata)
 		acc_neo_off[2]+= ( 1 / ( 1 + 1 / ( 2.2f *3.14f *0.04 ) ) ) *(acc_neo_temp[2]- acc_neo_off[2]) ;
 		}
 		static float acc_neo_temp1[3]={0};
-	  acc_neo_temp1[0]=IIR_I_Filter(acc_neo_temp[0]-acc_neo_off[0], InPut_IIR_acc[0], OutPut_IIR_acc[0], b_IIR_acc, 4+1, a_IIR_acc, 4+1);
-	  acc_neo_temp1[1]=IIR_I_Filter(acc_neo_temp[1]-acc_neo_off[1], InPut_IIR_acc[1], OutPut_IIR_acc[1], b_IIR_acc, 4+1, a_IIR_acc, 4+1);
-	  acc_neo_temp1[2]=IIR_I_Filter(acc_neo_temp[2]-acc_neo_off[2], InPut_IIR_acc[2], OutPut_IIR_acc[2], b_IIR_acc, 4+1, a_IIR_acc, 4+1);
-    static float acc_flt[3];
-		acc_flt[0] += ( 1 / ( 1 + 1 / ( 15 *3.14f *flow_loop_time ) ) ) *( acc_neo_temp1[0] - acc_flt[0] );
-	  acc_flt[1] += ( 1 / ( 1 + 1 / ( 15 *3.14f *flow_loop_time ) ) ) *( acc_neo_temp1[1] - acc_flt[1] );
-		acc_flt[2] += ( 1 / ( 1 + 1 / ( 15 *3.14f *flow_loop_time ) ) ) *( acc_neo_temp1[2] - acc_flt[2] );
-		if(fabs(acc_neo_temp1[0])<8.6&&fabs(acc_neo_temp1[1])<8.6){
-		acc_neo[0]=Moving_Median(5,5,acc_flt[0]);
-		acc_neo[1]=Moving_Median(6,5,acc_flt[1]);
-		acc_neo[2]=Moving_Median(7,5,acc_flt[2]);
+		static float acc_flt[3];
+    acc_neo_temp1[0]=Moving_Median(5,5,acc_neo_temp[0]-acc_neo_off[0]);
+		acc_neo_temp1[1]=Moving_Median(6,5,acc_neo_temp[1]-acc_neo_off[1]);
+		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
+		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
+		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+		//acc_flt[2]=acc_neo_temp1[2];//
+		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+		if(fabs(acc_neo_temp[0])<8.6&&fabs(acc_neo_temp[1])<8.6){
+		acc_neo[0]=acc_flt[0];
+		acc_neo[1]=acc_flt[1];
+		acc_neo[2]=acc_flt[2];
 	 	flow_matlab_data[0]=acc_neo[0];
 		flow_matlab_data[1]=acc_neo[1];}
 	  }
@@ -602,9 +531,9 @@ void TIM3_IRQHandler(void)
 								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
 								0,flow_rad.integrated_x*1000,accumulated_flow_x*1000);break;	
 								case 13:
-								Send_BLE_DEBUG(lis3mdl.Alt*1000,0,0,
+								Send_BLE_DEBUG(lis3mdl.Alt*100,0,0,
 								(ultra_distance),0,ultra_distance,
-								ALT_VEL_BMP_EKF*1000,ALT_POS_BMP_EKF*1000,ALT_POS_SONAR2*1000);break;
+								ALT_VEL_BMP_EKF*100,ALT_POS_BMP_EKF*100,ALT_POS_SONAR2*100);break;
 								}				
 								GOL_LINK_BUSY[1]=0;		
 								} 

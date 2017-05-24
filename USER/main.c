@@ -68,7 +68,6 @@ int main(void)
 	MPU6050_Init(20);   			//加速度计、陀螺仪初始化，配置20hz低通
 	Delay_ms(10);						//延时
 	}
-  //LSM303DLHC_AccInit(0);LSM303DLHC_MagInit(0);
 	#if IMU_UPDATE
 	LIS3MDL_enableDefault();
 	Delay_ms(10);						//延时
@@ -143,7 +142,7 @@ int main(void)
 #endif	
   TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
-	IWDG_Init(4,1500); //与分频数为64,重载值为500,溢出时间为1s	
+	//IWDG_Init(4,1500); //与分频数为64,重载值为500,溢出时间为1s	
 	//---------------初始化UCOSII--------------------------
 
 //	while(1)

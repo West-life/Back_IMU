@@ -73,11 +73,6 @@ void ANO_AK8975_CalOffset_Mag(void)
 		MagMAX.x=MagMAX.y=MagMAX.z=-100;MagMIN.x=MagMIN.y=MagMIN.z=100;		
 		}
 		
-		#if USE_CYCLE_HML_CAL
-		if(ABS(ak8975.Mag_Adc.x)<700&&ABS(ak8975.Mag_Adc.y)<700&&ABS(ak8975.Mag_Adc.z)<700)
-		    HMC_CAL_HML();
-		
-		#else
 		if(ABS(ak8975.Mag_Adc.x)<700&&ABS(ak8975.Mag_Adc.y)<700&&ABS(ak8975.Mag_Adc.z)<700)
 		{
 			MagMAX.x = MAX(ak8975.Mag_Adc.x, MagMAX.x);
@@ -112,7 +107,6 @@ void ANO_AK8975_CalOffset_Mag(void)
 				ak8975.Mag_CALIBRATED = 0;
 			}
 		}
-		#endif
 		cnt_m++;
 		
 	}
@@ -355,7 +349,7 @@ void HMC58X3_getID(char id[3])
 void HMC5883L_SetUp(void)
 { char id[3];
 	HMC58X3_getID(id);
-	if(id[0]!=0xf)
+	if(id[0]!=0xff)
 		mpu6050.good=1;
 	
   HMC58X3_init(0); // Don't set mode yet, we'll do that later on.

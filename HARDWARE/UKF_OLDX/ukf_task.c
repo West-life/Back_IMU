@@ -26,175 +26,7 @@ struct attitude_solution attitude_data;
 
 int ekf_hml_flag[3]={1,1,1};
 float angle_ins[3];
-void ins_outdoor_update(float T) 
-{
-	float gyro[3], accel[3], vel[3];
-	static uint32_t last_gps_time = 0;
-	uint16_t sensors;
-	// rate gyro inputs in units of rad/s
-	// accelerometer inputs in units of m/s
-	// format data for INS algo
-	gyro[0] = imu_fushion.Gyro_deg.x*DEG_RAD;
-	gyro[1] = imu_fushion.Gyro_deg.y*DEG_RAD*1;
-	gyro[2] = imu_fushion.Gyro_deg.z*DEG_RAD*1;
 
-	accel[0] = imu_fushion.Acc.x/4096.* 1*9.8;
-	accel[1] = imu_fushion.Acc.y/4096.* 1*9.8;
-	accel[2] = imu_fushion.Acc.z/4096.* 1*9.8;
-
-	mag_data.scaled.axis[0]= ekf_hml_flag[0]*imu_fushion.Mag_Val.x;///float)Global_Mag_Val[0];
-	mag_data.scaled.axis[1]= ekf_hml_flag[1]*imu_fushion.Mag_Val.y;//(float)Global_Mag_Val[1];
-	mag_data.scaled.axis[2]= ekf_hml_flag[2]*imu_fushion.Mag_Val.z;//(float)Global_Mag_Val[2];
-
-	INSStatePrediction(gyro, accel, T);
-	attitude_data.quaternion.q1 = Nav.q[0];
-	attitude_data.quaternion.q2 = Nav.q[1];
-	attitude_data.quaternion.q3 = Nav.q[2];
-	attitude_data.quaternion.q4 = Nav.q[3];		
-  angle_ins[0] = fast_atan2(2*(Nav.q[0]*Nav.q[1] + Nav.q[2]*Nav.q[3]),1 - 2*(Nav.q[1]*Nav.q[1] + Nav.q[2]*Nav.q[2])) *57.3f;
-  angle_ins[1] = asin(2*(ref_q[1]*Nav.q[3] - Nav.q[0]*Nav.q[2])) *57.3f;
-  angle_ins[2] = fast_atan2(2*(-Nav.q[1]*Nav.q[2] - Nav.q[0]*Nav.q[3]), 2*(Nav.q[0]*Nav.q[0] + Nav.q[1]*Nav.q[1]) - 1) *57.3f  ;// 
-	
-//	send_attitude();  // get message out quickly
-//	send_velocity();
-//	send_position();
-	INSCovariancePrediction(T);
-		
-	sensors = 0;
-	
-	/* 
-	 * Detect if greater than certain time since last gps update and if so
-	 * reset EKF to that position since probably drifted too far for safe
-	 * update 
-	 */
-	uint32_t this_gps_time = micros();
-	float gps_delay;
-	
-//	if (this_gps_time < last_gps_time)
-//		gps_delay = ((0xFFFF - last_gps_time) - this_gps_time) / timer_rate();
-//	else 
-//		gps_delay = (this_gps_time - last_gps_time) / timer_rate();
-//	last_gps_time = this_gps_time;
-	gps_data.groundspeed=gpsx.spd;
-	gps_data.heading=gpsx.angle;
-	if(gpsx.gpssta>0)
-	gps_data.updated=0;
-	else
-	gps_data.updated=0;	
-	if (gps_data.updated)
-	{
-		vel[0] = gps_data.groundspeed * cos(gps_data.heading * DEG_TO_RAD);
-		vel[1] = gps_data.groundspeed * sin(gps_data.heading * DEG_TO_RAD);
-		vel[2] = 0;
-				
-		//if(gps_delay > INSGPS_GPS_TIMEOUT)
-		//	INSPosVelReset(gps_data.NED,vel); // position stale, reset		
-		//else  {
-			sensors |= HORIZ_SENSORS | POS_SENSORS;						
-		//}
-			
-		/* 
-		 * When using gps need to make sure that barometer is brought into NED frame   
-		 * we should try and see if the altitude from the home location is good enough 
-		 * to use for the offset but for now starting with this conservative filter    
-		 */
-//		if(fabs(gps_data.NED[2] + (altitude_data.altitude - baro_offset)) > 10) {
-//			baro_offset = gps_data.NED[2] + altitude_data.altitude;
-//		} else {
-//			/* IIR filter with 100 second or so tau to keep them crudely in the same frame */
-//			baro_offset = baro_offset * 0.999 + (gps_data.NED[2] + altitude_data.altitude) * 0.001;
-//		}
-		gps_data.updated = false;
-	} else if (gps_delay > INSGPS_GPS_TIMEOUT) {
-		vel[0] = 0;
-		vel[1] = 0;
-		vel[2] = 0;
-		sensors |= VERT_SENSORS | HORIZ_SENSORS;
-	}
-	
-	//if(mag_data.updated) {
-	sensors |= MAG_SENSORS;
-	//	mag_data.updated = false;
-	//}
-	
-//	if(altitude_data.updated) {
-//		sensors |= BARO_SENSOR;
-//		altitude_data.updated = false;
-//	}
-		
-	/* 
-	 * TODO: Need to add a general sanity check for all the inputs to make sure their kosher 
-	 * although probably should occur within INS itself 
-	 */
-	INSCorrection(mag_data.scaled.axis, gps_data.NED, vel, 0, sensors);	
-}
-
-
-
-
-void ins_init_algorithm()
-{
-	float Rbe[3][3], q[4], accels[3], rpy[3], mag;
-	float ge[3]={0,0,-9.81}, zeros[3]={0,0,0}, Pdiag[16]={25,25,25,5,5,5,1e-5,1e-5,1e-5,1e-5,1e-5,1e-5,1e-5,1e-4,1e-4,1e-4};
-	u8 using_mags, using_gps;
-	
-	INSGPSInit();
-	
-//	HomeLocationData home;
-//	HomeLocationGet(&home);
-	
-	accels[0]=accel_data.filtered.x;
-	accels[1]=accel_data.filtered.y;
-	accels[2]=accel_data.filtered.z;
-	
-	using_mags =1;// (ahrs_algorithm == AHRSSETTINGS_ALGORITHM_INSGPS_OUTDOOR) || (ahrs_algorithm == AHRSSETTINGS_ALGORITHM_INSGPS_INDOOR);
-	//using_mags &= (home.Be[0] != 0) || (home.Be[1] != 0) || (home.Be[2] != 0);  /* only use mags when valid home location */
-	
-	using_gps = 1;//(ahrs_algorithm == AHRSSETTINGS_ALGORITHM_INSGPS_OUTDOOR) && (gps_data.quality != 0);
-
-	/* Block till a data update */
-//	get_accel_gyro_data();
-
-	/* Ensure we get mag data in a timely manner */
-	uint16_t fail_count = 50; // 50 at 200 Hz is up to 0.25 sec
-//	while(using_mags && !mag_data.updated && fail_count--) {
-//		get_accel_gyro_data();
-//		AhrsPoll();
-//	}
-//	using_mags &= mag_data.updated;		
-	
-	//if (using_mags) {
-		/* Spin waiting for mag data */
-//		while(!mag_data.updated) {
-//			get_accel_gyro_data();
-//			AhrsPoll();
-//		}
-//		mag_data.updated = false;
-
-	//	RotFrom2Vectors(accels, ge, mag_data.scaled.axis, home.Be, Rbe);
-	//	R2Quaternion(Rbe,q);
-//		if (using_gps)
-		  q[0]=1;
-			INSSetState(gps_data.NED, zeros, q, zeros, zeros);
-	//	else
-	//		INSSetState(zeros, zeros, q, zeros, zeros);
-//	} else {		
-//		// assume yaw = 0
-//		mag = VectorMagnitude(accels);
-//		rpy[1] = asinf(-accels[0]/mag);
-//		rpy[0] = atan2(accels[1]/mag,accels[2]/mag);
-//		rpy[2] = 0;
-//		RPY2Quaternion(rpy,q);
-//		if (using_gps)
-//			INSSetState(gps_data.NED, zeros, q, zeros, zeros);
-//		else
-//			INSSetState(zeros, zeros, q, zeros, zeros);
-//	}
-	
-	INSResetP(Pdiag);
-	
-	// TODO: include initial estimate of gyro bias?
-}
 
 
 
@@ -282,7 +114,7 @@ double H[9]={
  local_Lon=gpsx.longitude;
  local_Lat=gpsx.latitude;
  CalcEarthRadius(gpsx.latitude);
- ins_init_algorithm(); 
+
  }
  
 u8 kf_data_sel_temp=kf_data_sel; 
@@ -420,8 +252,7 @@ if(kf_data_sel_temp==1){//GPS
 	  gps_data.NED[1]=posEast;
 	  gps_data.NED[2]=0;
 	 
-		if((gps_init)||force_test||gps_data_vaild)
-		ins_outdoor_update(T);
+		
   }
 	else if(kf_data_sel_temp==2){//---------------------flow in global---------------------------------------------------------
 	 static int qr_yaw_init;	

@@ -1,15 +1,10 @@
 ..\obj\avoid.o: ..\HARDWARE\AVOID\avoid.c
-..\obj\avoid.o: ..\HARDWARE\AVOID\OLD_X_AVOID.h
-..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
-..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
-..\obj\avoid.o: ..\HARDWARE\IIC\rtwtypes.h
-..\obj\avoid.o: ..\HARDWARE\AVOID\OLD_X_AVOID_types.h
 ..\obj\avoid.o: ..\HARDWARE\AVOID\avoid.h
 ..\obj\avoid.o: ..\UCOSII\CONFIG\includes.h
 ..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
+..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\avoid.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 ..\obj\avoid.o: ..\UCOSII\CORE\ucos_ii.h
 ..\obj\avoid.o: ..\UCOSII\CONFIG\includes.h

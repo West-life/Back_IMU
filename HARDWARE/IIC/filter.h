@@ -25,4 +25,24 @@ typedef struct
 void anotc_filter_1(float base_hz,float gain_hz,float dT,float in,_filter_1_st *f1);
 void Moving_Average1(float moavarray[],u16 len ,u16 *fil_cnt,float in,float *out);
 float my_deathzoom1(float x,float ref,float zoom);//my_deadzone;
+
+
+
+
+#define NUMBER_OF_FIRST_ORDER_FILTERS 5
+#define ACC_LOWPASS_X 0
+#define ACC_LOWPASS_Y 1
+#define ACC_LOWPASS_Z 2
+typedef struct firstOrderFilterData {
+  float   gx1;
+  float   gx2;
+  float   gx3;
+  float   previousInput;
+  float   previousOutput;
+} firstOrderFilterData_t;
+
+extern firstOrderFilterData_t firstOrderFilters[NUMBER_OF_FIRST_ORDER_FILTERS];
+
+void initFirstOrderFilter(float T);
+float firstOrderFilter(float input, struct firstOrderFilterData *filterParameters,float T);
 #endif

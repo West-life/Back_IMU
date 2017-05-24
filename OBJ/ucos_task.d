@@ -96,6 +96,7 @@
 ..\obj\ucos_task.o: ..\HARDWARE\UKF_BARO\ukf_baro.h
 ..\obj\ucos_task.o: ..\HARDWARE\AVOID\avoid.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LIS3MDL.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\imu_oldx.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LSM303.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\FastMath.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Double.h

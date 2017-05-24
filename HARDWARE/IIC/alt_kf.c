@@ -1368,7 +1368,7 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		//HeightEKF( X_apo_height1, P_apo_k_height1,zFlag, dt, z, r_baro1, r_acc1, X_apo_height1, P_apo_k_height1);
    
 		float temp=(reference_vr_imd_down[2] *imu_fushion.Acc.z + reference_vr_imd_down[0] *imu_fushion.Acc.x + reference_vr_imd_down[1] *imu_fushion.Acc.y - 4096  );
-	  float acc_temp1=my_deathzoom(((float)temp/4096.0f) *9.8,0.01);
+	  float acc_temp1=my_deathzoom(acc_neo[2],0.01);//my_deathzoom(((float)temp/4096.0f) *9.8,0.01);
 	  //ALT_POS_SONAR3+=dt*ALT_VEL_BMP_EKF*k_spd;
 		//double Z_kf[3]={(float)ultra_distance/1000,0,0};
 		double Z_kf[3]={(float)oldx_sonar,0,0};
@@ -1446,7 +1446,7 @@ int baroAlt_temp;
 	  dt = Get_Cycle_T(GET_T_BARO_UKF);	
 		temp=(reference_vr_imd_down[2] *imu_fushion.Acc.z + reference_vr_imd_down[0] *imu_fushion.Acc.x + reference_vr_imd_down[1] *imu_fushion.Acc.y - 4096  )*k_flt_accz+(1-k_flt_accz)*temp_r;
 	  acc_temp1=my_deathzoom(-((float)temp/4096.0f) *9.8,dead_accz);
-		acc_temp1=acc_temp1+ acc_off_baro;
+		acc_temp1=acc_neo[2]+ acc_off_baro;
 	  baro_matlab_data[1]=accz_bmp=LIMIT(my_deathzoom(acc_temp1,dead_accz)*acc_scale_bmp,-3.6,3.6);
    
     if(!fly_ready||for_fly_ready)	{	
@@ -1478,7 +1478,7 @@ int baroAlt_temp;
 //		 X_apo_height[1]=altUkfData_bmp.x[1];	
 			double Z_kf[3]={baroAlt_temp/1000.,0,0};	
     //HeightEKF( X_apo_height, P_apo_k_height,zFlag, dt, z, r_baro, r_acc, X_apo_height, P_apo_k_height);
-		kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  -(accz_bmp), gh,  ga,  gwa,dt);
+		kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
 	  X_apo_height[0]=X_kf_baro[0];//Moving_Median(21,5,X_ukf_baro[0]);
 	  X_apo_height[1]=X_kf_baro[1];//Moving_Median(22,5,X_ukf_baro[1]);	
 			

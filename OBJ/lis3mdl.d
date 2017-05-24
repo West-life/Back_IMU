@@ -72,4 +72,4 @@
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\hml5833l.h
 ..\obj\lis3mdl.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\filter.h
-..\obj\lis3mdl.o: ..\HARDWARE\IIC\calibrationRoutines.h
+..\obj\lis3mdl.o: ..\HARDWARE\IIC\cycle_cal_oldx.h

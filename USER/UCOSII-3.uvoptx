@@ -312,87 +312,82 @@
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fly_ready</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/LIS3MDL.c\lis3mdl.Acc_Offset</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/LIS3MDL.c\lis3mdl.Acc_Offset</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/LIS3MDL.c\lis3mdl.Gyro_Offset</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/LIS3MDL.c\lis3mdl.Gyro_Offset</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\mpu6050.Acc_Offset</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\mpu6050.Acc_Offset</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\mpu6050.Gyro_Offset</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\mpu6050.Gyro_Offset</ItemText>
+          <ItemText>SendBuff2,0x10</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\imu_fushion.Acc_CALIBRATE</ItemText>
+          <ItemText>yaw_mag_view</ItemText>
         </Ww>
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\imu_fushion.Gyro_CALIBRATE</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/imu.c\Yaw</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/mpu6050.c\imu_fushion.Mag_CALIBRATED</ItemText>
+          <ItemText>Pitch</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>nrf_uart_cnt,0x0A</ItemText>
+          <ItemText>Roll</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>SendBuff2,0x10</ItemText>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/imu.c\Pitch</ItemText>
         </Ww>
         <Ww>
           <count>30</count>
           <WinNumber>1</WinNumber>
-          <ItemText>for_fly_ready</ItemText>
+          <ItemText>ref_q_m1</ItemText>
         </Ww>
         <Ww>
           <count>31</count>
           <WinNumber>1</WinNumber>
-          <ItemText>yaw_mag_view</ItemText>
+          <ItemText>ref_q</ItemText>
         </Ww>
         <Ww>
           <count>32</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/imu.c\Yaw</ItemText>
+          <ItemText>acc_neo</ItemText>
         </Ww>
         <Ww>
           <count>33</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Pitch</ItemText>
+          <ItemText>X_apo_height</ItemText>
         </Ww>
         <Ww>
           <count>34</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Roll</ItemText>
+          <ItemText>fly_ready</ItemText>
         </Ww>
         <Ww>
           <count>35</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Kp</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/imu.c\Pitch</ItemText>
+          <ItemText>fly_ready</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -404,17 +399,17 @@
         <Ww>
           <count>1</count>
           <WinNumber>2</WinNumber>
-          <ItemText>ALT_POS_SONAR2</ItemText>
+          <ItemText>flow_matlab_data</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>2</WinNumber>
-          <ItemText>flow_matlab_data</ItemText>
+          <ItemText>X_ukf</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>2</WinNumber>
-          <ItemText>X_ukf</ItemText>
+          <ItemText>H</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
@@ -424,72 +419,67 @@
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>g_spd_flow</ItemText>
+          <ItemText>qr</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>2</WinNumber>
-          <ItemText>H</ItemText>
+          <ItemText>X_ukf</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>2</WinNumber>
-          <ItemText>k_flow_devide</ItemText>
+          <ItemText>H</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>2</WinNumber>
-          <ItemText>qr</ItemText>
+          <ItemText>flag_kf1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>2</WinNumber>
-          <ItemText>X_ukf</ItemText>
+          <ItemText>hml_lsq,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>2</WinNumber>
-          <ItemText>Posx</ItemText>
+          <ItemText>lis3mdl</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>2</WinNumber>
-          <ItemText>Posy</ItemText>
+          <ItemText>UART_UP_LOAD_SEL,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/UKF_OLDX/ukf_task.c\X_ukf[0]</ItemText>
+          <ItemText>en_ble_debug</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/UKF_OLDX/ukf_task.c\X_ukf[3]</ItemText>
+          <ItemText>acc_neo</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>2</WinNumber>
-          <ItemText>g_pos_flow</ItemText>
+          <ItemText>accz_bmp</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>H</ItemText>
+          <ItemText>ACC_LOWPASS_TAU</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>2</WinNumber>
-          <ItemText>flag_kf1,0x0A</ItemText>
+          <ItemText>altUkfData_bmp.x[1]</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>2</WinNumber>
-          <ItemText>gwa_nav</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>ga_nav</ItemText>
+          <ItemText>fly_ready</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -524,7 +514,7 @@
         <aPa1>0</aPa1>
         <AscS4>0</AscS4>
         <aSer4>0</aSer4>
-        <StkLoc>0</StkLoc>
+        <StkLoc>1</StkLoc>
         <TrcWin>0</TrcWin>
         <newCpu>0</newCpu>
         <uProt>0</uProt>
@@ -1350,6 +1340,18 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>8</GroupNumber>
+      <FileNumber>63</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\IIC\cycle_cal.c</PathWithFileName>
+      <FilenameWithoutPath>cycle_cal.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -1360,7 +1362,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>63</FileNumber>
+      <FileNumber>64</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1372,7 +1374,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>64</FileNumber>
+      <FileNumber>65</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1384,7 +1386,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>65</FileNumber>
+      <FileNumber>66</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1396,7 +1398,7 @@
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>66</FileNumber>
+      <FileNumber>67</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1416,7 +1418,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>67</FileNumber>
+      <FileNumber>68</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1428,7 +1430,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>68</FileNumber>
+      <FileNumber>69</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1440,7 +1442,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>69</FileNumber>
+      <FileNumber>70</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1452,7 +1454,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>70</FileNumber>
+      <FileNumber>71</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1464,7 +1466,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>71</FileNumber>
+      <FileNumber>72</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1476,7 +1478,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>72</FileNumber>
+      <FileNumber>73</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1488,7 +1490,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>73</FileNumber>
+      <FileNumber>74</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1500,7 +1502,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>74</FileNumber>
+      <FileNumber>75</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1512,7 +1514,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>75</FileNumber>
+      <FileNumber>76</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1524,7 +1526,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>76</FileNumber>
+      <FileNumber>77</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1536,7 +1538,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>77</FileNumber>
+      <FileNumber>78</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1548,7 +1550,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>78</FileNumber>
+      <FileNumber>79</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1568,7 +1570,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>79</FileNumber>
+      <FileNumber>80</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1580,7 +1582,7 @@
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>80</FileNumber>
+      <FileNumber>81</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1592,7 +1594,7 @@
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>81</FileNumber>
+      <FileNumber>82</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1604,7 +1606,7 @@
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>82</FileNumber>
+      <FileNumber>83</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1616,7 +1618,7 @@
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>83</FileNumber>
+      <FileNumber>84</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1628,7 +1630,7 @@
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>84</FileNumber>
+      <FileNumber>85</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1648,7 +1650,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>85</FileNumber>
+      <FileNumber>86</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1660,7 +1662,7 @@
     </File>
     <File>
       <GroupNumber>12</GroupNumber>
-      <FileNumber>86</FileNumber>
+      <FileNumber>87</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
