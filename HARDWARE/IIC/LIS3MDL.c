@@ -267,12 +267,15 @@ void LIS_CalOffset_Mag(void)
 				lis3mdl.Mag_Gain.y =  temp_max/MagSum.y ;
 				lis3mdl.Mag_Gain.z =  temp_max/MagSum.z ;
 				#if USE_CYCLE_HML_CAL
+				if(lis3mdl.Mag_Gain_c.x<1.5&&lis3mdl.Mag_Gain_c.y<1.5&&lis3mdl.Mag_Gain_c.z<1.5&&
+					fabs(lis3mdl.Mag_Offset_c.x)<1500&&fabs(lis3mdl.Mag_Offset_c.y)<1500&&fabs(lis3mdl.Mag_Offset_c.z)<1500){
 				lis3mdl.Mag_Gain.x =  lis3mdl.Mag_Gain_c.x;
 				lis3mdl.Mag_Gain.y =  lis3mdl.Mag_Gain_c.y;
 				lis3mdl.Mag_Gain.z =  lis3mdl.Mag_Gain_c.z;
 				lis3mdl.Mag_Offset.x =  lis3mdl.Mag_Offset_c.x;
 				lis3mdl.Mag_Offset.y =  lis3mdl.Mag_Offset_c.y;
 				lis3mdl.Mag_Offset.z =  lis3mdl.Mag_Offset_c.z;
+					}
 				#endif
 			  WRITE_PARM();
 				cnt_m = 0;
@@ -514,9 +517,9 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Mag_Val.y = (lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y)*lis3mdl.Mag_Gain.y ;
 	lis3mdl.Mag_Val.z = (lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z)*lis3mdl.Mag_Gain.z ;
 	
-	lis3mdl.Mag_Val_t.x=lis3mdl.Mag_Val.y;
-	lis3mdl.Mag_Val_t.y=-lis3mdl.Mag_Val.x;
-	lis3mdl.Mag_Val_t.z=lis3mdl.Mag_Val.z;
+	lis3mdl.Mag_Val_t.x=firstOrderFilter(lis3mdl.Mag_Val.y,&firstOrderFilters[HML_LOWPASS_X],T);
+	lis3mdl.Mag_Val_t.y=firstOrderFilter(-lis3mdl.Mag_Val.x,&firstOrderFilters[HML_LOWPASS_Y],T);
+	lis3mdl.Mag_Val_t.z=firstOrderFilter(lis3mdl.Mag_Val.z,&firstOrderFilters[HML_LOWPASS_Z],T);
 	
 	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
 	static u8 state[3];

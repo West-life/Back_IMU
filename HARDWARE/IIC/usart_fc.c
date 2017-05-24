@@ -160,9 +160,12 @@ float sonar_fc;
 		lis3mdl.Acc_CALIBRATE=1;
 		if(!lis3mdl.Gyro_CALIBRATE&&*(data_buf+30)==1)
 		lis3mdl.Gyro_CALIBRATE=1;
-		if(!lis3mdl.Mag_CALIBRATED&&*(data_buf+31)==1)
-		lis3mdl.Mag_CALIBRATED=1;
-	
+		static u8 mag_flag;
+		if(!lis3mdl.Mag_CALIBRATED&&*(data_buf+31)==1&&mag_flag==0)
+		mag_flag=lis3mdl.Mag_CALIBRATED=1;
+	  
+		if(!lis3mdl.Mag_CALIBRATED&&*(data_buf+31)==0)
+			mag_flag=0;
 	}	
 		else if(*(data_buf+2)==0x83)//
   {

@@ -29,10 +29,13 @@ float my_deathzoom1(float x,float ref,float zoom);//my_deadzone;
 
 
 
-#define NUMBER_OF_FIRST_ORDER_FILTERS 5
+#define NUMBER_OF_FIRST_ORDER_FILTERS 20
 #define ACC_LOWPASS_X 0
 #define ACC_LOWPASS_Y 1
 #define ACC_LOWPASS_Z 2
+#define HML_LOWPASS_X 3
+#define HML_LOWPASS_Y 4
+#define HML_LOWPASS_Z 5
 typedef struct firstOrderFilterData {
   float   gx1;
   float   gx2;

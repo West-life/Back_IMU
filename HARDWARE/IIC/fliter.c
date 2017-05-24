@@ -270,11 +270,18 @@ float ACC_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
 float ACC_LOWPASS_GX2      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
 float ACC_LOWPASS_GX3      ;// ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
 
+float HML_LOWPASS_TAU        = 0.025f;
+float HML_LOWPASS_SAMPLE_TIME =0.02f;
+float HML_LOWPASS_A        ;//   (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
+float HML_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
+float HML_LOWPASS_GX2      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
+float HML_LOWPASS_GX3      ;// ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
+
 firstOrderFilterData_t firstOrderFilters[NUMBER_OF_FIRST_ORDER_FILTERS];
 
 void initFirstOrderFilter(float T)
 { 
-	ACC_LOWPASS_SAMPLE_TIME= 0.02f;
+	ACC_LOWPASS_SAMPLE_TIME= T;
 	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
 	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
 	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
@@ -288,6 +295,21 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[ACC_LOWPASS_Z].gx1 = ACC_LOWPASS_GX1;
 	firstOrderFilters[ACC_LOWPASS_Z].gx2 = ACC_LOWPASS_GX2;
 	firstOrderFilters[ACC_LOWPASS_Z].gx3 = ACC_LOWPASS_GX3;
+	
+	HML_LOWPASS_SAMPLE_TIME= T;
+	HML_LOWPASS_A       =    (2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
+	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
+	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));
+	HML_LOWPASS_GX3     =    ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A));
+  firstOrderFilters[HML_LOWPASS_X].gx1 = HML_LOWPASS_GX1;
+	firstOrderFilters[HML_LOWPASS_X].gx2 = HML_LOWPASS_GX2;
+	firstOrderFilters[HML_LOWPASS_X].gx3 = HML_LOWPASS_GX3;
+	firstOrderFilters[HML_LOWPASS_Y].gx1 = HML_LOWPASS_GX1;
+	firstOrderFilters[HML_LOWPASS_Y].gx2 = HML_LOWPASS_GX2;
+	firstOrderFilters[HML_LOWPASS_Y].gx3 = HML_LOWPASS_GX3;
+	firstOrderFilters[HML_LOWPASS_Z].gx1 = HML_LOWPASS_GX1;
+	firstOrderFilters[HML_LOWPASS_Z].gx2 = HML_LOWPASS_GX2;
+	firstOrderFilters[HML_LOWPASS_Z].gx3 = HML_LOWPASS_GX3;
 }
 
 

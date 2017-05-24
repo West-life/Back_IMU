@@ -105,20 +105,19 @@ void outer_task(void *pdata)
 	else{
 
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
-//	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),
-//	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
+	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
 
-  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
-						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
-						1,&RollR,&PitchR,&YawR,outer_loop_time);
-	reference_vr[0]=reference_v.x=reference_v_m1[0];
-	reference_vr[1]=reference_v.y=reference_v_m1[1];
-  reference_vr[2]=reference_v.z=reference_v_m1[2];
-	q_nav[0]=ref_q[0]=ref_q_m1[0];
-	q_nav[1]=ref_q[1]=ref_q_m1[1];
-	q_nav[2]=ref_q[2]=ref_q_m1[2];
-	q_nav[3]=ref_q[3]=ref_q_m1[3];	
+//  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
+//						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+//						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+//						1,&RollR,&PitchR,&YawR,outer_loop_time);
+//						reference_vr[0]=reference_v.x=reference_v_m1[0];
+//						reference_vr[1]=reference_v.y=reference_v_m1[1];
+//						reference_vr[2]=reference_v.z=reference_v_m1[2];
+//						q_nav[0]=ref_q[0]=ref_q_m1[0];
+//						q_nav[1]=ref_q[1]=ref_q_m1[1];
+//						q_nav[2]=ref_q[2]=ref_q_m1[2];
+//						q_nav[3]=ref_q[3]=ref_q_m1[3];	
 		
 	if(mode.en_imu_ekf==0){
 	Yaw_mid_down=Yaw=YawR;

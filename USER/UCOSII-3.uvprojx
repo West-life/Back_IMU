@@ -13,16 +13,16 @@
       <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F407ZG</Device>
+          <Device>STM32F407VGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32F4xx_DFP.2.9.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
-          <Cpu>IROM(0x08000000,0x100000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(168000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407ZG$Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407VGTx$CMSIS\Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32F407ZG$Device\Include\stm32f4xx.h</RegisterFile>
+          <RegisterFile>$$Device:STM32F407VGTx$Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -32,7 +32,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32F407ZG$SVD\STM32F40x.svd</SFDFile>
+          <SFDFile>$$Device:STM32F407VGTx$CMSIS\SVD\STM32F40x.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -408,6 +408,21 @@
           <GroupName>SYSTEM</GroupName>
           <Files>
             <File>
+              <FileName>rt_nonfinite.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\rt_nonfinite.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtGetNaN.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\rtGetNaN.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtGetInf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\rtGetInf.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\stm32f4xx_it.c</FilePath>
@@ -598,16 +613,6 @@
           <GroupName>HARDWARE</GroupName>
           <Files>
             <File>
-              <FileName>gps.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\GPS\gps.c</FilePath>
-            </File>
-            <File>
-              <FileName>ublox.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ublox.c</FilePath>
-            </File>
-            <File>
               <FileName>iic_fc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\iic_fc.c</FilePath>
@@ -663,6 +668,16 @@
           <GroupName>COMMUNICATION</GroupName>
           <Files>
             <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\GPS\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>ublox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\ublox.c</FilePath>
+            </File>
+            <File>
               <FileName>dma.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\dma.c</FilePath>
@@ -693,11 +708,6 @@
               <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
             </File>
             <File>
-              <FileName>flow.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
-            </File>
-            <File>
               <FileName>ms5611_2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\ms5611_2.c</FilePath>
@@ -708,24 +718,19 @@
               <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
             </File>
             <File>
-              <FileName>bmp_adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\bmp_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>LSD303.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\LSD303.c</FilePath>
-            </File>
-            <File>
               <FileName>laser.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\laser.c</FilePath>
             </File>
             <File>
-              <FileName>cycle_cal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\cycle_cal.c</FilePath>
+              <FileName>flow_oldx.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\flow_oldx.lib</FilePath>
+            </File>
+            <File>
+              <FileName>cycle_cal_oldx.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\cycle_cal_oldx.lib</FilePath>
             </File>
           </Files>
         </Group>
@@ -733,14 +738,44 @@
           <GroupName>MATH&amp;FUSION</GroupName>
           <Files>
             <File>
-              <FileName>alt_kf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\alt_kf.c</FilePath>
-            </File>
-            <File>
               <FileName>fliter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
+            </File>
+            <File>
+              <FileName>KF_OLDX_NAV.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
+            </File>
+            <File>
+              <FileName>baro_ekf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\KF\baro_ekf.c</FilePath>
+            </File>
+            <File>
+              <FileName>kf_oldx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
+            </File>
+            <File>
+              <FileName>ekf_math.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\ekf_math.c</FilePath>
+            </File>
+            <File>
+              <FileName>Matrix.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\Matrix.c</FilePath>
+            </File>
+            <File>
+              <FileName>FastMath.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\FastMath.c</FilePath>
+            </File>
+            <File>
+              <FileName>Quaternion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\Quaternion.c</FilePath>
             </File>
             <File>
               <FileName>my_math.c</FileName>
@@ -768,54 +803,14 @@
               <FilePath>..\HARDWARE\IIC\imu_m.c</FilePath>
             </File>
             <File>
+              <FileName>imu_oldx.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\imu_oldx.lib</FilePath>
+            </File>
+            <File>
               <FileName>kf_oldx_yaw.lib</FileName>
               <FileType>4</FileType>
               <FilePath>..\HARDWARE\IIC\kf_oldx_yaw.lib</FilePath>
-            </File>
-            <File>
-              <FileName>Quaternion.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\Quaternion.c</FilePath>
-            </File>
-            <File>
-              <FileName>FastMath.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\FastMath.c</FilePath>
-            </File>
-            <File>
-              <FileName>Matrix.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\Matrix.c</FilePath>
-            </File>
-            <File>
-              <FileName>mini_ARSH.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\mini_ARSH.c</FilePath>
-            </File>
-            <File>
-              <FileName>miniMatrix.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\miniMatrix.c</FilePath>
-            </File>
-            <File>
-              <FileName>ekf_math.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ekf_math.c</FilePath>
-            </File>
-            <File>
-              <FileName>kf_oldx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
-            </File>
-            <File>
-              <FileName>baro_ekf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\KF\baro_ekf.c</FilePath>
-            </File>
-            <File>
-              <FileName>insgps13state.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\AHRS\insgps13state.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -823,34 +818,14 @@
           <GroupName>UKF&amp;POS</GroupName>
           <Files>
             <File>
+              <FileName>alt_kf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\alt_kf.c</FilePath>
+            </File>
+            <File>
               <FileName>ukf_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_OLDX\ukf_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>ukf_oldx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\ukf_oldx.c</FilePath>
-            </File>
-            <File>
-              <FileName>KF_OLDX_NAV.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
-            </File>
-            <File>
-              <FileName>rt_nonfinite.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\rt_nonfinite.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtGetInf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\rtGetInf.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtGetNaN.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\rtGetNaN.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -861,11 +836,6 @@
               <FileName>avoid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\AVOID\avoid.c</FilePath>
-            </File>
-            <File>
-              <FileName>F407_FC.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\AVOID\F407_FC.lib</FilePath>
             </File>
           </Files>
         </Group>

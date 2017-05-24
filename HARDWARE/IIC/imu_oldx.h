@@ -11,9 +11,9 @@ void OLDX_AHRS(     float gx, float gy, float gz,
 extern float ref_q_m1[4];
 extern float reference_v_m1[3];
 
-#define KpAcc  1.0f    
-#define KiAcc  0.1f 
-#define KpMag  5.0f    
-#define KiMag  0.1f    									
+#define KpAcc  0.625f    
+#define KiAcc  0.001f 
+#define KpMag  5.00   
+#define KiMag  0.001f    									
 #endif
 
