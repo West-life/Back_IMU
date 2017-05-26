@@ -405,6 +405,8 @@ void flow_task1(void *pdata)
 		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
 		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
 		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+//		acc_flt[0]=acc_neo_temp1[0];
+//		acc_flt[1]=acc_neo_temp1[1];
 		//acc_flt[2]=acc_neo_temp1[2];//
 		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
 		if(fabs(acc_neo_temp[0])<8.6&&fabs(acc_neo_temp[1])<8.6){
@@ -426,7 +428,7 @@ void flow_task1(void *pdata)
 		temp_spd[1]=Moving_Median(17,MID_CNT_SPD,FLOW_VEL_Y);
 		imu_nav.flow.speed.x=imu_nav.flow.speed.x*(1-k_flp)+k_flp*temp_spd[0];
 		imu_nav.flow.speed.y=imu_nav.flow.speed.y*(1-k_flp)+k_flp*temp_spd[1];
-		delay_ms(20); 
+		delay_ms(10); 
 	}
 }	
 

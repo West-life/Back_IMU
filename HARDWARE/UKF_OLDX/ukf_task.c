@@ -76,7 +76,7 @@ double P_KF_NAV[2][9];
 float ga_nav= 0.1; 
 float gwa_nav=0.1;
 float g_pos_flow= 0.0086;//0.0051;
-float g_spd_flow= 0.0006;
+float g_spd_flow= 2.00000011e-005;//0.0006;
 
 float K_pos_qr=0.01;
 float K_spd_flow=0.86;//1.2;//0.86;

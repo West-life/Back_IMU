@@ -73,8 +73,8 @@
 "..\obj\imu_m.o"
 "..\HARDWARE\IIC\imu_oldx.lib"
 "..\HARDWARE\IIC\kf_oldx_yaw.lib"
-"..\obj\alt_kf.o"
 "..\obj\ukf_task.o"
+"..\obj\alt_kf.o"
 "..\obj\avoid.o"
 --strict --scatter "..\OBJ\UCOSII-3.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols

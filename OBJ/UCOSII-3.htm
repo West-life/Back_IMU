@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\OBJ\UCOSII-3.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\UCOSII-3.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Wed May 24 13:17:40 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Fri May 26 15:43:46 2017
 <BR><P>
 <H3>Maximum Stack Usage =       1384 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -134,9 +134,9 @@ Function Pointers
  <LI><a href="#[68]">ekf_task</a> from ucos_task.o(.text) referenced from main.o(.text)
  <LI><a href="#[6c]">error_task</a> from ucos_task.o(.text) referenced from main.o(.text)
  <LI><a href="#[74]">flowUkfTimeUpdate</a> from alt_kf.o(.text) referenced from alt_kf.o(.text)
- <LI><a href="#[2b5]">flowUpdate</a> from alt_kf.o(.text) referenced 2 times from alt_kf.o(.text)
+ <LI><a href="#[2b9]">flowUpdate</a> from alt_kf.o(.text) referenced 2 times from alt_kf.o(.text)
  <LI><a href="#[69]">flow_task1</a> from ucos_task.o(.text) referenced from main.o(.text)
- <LI><a href="#[72]">gpsUpdate</a> from alt_kf.o(.text) referenced 2 times from alt_kf.o(.text)
+ <LI><a href="#[72]">gpsUpdate</a> from alt_kf.o(.text) referenced 2 times from ukf_task.o(.text)
  <LI><a href="#[67]">inner_task</a> from ucos_task.o(.text) referenced from main.o(.text)
  <LI><a href="#[66]">outer_task</a> from ucos_task.o(.text) referenced from main.o(.text)
  <LI><a href="#[6b]">sonar_task</a> from ucos_task.o(.text) referenced from main.o(.text)
@@ -4933,7 +4933,7 @@ Global Symbols
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<BR>[Called By]<UL><LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
 <P><STRONG><a name="[286]"></a>sonar_filter_bmp</STRONG> (Thumb, 588 bytes, Stack size 72 bytes, ultrasonic.o(.text), UNUSED)
@@ -4996,24 +4996,24 @@ Global Symbols
 <P><STRONG><a name="[28a]"></a>anotc_filter_1</STRONG> (Thumb, 446 bytes, Stack size 32 bytes, fliter.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[28b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_pow
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;acc_fusion
+<BR>[Called By]<UL><LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;acc_fusion
 </UL>
 
-<P><STRONG><a name="[2ba]"></a>my_deathzoom1</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, fliter.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[2bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;acc_fusion
-<LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fusion_prepare
+<P><STRONG><a name="[2be]"></a>my_deathzoom1</STRONG> (Thumb, 54 bytes, Stack size 0 bytes, fliter.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;acc_fusion
+<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fusion_prepare
 </UL>
 
-<P><STRONG><a name="[2bb]"></a>Moving_Average1</STRONG> (Thumb, 94 bytes, Stack size 12 bytes, fliter.o(.text))
+<P><STRONG><a name="[2bf]"></a>Moving_Average1</STRONG> (Thumb, 94 bytes, Stack size 12 bytes, fliter.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = Moving_Average1
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fusion_prepare
+<BR>[Called By]<UL><LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fusion_prepare
 </UL>
 
-<P><STRONG><a name="[2be]"></a>Moving_Average</STRONG> (Thumb, 94 bytes, Stack size 12 bytes, fliter.o(.text))
+<P><STRONG><a name="[2c2]"></a>Moving_Average</STRONG> (Thumb, 94 bytes, Stack size 12 bytes, fliter.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = Moving_Average
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<BR>[Called By]<UL><LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
 <P><STRONG><a name="[a4]"></a>Moving_Median</STRONG> (Thumb, 236 bytes, Stack size 216 bytes, fliter.o(.text))
@@ -5022,7 +5022,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
 <P><STRONG><a name="[25e]"></a>IIR_I_Filter</STRONG> (Thumb, 326 bytes, Stack size 72 bytes, fliter.o(.text))
@@ -5054,7 +5054,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
 </UL>
 
-<P><STRONG><a name="[28f]"></a>initFirstOrderFilter</STRONG> (Thumb, 470 bytes, Stack size 0 bytes, fliter.o(.text))
+<P><STRONG><a name="[28f]"></a>initFirstOrderFilter</STRONG> (Thumb, 454 bytes, Stack size 0 bytes, fliter.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;firstOrderFilter
 </UL>
 
@@ -5099,7 +5099,7 @@ Global Symbols
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
 </UL>
 <BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
 <P><STRONG><a name="[298]"></a>kf_oldx_initialize</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, kf_oldx.o(.text), UNUSED)
@@ -5173,7 +5173,7 @@ Global Symbols
 <P><STRONG><a name="[2a3]"></a>my_deathzoom</STRONG> (Thumb, 158 bytes, Stack size 0 bytes, my_math.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
 <P><STRONG><a name="[93]"></a>my_deathzoom_2</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, my_math.o(.text))
@@ -5224,115 +5224,147 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
 </UL>
 
-<P><STRONG><a name="[2b0]"></a>arm_mat_trans_f32</STRONG> (Thumb, 152 bytes, Stack size 32 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[96]"></a>ukf_pos_task_qr</STRONG> (Thumb, 9576 bytes, Stack size 376 bytes, ukf_task.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1360<LI>Call Chain = ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[293]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
+<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
+<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
+<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
+<LI><a href="#[283]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[285]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
+<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
+<LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+</UL>
+<BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ekf_task
+</UL>
+
+<P><STRONG><a name="[2b6]"></a>arm_mat_trans_f32</STRONG> (Thumb, 152 bytes, Stack size 32 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = arm_mat_trans_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
+<BR>[Called By]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 </UL>
 
-<P><STRONG><a name="[2a8]"></a>arm_mat_mult_f32</STRONG> (Thumb, 284 bytes, Stack size 60 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2af]"></a>arm_mat_mult_f32</STRONG> (Thumb, 284 bytes, Stack size 60 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = arm_mat_mult_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixDiv_f32
+<BR>[Called By]<UL><LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixDiv_f32
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 </UL>
 
-<P><STRONG><a name="[2ab]"></a>arm_mat_init_f32</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, alt_kf.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
+<P><STRONG><a name="[2b2]"></a>arm_mat_init_f32</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, alt_kf.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
 </UL>
 
-<P><STRONG><a name="[2a6]"></a>arm_fill_f32</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, alt_kf.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
+<P><STRONG><a name="[2ad]"></a>arm_fill_f32</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, alt_kf.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
+<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 </UL>
 
-<P><STRONG><a name="[2a5]"></a>qrDecompositionT_f32</STRONG> (Thumb, 756 bytes, Stack size 40 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2ac]"></a>qrDecompositionT_f32</STRONG> (Thumb, 756 bytes, Stack size 40 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = qrDecompositionT_f32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_fill_f32
+<BR>[Calls]<UL><LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_fill_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixDiv_f32
+<BR>[Called By]<UL><LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixDiv_f32
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 </UL>
 
-<P><STRONG><a name="[2a7]"></a>matrixDiv_f32</STRONG> (Thumb, 242 bytes, Stack size 56 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2ae]"></a>matrixDiv_f32</STRONG> (Thumb, 242 bytes, Stack size 56 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 116<LI>Call Chain = matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
-<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_mult_f32
+<BR>[Calls]<UL><LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
+<LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_mult_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
+<BR>[Called By]<UL><LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
 </UL>
 
-<P><STRONG><a name="[2aa]"></a>aqDataCalloc</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2b1]"></a>aqDataCalloc</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = aqDataCalloc
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
-<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
+<BR>[Called By]<UL><LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
+<LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
 </UL>
 
-<P><STRONG><a name="[2a9]"></a>matrixInit</STRONG> (Thumb, 50 bytes, Stack size 20 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2b0]"></a>matrixInit</STRONG> (Thumb, 50 bytes, Stack size 20 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = matrixInit &rArr; aqDataCalloc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;aqDataCalloc
-<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_init_f32
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_fill_f32
+<BR>[Calls]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;aqDataCalloc
+<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_init_f32
+<LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_fill_f32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
-</UL>
-
-<P><STRONG><a name="[2ac]"></a>matrixFree</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, alt_kf.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<BR>[Called By]<UL><LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
 </UL>
 
-<P><STRONG><a name="[2ae]"></a>srcdkfTimeUpdate</STRONG> (Thumb, 400 bytes, Stack size 72 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2b3]"></a>matrixFree</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, alt_kf.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+</UL>
+
+<P><STRONG><a name="[2a9]"></a>srcdkfTimeUpdate</STRONG> (Thumb, 400 bytes, Stack size 72 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = srcdkfTimeUpdate &rArr; qrDecompositionT_f32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
-<LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_trans_f32
-<LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfCalcSigmaPoints
+<BR>[Calls]<UL><LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
+<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_trans_f32
+<LI><a href="#[2b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfCalcSigmaPoints
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FlowUkfProcess
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 </UL>
 
-<P><STRONG><a name="[2b1]"></a>srcdkfMeasurementUpdate</STRONG> (Thumb, 1368 bytes, Stack size 128 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2ab]"></a>srcdkfMeasurementUpdate</STRONG> (Thumb, 1368 bytes, Stack size 128 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 244<LI>Call Chain = srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixDiv_f32
-<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
-<LI><a href="#[2a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_mult_f32
-<LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_trans_f32
-<LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfCalcSigmaPoints
-<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_fill_f32
+<BR>[Calls]<UL><LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixDiv_f32
+<LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;qrDecompositionT_f32
+<LI><a href="#[2af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_mult_f32
+<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_trans_f32
+<LI><a href="#[2b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfCalcSigmaPoints
+<LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_fill_f32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
 </UL>
 
-<P><STRONG><a name="[2b2]"></a>srcdkfInit</STRONG> (Thumb, 540 bytes, Stack size 32 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2b7]"></a>srcdkfInit</STRONG> (Thumb, 540 bytes, Stack size 32 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = srcdkfInit &rArr; matrixInit &rArr; aqDataCalloc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
-<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;aqDataCalloc
+<BR>[Calls]<UL><LI><a href="#[2b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixInit
+<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;aqDataCalloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfInit
 </UL>
 
-<P><STRONG><a name="[2b4]"></a>srcdkfGetState</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2aa]"></a>srcdkfGetState</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, alt_kf.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfInit
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
 </UL>
 
-<P><STRONG><a name="[2c1]"></a>srcdkfSetVariance</STRONG> (Thumb, 166 bytes, Stack size 28 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2c5]"></a>srcdkfSetVariance</STRONG> (Thumb, 166 bytes, Stack size 28 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = srcdkfSetVariance
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfInit
@@ -5350,38 +5382,38 @@ Global Symbols
 </UL>
 <P><STRONG><a name="[402]"></a>altUkfPresUpdate</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, alt_kf.o(.text), UNUSED)
 
-<P><STRONG><a name="[2b5]"></a>flowUpdate</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2b9]"></a>flowUpdate</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, alt_kf.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> alt_kf.o(.text)
 </UL>
 <P><STRONG><a name="[72]"></a>gpsUpdate</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, alt_kf.o(.text))
-<BR>[Address Reference Count : 2]<UL><LI> alt_kf.o(.text)
-<LI> ukf_task.o(.text)
+<BR>[Address Reference Count : 2]<UL><LI> ukf_task.o(.text)
+<LI> alt_kf.o(.text)
 </UL>
-<P><STRONG><a name="[2b6]"></a>sonar_filter_oldx</STRONG> (Thumb, 424 bytes, Stack size 64 bytes, alt_kf.o(.text), UNUSED)
+<P><STRONG><a name="[2ba]"></a>sonar_filter_oldx</STRONG> (Thumb, 424 bytes, Stack size 64 bytes, alt_kf.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 
-<P><STRONG><a name="[2b7]"></a>insert_sonar_value_and_get_mode_value</STRONG> (Thumb, 84 bytes, Stack size 32 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2bb]"></a>insert_sonar_value_and_get_mode_value</STRONG> (Thumb, 84 bytes, Stack size 32 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = insert_sonar_value_and_get_mode_value &rArr; sonar_bubble_sort
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_bubble_sort
+<BR>[Calls]<UL><LI><a href="#[2bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_bubble_sort
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<BR>[Called By]<UL><LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
-<P><STRONG><a name="[2b9]"></a>fusion_prepare</STRONG> (Thumb, 178 bytes, Stack size 32 bytes, alt_kf.o(.text))
+<P><STRONG><a name="[2bd]"></a>fusion_prepare</STRONG> (Thumb, 178 bytes, Stack size 32 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = fusion_prepare &rArr; Moving_Average1
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Average1
-<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom1
+<BR>[Calls]<UL><LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Average1
+<LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom1
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<BR>[Called By]<UL><LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
-<P><STRONG><a name="[2bc]"></a>acc_fusion</STRONG> (Thumb, 456 bytes, Stack size 24 bytes, alt_kf.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom1
+<P><STRONG><a name="[2c0]"></a>acc_fusion</STRONG> (Thumb, 456 bytes, Stack size 24 bytes, alt_kf.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom1
 <LI><a href="#[28a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;anotc_filter_1
 </UL>
 
@@ -5390,7 +5422,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Cycle_T
 <LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -5409,15 +5441,15 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 308<LI>Call Chain = FlowUkfProcess &rArr; flow_ukf_Update &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Cycle_T
-<LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-<LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
+<LI><a href="#[2b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_ukf_Update
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 </UL>
 
-<P><STRONG><a name="[2c0]"></a>GpsUkfProcess</STRONG> (Thumb, 820 bytes, Stack size 80 bytes, alt_kf.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<P><STRONG><a name="[2c4]"></a>GpsUkfProcess</STRONG> (Thumb, 820 bytes, Stack size 80 bytes, alt_kf.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
 <LI><a href="#[283]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -5430,43 +5462,11 @@ Global Symbols
 <P><STRONG><a name="[cc]"></a>altUkfInit</STRONG> (Thumb, 654 bytes, Stack size 68 bytes, alt_kf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = altUkfInit &rArr; srcdkfInit &rArr; matrixInit &rArr; aqDataCalloc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfSetVariance
-<LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
-<LI><a href="#[2b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
+<BR>[Calls]<UL><LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfSetVariance
+<LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfInit
+<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
 </UL>
 <BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-</UL>
-
-<P><STRONG><a name="[96]"></a>ukf_pos_task_qr</STRONG> (Thumb, 9576 bytes, Stack size 376 bytes, ukf_task.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1360<LI>Call Chain = ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[293]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KF_OLDX_NAV
-<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-<LI><a href="#[2a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
-<LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sin
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
-<LI><a href="#[283]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_cos
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
-<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[285]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dneg
-<LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
-<LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
-</UL>
-<BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ekf_task
 </UL>
 
 <P><STRONG><a name="[2c6]"></a>ByteToFloat</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, flow.o(.text))
@@ -5540,10 +5540,10 @@ Global Symbols
 
 <P><STRONG><a name="[403]"></a>kf_oldx_yaw_terminate</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, kf_oldx_yaw.o(.text), UNUSED)
 
-<P><STRONG><a name="[2ad]"></a>free</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, h1_free.o(.text), UNUSED)
+<P><STRONG><a name="[2b4]"></a>free</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, h1_free.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[2c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_heap_descriptor
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixFree
+<BR>[Called By]<UL><LI><a href="#[2b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;matrixFree
 </UL>
 
 <P><STRONG><a name="[275]"></a>__aeabi_ldivmod</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, llsdiv.o(.text))
@@ -5566,7 +5566,7 @@ Global Symbols
 <LI><a href="#[1ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMEA_GPGSV_Analysis
 </UL>
 
-<P><STRONG><a name="[2c5]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
+<P><STRONG><a name="[2a8]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
@@ -5594,7 +5594,7 @@ Global Symbols
 <LI><a href="#[22f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_ATT_PID_SD
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_IMU_SD
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ubloxInit
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 </UL>
 
 <P><STRONG><a name="[407]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 4 bytes, rt_memclr_w.o(.text), UNUSED)
@@ -5610,7 +5610,7 @@ Global Symbols
 <P><STRONG><a name="[0]"></a>__rt_heap_expand</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
 <P><STRONG><a name="[2c8]"></a>__rt_heap_descriptor</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, rt_heap_descriptor_intlibspace.o(.text), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[2ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<BR><BR>[Called By]<UL><LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
 </UL>
 
 <P><STRONG><a name="[2ca]"></a>__aeabi_uldivmod</STRONG> (Thumb, 0 bytes, Stack size 48 bytes, lludivv7m.o(.text), UNUSED)
@@ -5759,8 +5759,8 @@ Global Symbols
 <LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI15_10_IRQHandler
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Get
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 </UL>
 
 <P><STRONG><a name="[9d]"></a>__hardfp_fabs</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, fabs.o(i.__hardfp_fabs))
@@ -5780,8 +5780,8 @@ Global Symbols
 <LI><a href="#[284]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cycle_cal_oldx
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_CalOffset_Mag
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 </UL>
 
@@ -5824,7 +5824,7 @@ Global Symbols
 <LI><a href="#[273]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
 <LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeFeet
 <LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeMeters
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 </UL>
 
 <P><STRONG><a name="[2a0]"></a>__hardfp_sin</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, sin.o(i.__hardfp_sin))
@@ -5840,8 +5840,8 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IMUupdate
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 </UL>
 
 <P><STRONG><a name="[24e]"></a>__hardfp_sqrt</STRONG> (Thumb, 122 bytes, Stack size 32 bytes, sqrt.o(i.__hardfp_sqrt))
@@ -5854,7 +5854,7 @@ Global Symbols
 <LI><a href="#[291]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cycle_cal_oldx
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 </UL>
 
 <P><STRONG><a name="[2db]"></a>__ieee754_rem_pio2</STRONG> (Thumb, 938 bytes, Stack size 120 bytes, rred.o(i.__ieee754_rem_pio2))
@@ -6049,13 +6049,13 @@ Global Symbols
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 <LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Receive_Anl
-<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 </UL>
 
@@ -6082,9 +6082,9 @@ Global Symbols
 <LI><a href="#[25e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureF
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
-<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
@@ -6136,10 +6136,10 @@ Global Symbols
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_CalOffset_Mag
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 <LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Receive_Anl
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[2d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_divzero
@@ -6208,7 +6208,7 @@ Global Symbols
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_task
 <LI><a href="#[1f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NMEA_GPRMC_Analysis
 <LI><a href="#[273]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MS561101BA_get_altitude
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ieee754_rem_pio2
 </UL>
 
@@ -6233,8 +6233,8 @@ Global Symbols
 <LI><a href="#[284]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty_SCL
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_CalOffset_Mag
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
 </UL>
@@ -6280,10 +6280,10 @@ Global Symbols
 <LI><a href="#[221]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_GPS
 <LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_UKF1
 <LI><a href="#[208]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ubloxPublish
-<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_sin
@@ -6340,8 +6340,8 @@ Global Symbols
 <LI><a href="#[291]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_powd_snf
 <LI><a href="#[290]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;inv
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_CalOffset_Mag
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_sin
@@ -6363,8 +6363,8 @@ Global Symbols
 <LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeFeet
 <LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_pressureToAltitudeMeters
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
-<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
+<LI><a href="#[2a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[29d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mx_sin
 <LI><a href="#[2dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_sin
@@ -6404,8 +6404,8 @@ Global Symbols
 <LI><a href="#[286]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_bmp
 <LI><a href="#[284]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
 <LI><a href="#[25e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx_yaw
 <LI><a href="#[29f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_cos
 <LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_sin
@@ -6455,12 +6455,12 @@ Global Symbols
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LPS_readTemperatureC
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 <LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Receive_Anl
-<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
-<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
-<LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-<LI><a href="#[2b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
-<LI><a href="#[2bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
-<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
+<LI><a href="#[2ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
+<LI><a href="#[2c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
+<LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
+<LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalLocation
+<LI><a href="#[2a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcGlobalDistance
 </UL>
 
 <P><STRONG><a name="[2f6]"></a>_f2d</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d), UNUSED)
@@ -6905,68 +6905,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
 </UL>
 
-<P><STRONG><a name="[2af]"></a>srcdkfCalcSigmaPoints</STRONG> (Thumb, 236 bytes, Stack size 36 bytes, alt_kf.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = srcdkfCalcSigmaPoints
-</UL>
-<BR>[Called By]<UL><LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[2ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
-</UL>
-
-<P><STRONG><a name="[2b3]"></a>flow_ukf_Update</STRONG> (Thumb, 150 bytes, Stack size 40 bytes, alt_kf.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 284<LI>Call Chain = flow_ukf_Update &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
-</UL>
-<BR>[Calls]<UL><LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-</UL>
-<BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FlowUkfProcess
-</UL>
-
-<P><STRONG><a name="[2b8]"></a>sonar_bubble_sort</STRONG> (Thumb, 96 bytes, Stack size 8 bytes, alt_kf.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = sonar_bubble_sort
-</UL>
-<BR>[Called By]<UL><LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;insert_sonar_value_and_get_mode_value
-</UL>
-
-<P><STRONG><a name="[2bd]"></a>altDoPresUpdate</STRONG> (Thumb, 1448 bytes, Stack size 112 bytes, alt_kf.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1176<LI>Call Chain = altDoPresUpdate &rArr; kf_oldx &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Median
-<LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
-<LI><a href="#[2be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Average
-<LI><a href="#[284]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
-<LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fusion_prepare
-<LI><a href="#[2b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;insert_sonar_value_and_get_mode_value
-<LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
-<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
-<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-<LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
-</UL>
-<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
-</UL>
-
-<P><STRONG><a name="[2bf]"></a>gps_ukf_Update</STRONG> (Thumb, 782 bytes, Stack size 64 bytes, alt_kf.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[2b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
-<LI><a href="#[2b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[285]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
-</UL>
-<BR>[Called By]<UL><LI><a href="#[2c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
-</UL>
-
-<P><STRONG><a name="[2c2]"></a>CalcEarthRadius</STRONG> (Thumb, 300 bytes, Stack size 72 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[2a5]"></a>CalcEarthRadius</STRONG> (Thumb, 300 bytes, Stack size 72 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 336<LI>Call Chain = CalcEarthRadius &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
@@ -6981,7 +6920,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[2c3]"></a>CalcGlobalDistance</STRONG> (Thumb, 140 bytes, Stack size 56 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[2a6]"></a>CalcGlobalDistance</STRONG> (Thumb, 140 bytes, Stack size 56 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = CalcGlobalDistance &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -6992,7 +6931,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[2c4]"></a>CalcGlobalLocation</STRONG> (Thumb, 144 bytes, Stack size 32 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[2a7]"></a>CalcGlobalLocation</STRONG> (Thumb, 144 bytes, Stack size 32 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = CalcGlobalLocation &rArr; __aeabi_d2f
 </UL>
 <BR>[Calls]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -7000,6 +6939,67 @@ Local Symbols
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
+</UL>
+
+<P><STRONG><a name="[2b5]"></a>srcdkfCalcSigmaPoints</STRONG> (Thumb, 236 bytes, Stack size 36 bytes, alt_kf.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = srcdkfCalcSigmaPoints
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfTimeUpdate
+<LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
+</UL>
+
+<P><STRONG><a name="[2b8]"></a>flow_ukf_Update</STRONG> (Thumb, 150 bytes, Stack size 40 bytes, alt_kf.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 284<LI>Call Chain = flow_ukf_Update &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
+</UL>
+<BR>[Calls]<UL><LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
+<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
+</UL>
+<BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FlowUkfProcess
+</UL>
+
+<P><STRONG><a name="[2bc]"></a>sonar_bubble_sort</STRONG> (Thumb, 96 bytes, Stack size 8 bytes, alt_kf.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = sonar_bubble_sort
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;insert_sonar_value_and_get_mode_value
+</UL>
+
+<P><STRONG><a name="[2c1]"></a>altDoPresUpdate</STRONG> (Thumb, 1448 bytes, Stack size 112 bytes, alt_kf.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1176<LI>Call Chain = altDoPresUpdate &rArr; kf_oldx &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Median
+<LI><a href="#[297]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kf_oldx
+<LI><a href="#[2c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Moving_Average
+<LI><a href="#[284]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter
+<LI><a href="#[2bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fusion_prepare
+<LI><a href="#[2bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;insert_sonar_value_and_get_mode_value
+<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
+<LI><a href="#[2a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+<LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+</UL>
+<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
+</UL>
+
+<P><STRONG><a name="[2c3]"></a>gps_ukf_Update</STRONG> (Thumb, 782 bytes, Stack size 64 bytes, alt_kf.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
+<LI><a href="#[2aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfGetState
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[285]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+</UL>
+<BR>[Called By]<UL><LI><a href="#[2c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GpsUkfProcess
 </UL>
 
 <P><STRONG><a name="[2f4]"></a>_dadd1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, daddsub_clz.o(x$fpl$dadd), UNUSED)

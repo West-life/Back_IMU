@@ -263,14 +263,15 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ð¡·¶Î§ÄÚÕýÈ·¡
 
 ///////////////////////////////////////
 
-float  ACC_LOWPASS_TAU        = 0.025f;
+float ACC_LOWPASS_TAU        = 4;//0.005f;
 float ACC_LOWPASS_SAMPLE_TIME =0.02f;
 float ACC_LOWPASS_A        ;//   (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
 float ACC_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
 float ACC_LOWPASS_GX2      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
 float ACC_LOWPASS_GX3      ;// ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
 
-float HML_LOWPASS_TAU        = 0.025f;
+
+float HML_LOWPASS_TAU        = 0.005f;
 float HML_LOWPASS_SAMPLE_TIME =0.02f;
 float HML_LOWPASS_A        ;//   (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
 float HML_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
@@ -282,10 +283,16 @@ firstOrderFilterData_t firstOrderFilters[NUMBER_OF_FIRST_ORDER_FILTERS];
 void initFirstOrderFilter(float T)
 { 
 	ACC_LOWPASS_SAMPLE_TIME= T;
-	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
-	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
-	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
-	ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
+//	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME);
+  ACC_LOWPASS_GX1     =    ( ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
+  ACC_LOWPASS_GX2     =   (-ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
+  ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+
+
   firstOrderFilters[ACC_LOWPASS_X].gx1 = ACC_LOWPASS_GX1;
 	firstOrderFilters[ACC_LOWPASS_X].gx2 = ACC_LOWPASS_GX2;
 	firstOrderFilters[ACC_LOWPASS_X].gx3 = ACC_LOWPASS_GX3;
@@ -297,7 +304,7 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[ACC_LOWPASS_Z].gx3 = ACC_LOWPASS_GX3;
 	
 	HML_LOWPASS_SAMPLE_TIME= T;
-	HML_LOWPASS_A       =    (2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
+	HML_LOWPASS_A       =     2.0f * 0.05 * 500.0f;//(2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
 	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
 	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));
 	HML_LOWPASS_GX3     =    ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A));
