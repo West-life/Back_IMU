@@ -389,6 +389,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>fly_ready</ItemText>
         </Ww>
+        <Ww>
+          <count>36</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>altUkfData_bmp</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -495,6 +500,51 @@
           <count>20</count>
           <WinNumber>2</WinNumber>
           <ItemText>KpMag</ItemText>
+        </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>altUkfData_bmp</ItemText>
+        </Ww>
+        <Ww>
+          <count>22</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>ALT_PRES_NOISE</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>baroAlt,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>baroAlt_fc</ItemText>
+        </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>NOISE</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>r_baro</ItemText>
+        </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>gh</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>fc_rx_time</ItemText>
+        </Ww>
+        <Ww>
+          <count>29</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>fc_rx_time</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -1223,7 +1273,7 @@
 
   <Group>
     <GroupName>COMMUNICATION</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1578,8 +1628,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\IIC\alt_kf.c</PathWithFileName>
-      <FilenameWithoutPath>alt_kf.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\UKF_OLDX\ukf_task.c</PathWithFileName>
+      <FilenameWithoutPath>ukf_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1590,8 +1640,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\UKF_OLDX\ukf_task.c</PathWithFileName>
-      <FilenameWithoutPath>ukf_task.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\IIC\alt_kf.c</PathWithFileName>
+      <FilenameWithoutPath>alt_kf.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

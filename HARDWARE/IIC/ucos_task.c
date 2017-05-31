@@ -317,6 +317,7 @@ accumulated_gyro_z = z_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulat
 
 
 //=======================FLOW ÈÎÎñº¯Êý==================
+u8 imu_board_test=1;
 OS_STK FLOW_TASK_STK[FLOW_STK_SIZE];
 u8 MID_CNT_SPD=5;
 float k_flp=1-0.1; 
@@ -391,7 +392,7 @@ void flow_task1(void *pdata)
 	  acc_neo_temp[0]=-acc_temp[0]*9.87;
 		acc_neo_temp[1]=-acc_temp[1]*9.87;
 		acc_neo_temp[2]=(acc_temp[2]-1.0f)*9.87;		
-	  if(en_ble_debug)
+	  if(en_ble_debug||imu_board_test)
 			;
 		else if(!fly_ready){
 	  acc_neo_off[0]+= ( 1 / ( 1 + 1 / ( 2.2f *3.14f *0.04 ) ) ) *(acc_neo_temp[0]- acc_neo_off[0]) ;
@@ -405,10 +406,11 @@ void flow_task1(void *pdata)
 		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
 		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
 		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
 //		acc_flt[0]=acc_neo_temp1[0];
 //		acc_flt[1]=acc_neo_temp1[1];
-		//acc_flt[2]=acc_neo_temp1[2];//
-		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+//		acc_flt[2]=acc_neo_temp1[2];//
+	
 		if(fabs(acc_neo_temp[0])<8.6&&fabs(acc_neo_temp[1])<8.6){
 		acc_neo[0]=acc_flt[0];
 		acc_neo[1]=acc_flt[1];

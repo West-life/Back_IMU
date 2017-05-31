@@ -100,8 +100,9 @@ u8 NAV_BOARD_CONNECT=0;
 u8 force_fly_ready;
 int par[12];
 float k_flow_opencv=0.88;
-float sonar_fc;
- void Data_Receive_Anl(u8 *data_buf,u8 num)
+float sonar_fc,baroAlt_fc;
+float fc_rx_time;
+void Data_Receive_Anl(u8 *data_buf,u8 num)
 { static u8 flag;
 	vs16 rc_value_temp;
 	u8 sum = 0;
@@ -113,7 +114,7 @@ float sonar_fc;
    if(*(data_buf+2)==0x01)//IMU_FRAME  QR
   {
 		
-		
+		fc_rx_time = Get_Cycle_T(GET_T_FC);			
     fly_ready=*(data_buf+10)||force_fly_ready||en_ble_debug;	
 		qr.x=((vs16)(*(data_buf+11)<<8)|*(data_buf+12));
 		qr.y=((vs16)(*(data_buf+13)<<8)|*(data_buf+14));
@@ -128,7 +129,7 @@ float sonar_fc;
 		qr.check=*(data_buf+30);
 		qr.use_spd=*(data_buf+31);
 		sonar_fc=(float)((int16_t)(*(data_buf+32)<<8)|*(data_buf+33))/1000.;
-
+    baroAlt_fc=(float)((int16_t)(*(data_buf+34)<<8)|*(data_buf+35));
 	}
 		else if(*(data_buf+2)==0x14)//IMU_FRAME
   {

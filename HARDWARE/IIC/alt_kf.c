@@ -1268,7 +1268,7 @@ _f_set_st sonar_f_set = {
 
 
 //alt
-float ALT_PRES_NOISE = 0.02;//0.02;//5e-4f;//0.00052f;
+float ALT_PRES_NOISE = 0.00052f;
 float ALT_PRES_NOISE_SONAR = 0.0002;//015f;
 #define USE_UKF_SONAR 0
 float ALT_POS_SONAR2,ALT_POS_SONAR3;
@@ -1308,17 +1308,17 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	#endif
 	 y = (float)baroAlt/1000;
 	   static u16 cnt_1;
-  if(fabs(Pitch)>10||fabs(Roll)>10)
-	{ALT_PRES_NOISE = NOISE[1];cnt_1=0;}
-	else
-	  cnt_1++;	
-	
-	if(cnt_1++>test_1){cnt_1=test_1+1;
-		ALT_PRES_NOISE = NOISE[0];
-	}
+//  if(fabs(Pitch)>10||fabs(Roll)>10)
+//	{ALT_PRES_NOISE = NOISE[1];cnt_1=0;}
+//	else
+//	  cnt_1++;	
+//	
+//	if(cnt_1++>test_1){cnt_1=test_1+1;
+//		ALT_PRES_NOISE = NOISE[0];
+//	}
 
-		ALT_PRES_NOISE=NOISE[0];
-	  noise = ALT_PRES_NOISE;
+//		ALT_PRES_NOISE=NOISE[0];
+//	  noise = ALT_PRES_NOISE;
 
 	 #if defined(SONAR_SAMPLE1)
 	 float temp_sonar;
@@ -1398,7 +1398,7 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		if(sonar_fc!=0&&!ultra_ok)
 		ALT_POS_SONAR2=sonar_fc;
 		else
-		ALT_POS_SONAR2=X_kf_sonar[0]*0.2+ALT_POS_SONAR3*0.8;
+		ALT_POS_SONAR2=X_kf_sonar[0]*0.0+ALT_POS_SONAR3*1;
 	
 		//ALT_POS_SONAR3=sonar_temp*K_SONAR/10+(1-K_SONAR/10)*(ALT_POS_SONAR3-dt*ALT_VEL_BMP_EKF);
 		//ALT_POS_SONAR2=(float)sonar_fusion.fusion_displacement.out/1000.;
@@ -1441,8 +1441,8 @@ int baroAlt_temp;
 	  if(baroAlt_sel&&mpu6050.good)
 	  baroAlt_temp=baroAlt;
 		else
-		baroAlt_temp=lis3mdl.Alt*1000;	
-		
+		baroAlt_temp=baroAlt_fc;
+		//baroAlt_temp=lis3mdl.Alt*1000;	
 	  dt = Get_Cycle_T(GET_T_BARO_UKF);	
 		temp=(reference_vr_imd_down[2] *imu_fushion.Acc.z + reference_vr_imd_down[0] *imu_fushion.Acc.x + reference_vr_imd_down[1] *imu_fushion.Acc.y - 4096  )*k_flt_accz+(1-k_flt_accz)*temp_r;
 	  acc_temp1=my_deathzoom(-((float)temp/4096.0f) *9.8,dead_accz);
@@ -1462,25 +1462,35 @@ int baroAlt_temp;
     altDoPresUpdate(measuredPres,dt);
 		wz_speed_old = ALT_VEL_BMP;
 	  
-	  uint8_t zFlag[2] = {1, 1};
+
 		if(force_fly_ready!=0)fly_ready=1;
-		float z[2] = { (float)baroAlt_temp/1000., -(accz_bmp)};//)+((float)baroAlt/1000.-X_apo_height[0]
 		baro_matlab_data[0]=(float)baroAlt_temp/1000.;
     static u8 cnt_ekf;
+		  #define BARO_UKF
+		 // #define BARO_EKF
+
 		if(mpu6050.good==0)
 		baro_set=1;
 		if(baro_set){cnt_ekf=0;
-		//dt = Get_Cycle_T(GET_T_BARO_EKF);	
-//		 srcdkfTimeUpdate(altUkfData_bmp.kf, &acc_temp1,dt);//5000			    // us (200 Hz)		
-//			float noise = ALT_PRES_NOISE;
-//     srcdkfMeasurementUpdate(altUkfData_bmp.kf, 0, &z[0], 1, 1, &noise, altUkfPresUpdate);
-//	   X_apo_height[0]=altUkfData_bmp.x[0];
-//		 X_apo_height[1]=altUkfData_bmp.x[1];	
+			#if defined(BARO_UKF) //UKF with limit bias
+		 float z[2] = { (float)baroAlt_temp/1000., (-accz_bmp)};
+		 float noise = ALT_PRES_NOISE;	
+		 srcdkfTimeUpdate(altUkfData_bmp.kf, &z[1],dt);//5000			    // us (200 Hz)		
+     srcdkfMeasurementUpdate(altUkfData_bmp.kf, 0, &z[0], 1, 1, &noise, altUkfPresUpdate);
+	   X_kf_baro[0]=altUkfData_bmp.x[ALT_STATE_POS]+X_kf_baro[1]*dt*10;
+		 X_kf_baro[1]=-altUkfData_bmp.x[ALT_STATE_VEL];	
+		 X_apo_height[0]= X_kf_baro[0];
+		 X_apo_height[1]= X_kf_baro[1];
+			#elif  defined(BARO_EKF) //KF with bias
+			uint8_t zFlag[2] = {1, 1};
+		  float z[2] = { (float)baroAlt_temp/1000., (accz_bmp)};//)+((float)baroAlt/1000.-X_apo_height[0]
+      HeightEKF( X_apo_height, P_apo_k_height,zFlag, dt, z, r_baro, r_acc, X_apo_height, P_apo_k_height);
+			X_kf_baro[0]=X_apo_height[0];
+      X_kf_baro[1]=X_apo_height[1];
+			#else
 			double Z_kf[3]={baroAlt_temp/1000.,0,0};	
-    //HeightEKF( X_apo_height, P_apo_k_height,zFlag, dt, z, r_baro, r_acc, X_apo_height, P_apo_k_height);
-		kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
-	  X_apo_height[0]=X_kf_baro[0];//Moving_Median(21,5,X_ukf_baro[0]);
-	  X_apo_height[1]=X_kf_baro[1];//Moving_Median(22,5,X_ukf_baro[1]);	
+    	kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
+      #endif
 			
 		}
 		
@@ -1490,9 +1500,9 @@ int baroAlt_temp;
 	if(fabs(acc_est_imu)>5||fabs(spd_r_imu)>10)	
   {baro_ekf_ero=1;}
 	
-	if(fabs(X_kf_sonar[1])<0.1&&fabs(X_kf_baro[1])<0.1&&ALT_POS_SONAR3<2.6&&ultra_ok)
-	ALT_VEL_BMP_UNION=X_kf_sonar[1];	
-	else
+	//if(fabs(X_kf_sonar[1])<0.1&&fabs(X_kf_baro[1])<0.1&&ALT_POS_SONAR3<2.6&&ultra_ok)
+	//ALT_VEL_BMP_UNION=X_kf_sonar[1];	
+	//else
 	ALT_VEL_BMP_UNION=X_kf_baro[1];
 }
 
