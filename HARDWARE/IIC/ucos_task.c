@@ -343,13 +343,21 @@ void flow_task1(void *pdata)
  FLOW_RAD flow_rad_use;  
  	while(1)
 	{
-	 if(!ultra_ok)
+	 #if SENSOR_FORM_PI_FLOW
+	 if(!pi_flow.insert)
 	 flow_height_fliter=0.666;
-	 else if(ALT_POS_SONAR2>4)
+	 else if(pi_flow.z>4)
 	 flow_height_fliter=4;
 	 else
-	 flow_height_fliter=ALT_POS_SONAR2;
-
+	 flow_height_fliter=pi_flow.z;
+   #else
+	 if(!ultra_ok)
+	 flow_height_fliter=0.666;
+	 else if(ALT_POS_SONAR3>4)
+	 flow_height_fliter=4;
+	 else
+	 flow_height_fliter=ALT_POS_SONAR3;	
+	 #endif
 	 flow_sample();
 	 if(qr.use_spd==0)
 	 {
@@ -370,13 +378,19 @@ void flow_task1(void *pdata)
 	 flow_rad_use.integrated_y=accumulated_flow_y;
 	 }	 
 	  flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
+	  
+	  #if SENSOR_FORM_PI_FLOW
+	  flow_ground_temp[0]=pi_flow.sensor.spdx;
+		flow_ground_temp[1]=pi_flow.sensor.spdy;
+		flow_ground_temp[2]=pi_flow.spdx;
+	  flow_ground_temp[3]=pi_flow.spdy;
+	  #else 
 	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
-	 
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
 		flow_ground_temp[2]=flow_per_out[2];
 	  flow_ground_temp[3]=flow_per_out[3];
-
+    #endif
 		static float a_br[3]={0};	
 		static float acc_temp[3]={0};
 		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
@@ -446,11 +460,11 @@ void uart_task(void *pdata)
 	}
 }	
 
-u8 UART_UP_LOAD_SEL=5;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=11;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
-	OSIntEnter();static u16 cnt,cnt1,cnt_init,init;
+	OSIntEnter();static u16 cnt,cnt1,cnt2,cnt_init,init;
 	if(TIM_GetITStatus(TIM3,TIM_IT_Update)==SET) //溢出中断
 	{
 	time_uart = Get_Cycle_T(GET_T_UART); 	
@@ -460,6 +474,10 @@ void TIM3_IRQHandler(void)
 	time_uart=0.0025;
 	}
 	else{
+		
+	if(pi_flow.insert&&cnt2++>10){cnt2=0;
+		Send_TO_FLOW_PI();	
+  }		
 							//获取内环准确的执行周期
 	if(time_uart<0.000002)time_uart=0.0025;
 		#if EN_DMA_UART2 			
@@ -474,8 +492,9 @@ void TIM3_IRQHandler(void)
 					#else
 								 GOL_LINK_TASK();
 					#endif
-//		SPI_ReadWriteByte(0xaa); 				 		
-  //en_ble_debug=1;
+//		SPI_ReadWriteByte(0xaa); 		
+if(debug_pi_flow[0])									
+  en_ble_debug=1;
 	if(cnt++>4-1){cnt=0;	
 								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
@@ -526,9 +545,9 @@ void TIM3_IRQHandler(void)
 								0,ultra_distance,0,
 								0,0,yaw_mag_view[4]);break;
 								case 11:
-								Send_BLE_DEBUG(velNorth*1000,velNorth_gps*1000,0*X_KF_NAV[0][1]*1000,
-								velEast*1000,velEast_gps*1000,0*X_KF_NAV[1][1]*1000,
-								flow_matlab_data[0]*100,flow_matlab_data[1]*100,Yaw);break;
+								Send_BLE_DEBUG(Global_GPS_Sensor.NED_Pos[0]*100,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[2]*100,
+								Global_GPS_Sensor.NED_Vel[0]*100,Global_GPS_Sensor.NED_Vel[1]*100,0,
+								0,0,0);break;
 								case 12:
 								Send_BLE_DEBUG(flow_rad.integrated_xgyro*1000,accumulated_flow_x*1000,accumulated_gyro_x*1000,
 								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
@@ -555,6 +574,9 @@ void error_task(void *pdata)
 	{
 		if(gps_loss_cnt++>1/0.2)
 			gps_good=0;
+		if(pi_flow.loss_cnt++>1/0.2)
+			pi_flow.insert=0;
+	
 		flow.rate=flow.flow_cnt;
 	  flow.flow_cnt=0;
 		if(fly_ready)

@@ -86,7 +86,7 @@ int main(void)
 	MYDMA_Config(DMA1_Stream6,DMA_Channel_4,(u32)&USART2->DR,(u32)SendBuff2,SEND_BUF_SIZE2+2,1);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	#endif
 	#if USE_LASER_AVOID
-	Usart4_Init(115200L);     //IMU2 Link
+	Usart4_Init(576000L);     //IMU2 Link
 	#else
 	Usart4_Init(256000L);     //IMU2 Link
 	#endif

@@ -76,15 +76,7 @@ void VelBaroCorrection(float Vel[3], float BaroAlt);
 
 uint16_t ins_get_num_states();
 
-//  Nav structure containing current solution
-typedef struct  {
-	float Pos[3];		// Position in meters and relative to a local NED frame
-	float Vel[3];		// Velocity in meters and in NED
-	float q[4];		// unit quaternion rotation relative to NED
-	float gyro_bias[3];
-	float accel_bias[3];
-}NavStruct;
-extern NavStruct Nav;
+
 /**
  * @}
  * @}

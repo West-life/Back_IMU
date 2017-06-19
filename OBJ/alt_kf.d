@@ -41,6 +41,7 @@
 ..\obj\alt_kf.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\alt_kf.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\alt_kf.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\alt_kf.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\time.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\include.h
@@ -77,4 +78,3 @@
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rtwtypes.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\kf_oldx_types.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\LIS3MDL.h
-..\obj\alt_kf.o: ..\HARDWARE\IIC\ekf_ins.h

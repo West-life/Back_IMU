@@ -109,7 +109,7 @@ struct altitude_sensor {
 struct gps_sensor {
 	float NED[3];
 	float heading;
-	float groundspeed;
+	float groundspeed[2];
 	float quality;
 	u8 updated;
 };

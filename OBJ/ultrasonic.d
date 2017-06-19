@@ -40,6 +40,7 @@
 ..\obj\ultrasonic.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\ultrasonic.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\ultrasonic.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\ultrasonic.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\time.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\ultrasonic.o: ..\HARDWARE\IIC\include.h

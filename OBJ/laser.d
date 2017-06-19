@@ -43,6 +43,7 @@
 ..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\laser.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\laser.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\laser.o: ..\HARDWARE\IIC\time.h
 ..\obj\laser.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\laser.o: ..\HARDWARE\IIC\include.h

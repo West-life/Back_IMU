@@ -44,6 +44,7 @@
 ..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\led_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\led_fc.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\time.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\led_fc.o: ..\HARDWARE\IIC\include.h

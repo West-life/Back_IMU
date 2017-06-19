@@ -44,6 +44,7 @@
 ..\obj\flash_w25.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\flash_w25.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\flash_w25.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\flash_w25.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\time.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\flash_w25.o: ..\HARDWARE\IIC\include.h

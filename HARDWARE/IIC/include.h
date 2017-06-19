@@ -9,7 +9,8 @@
 
 
 
-#include <stm32f4xx.h>	    
+#include <stm32f4xx.h>	
+#include "ekf_ins.h"
 #include "time.h"
 #include "mpu6050.h"
 #include "parameter.h"
@@ -41,6 +42,7 @@
 //#define SONAR_SAMPLE2					//0-5m 100ms T fix
 #define SONAR_SAMPLE3					//0-11m 68ms no fix
 
+#define SENSOR_FORM_PI_FLOW 0
 //#define SONAR_USE_SCL  
 //#define SONAR_USE_TIG
 #define SONAR_USE_UART 

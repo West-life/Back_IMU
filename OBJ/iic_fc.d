@@ -41,6 +41,7 @@
 ..\obj\iic_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\iic_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\iic_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\iic_fc.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\iic_fc.o: ..\HARDWARE\IIC\time.h
 ..\obj\iic_fc.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\iic_fc.o: ..\HARDWARE\IIC\include.h

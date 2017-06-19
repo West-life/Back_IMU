@@ -43,6 +43,7 @@
 ..\obj\usart_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\usart_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\usart_fc.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\usart_fc.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\time.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\include.h
@@ -84,7 +85,6 @@
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\error.h
 ..\obj\usart_fc.o: ..\HARDWARE\GPS\gps.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\ublox.h
-..\obj\usart_fc.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_OLDX\ukf_task.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_BARO\ukf_baro.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\sonar_avoid.h

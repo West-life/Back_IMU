@@ -46,6 +46,7 @@
 ..\obj\lis3mdl.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\lis3mdl.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\lis3mdl.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\lis3mdl.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\include.h
 ..\obj\lis3mdl.o: ..\SYSTEM\delay\delay.h

@@ -40,6 +40,7 @@
 ..\obj\ms5611_2.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\ms5611_2.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\ms5611_2.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\ms5611_2.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\time.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\ms5611_2.o: ..\HARDWARE\IIC\include.h

@@ -1,6 +1,7 @@
 #ifndef EKF_INS_GPS_Estimator_H_
 #define EKF_INS_GPS_Estimator_H_
-#include "include.h"
+
+#include <stm32f4xx.h>	 
 typedef struct 
 {
     double Pos[3]; // Position in meters and relative to a local NED frame ???????? ?? m X[0] X[1] X[2]
@@ -9,6 +10,7 @@ typedef struct
     float gyro_bias[3]; // ????? X[10] X[11] X[12]
     float accel_bias[3];// ????? X[13] X[14] X[15]
 } NavStruct;
+
 typedef struct  
 {
 	double NED_Pos[3];

@@ -102,6 +102,7 @@ int par[12];
 float k_flow_opencv=0.88;
 float sonar_fc,baroAlt_fc;
 float fc_rx_time;
+float flow_module_set_yaw;
 void Data_Receive_Anl(u8 *data_buf,u8 num)
 { static u8 flag;
 	vs16 rc_value_temp;
@@ -173,6 +174,7 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 	 k_flow_devide=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/1000.;
    flow_module_offset_x=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/1000.;
 	 flow_module_offset_y=(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/1000.;
+	 flow_module_set_yaw=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11))/10.;
 	}
   	
 }
@@ -588,33 +590,63 @@ u8 i;	u8 sum = 0;
 	data_to_send[_cnt++]=0xAF;
 	data_to_send[_cnt++]=0x01;//功能字
 	data_to_send[_cnt++]=0;//数据量
-
+  
+	if(debug_pi_flow[0])
+	_temp =  1;	
+	else	
 	_temp =  en_ble_debug;
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[1];	
+	else	
 	_temp =  ax;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[2];	
+	else	
 	_temp =  ay;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[3];	
+	else	
 	_temp =  az;//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[4];	
+	else	
 	_temp =  gx;//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[5];	
+	else	
 	_temp =  gy;//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[6];	
+	else	
 	_temp =  gz;//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[7];	
+	else	
 	_temp =  hx;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[8];	
+	else	
 	_temp =  hy;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[9];	
+	else	
 	_temp =  hz;//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
@@ -839,6 +871,13 @@ switch(sel){
  	_temp = (vs16)(Roll*10);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	static float off_yaw; 
+	if (pi_flow.insert){
+			if(pi_flow.connect&&pi_flow.check)
+			pi_flow.yaw_off=pi_flow.yaw-Yaw;	
+	_temp = (vs16)(	(Yaw+pi_flow.yaw_off)*10);
+	}
+	else
 	_temp = (vs16)(Yaw*10);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -893,11 +932,17 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=0x12;//功能字
 	SendBuff2[nrf_uart_cnt++]=0;//数据量
 	
-	_temp = (vs16) (flow.rate);
+	_temp = (vs16) (flow.rate);//ukf autoquad
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.spdx*1000);
+	else
 	_temp = (vs16)( imu_nav.flow.speed.x*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.spdy*1000);
+	else
 	_temp =  (vs16)(imu_nav.flow.speed.y*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -906,23 +951,34 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp = (vs16) (flow_ground_temp[1]*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
-	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);	
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.x*100);
+	else
 	_temp = (vs16)( FLOW_POS_X*100);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.y*100);
+	else
 	_temp = (vs16) (FLOW_POS_Y*100);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	
 	//-------------------
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.spdz*1000);
+	else
 	_temp = (vs16)(ALT_VEL_SONAR*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	#if SONAR_USE_FLOW
 	sys.sonar=1;
 	#endif
-	if(sys.sonar)
-	_temp = (vs16)(ALT_POS_SONAR2*1000);//navUkfData.posE[0]*1000;
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.z*1000);	
+	else if(sys.sonar)
+	_temp = (vs16)(ALT_POS_SONAR3*1000);//navUkfData.posE[0]*1000;
 	else
 	_temp= 9000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
@@ -944,16 +1000,28 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
 	//-------------oldx_ukf flow qr fushion
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.x*1000);
+	else
 	_temp = (vs16)( X_ukf_Pos[0]*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.y*1000);
+	else
 	_temp = (vs16) (X_ukf_Pos[1]*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	//spd
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.spdx*1000);
+	else
 	_temp = (vs16)( X_ukf[1]*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert)
+	_temp = (vs16)(	pi_flow.spdy*1000);
+	else
 	_temp = (vs16) (X_ukf[4]*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -1625,11 +1693,75 @@ void Laser_Get(u8 com_data)
 }
 
 
-void UART4_IRQHandler(void)//-------------------LASER
+int debug_pi_flow[20];
+struct _FLOW_PI pi_flow;
+void Data_Receive_Anl4(u8 *data_buf,u8 num)
+{ static u8 flag;
+	vs16 rc_value_temp;
+	u8 sum = 0;
+	u8 i;
+	for( i=0;i<(num-1);i++)
+		sum += *(data_buf+i);
+	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
+	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
+   if(*(data_buf+2)==0x66)//PI_FLOW FUSION OUT
+  { pi_flow.loss_cnt=0;
+		pi_flow.insert=1;
+		pi_flow.x=(float)((vs16)(*(data_buf+4)<<8)|*(data_buf+5))/100.;
+		pi_flow.y=(float)((vs16)(*(data_buf+6)<<8)|*(data_buf+7))/100.;
+		pi_flow.z=(float)((vs16)(*(data_buf+8)<<8)|*(data_buf+9))/1000.;
+		
+		pi_flow.spdx=(float)((vs16)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
+		pi_flow.spdy=(float)((vs16)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
+		pi_flow.spdz=(float)((vs16)(*(data_buf+14)<<8)|*(data_buf+15))/1000.;
+		
+		pi_flow.pit=(float)((vs16)(*(data_buf+16)<<8)|*(data_buf+17))/100.;
+		pi_flow.rol=(float)((vs16)(*(data_buf+18)<<8)|*(data_buf+19))/100.;
+		pi_flow.yaw=(float)((vs16)(*(data_buf+20)<<8)|*(data_buf+21))/100.;
+
+    pi_flow.connect=*(data_buf+22);
+		pi_flow.check=*(data_buf+23);
+	}
+	else  if(*(data_buf+2)==0x11)//PI_FLOW FUSION OUT
+  { 
+		debug_pi_flow[0]=((vs16)(*(data_buf+4)<<8)|*(data_buf+5));
+		debug_pi_flow[1]=((vs16)(*(data_buf+6)<<8)|*(data_buf+7));
+		debug_pi_flow[2]=((vs16)(*(data_buf+8)<<8)|*(data_buf+9));
+		debug_pi_flow[3]=((vs16)(*(data_buf+10)<<8)|*(data_buf+11));
+		debug_pi_flow[4]=((vs16)(*(data_buf+12)<<8)|*(data_buf+13));
+		debug_pi_flow[5]=((vs16)(*(data_buf+14)<<8)|*(data_buf+15));
+		debug_pi_flow[6]=((vs16)(*(data_buf+16)<<8)|*(data_buf+17));
+		debug_pi_flow[7]=((vs16)(*(data_buf+18)<<8)|*(data_buf+19));
+		debug_pi_flow[8]=((vs16)(*(data_buf+20)<<8)|*(data_buf+21));
+		debug_pi_flow[9]=((vs16)(*(data_buf+22)<<8)|*(data_buf+23));
+		debug_pi_flow[10]=((vs16)(*(data_buf+24)<<8)|*(data_buf+25));
+		debug_pi_flow[11]=((vs16)(*(data_buf+26)<<8)|*(data_buf+27));
+		debug_pi_flow[12]=((vs16)(*(data_buf+28)<<8)|*(data_buf+29));
+		debug_pi_flow[13]=((vs16)(*(data_buf+30)<<8)|*(data_buf+31));
+		debug_pi_flow[14]=((vs16)(*(data_buf+32)<<8)|*(data_buf+33));
+		debug_pi_flow[15]=((vs16)(*(data_buf+34)<<8)|*(data_buf+35));
+		debug_pi_flow[16]=((vs16)(*(data_buf+36)<<8)|*(data_buf+37));
+		debug_pi_flow[17]=((vs16)(*(data_buf+38)<<8)|*(data_buf+39));
+		debug_pi_flow[18]=((vs16)(*(data_buf+40)<<8)|*(data_buf+41));
+		debug_pi_flow[19]=((vs16)(*(data_buf+42)<<8)|*(data_buf+43));
+	}
+ 	
+}
+ 
+
+
+
+u8 RxBuffer4_test[25],RxBuffer4_test_cnt;
+u8 RxBuffer4[50];
+u8 RxState4 = 0;
+u8 RxBufferNum4 = 0;
+u8 RxBufferCnt4 = 0;
+u8 RxLen4 = 0;
+static u8 _data_len4 = 0,_data_cnt4 = 0;
+void UART4_IRQHandler(void)
 { OSIntEnter(); 
 	u8 com_data;
-	static u16 cnt;
-	static u8 state0,cnt_buf;
+	
 	if(UART4->SR & USART_SR_ORE)//ORE中断
 	{
 		com_data = UART4->DR;
@@ -1641,24 +1773,51 @@ void UART4_IRQHandler(void)//-------------------LASER
 		USART_ClearITPendingBit(UART4,USART_IT_RXNE);//清除中断标志
 
 		com_data = UART4->DR;
-	  Laser_Get(com_data);
-	}
-	//发送（进入移位）中断
-	if( USART_GetITStatus(UART4,USART_IT_TXE ) )
-	{
-				
-		UART4->DR = TxBuffer_u1[TxCounter_u1++]; //写DR清除中断标志          
-		if(TxCounter_u1 == count_u1)
+		RxBuffer4_test[RxBuffer4_test_cnt++]=com_data;
+		if(RxBuffer4_test_cnt>24)
+			RxBuffer4_test_cnt=0;
+		 Laser_Get(com_data);
+				if(RxState4==0&&com_data==0xAA)
 		{
-			UART4->CR1 &= ~USART_CR1_TXEIE;		//关闭TXE（发送中断）中断
+			RxState4=1;
+			RxBuffer4[0]=com_data;
 		}
-
-
-		USART_ClearITPendingBit(UART4,USART_IT_TXE);
+		else if(RxState4==1&&com_data==0xAF)
+		{
+			RxState4=2;
+			RxBuffer4[1]=com_data;
+		}
+		else if(RxState4==2&&com_data>0&&com_data<0XF1)
+		{
+			RxState4=3;
+			RxBuffer4[2]=com_data;
+		}
+		else if(RxState4==3&&com_data<50)
+		{
+			RxState4 = 4;
+			RxBuffer4[3]=com_data;
+			_data_len4 = com_data;
+			_data_cnt4 = 0;
+		}
+		else if(RxState4==4&&_data_len4>0)
+		{
+			_data_len4--;
+			RxBuffer4[4+_data_cnt4++]=com_data;
+			if(_data_len4==0)
+				RxState4 = 5;
+		}
+		else if(RxState4==5)
+		{
+			RxState4 = 0;
+			RxBuffer4[4+_data_cnt4]=com_data;
+			Data_Receive_Anl4(RxBuffer4,_data_cnt4+5);
+		}
+		else
+			RxState4 = 0;
+	
 	}
-
+	
    OSIntExit(); 
-
 }
 
 
@@ -1706,6 +1865,36 @@ UsartSend_SD( 0x02); //USART1, ch);
 
 
 
+void Send_TO_FLOW_PI(void)
+{u8 i;	u8 sum = 0;
+	u8 data_to_send[50]={0};
+	u8 _cnt=0;
+	vs16 _temp;
+	data_to_send[_cnt++]=0xAA;
+	data_to_send[_cnt++]=0xAF;
+	data_to_send[_cnt++]=0x66;//功能字
+	data_to_send[_cnt++]=0;//数据量
+	_temp = (int)(k_flow_devide*1000.);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (int)(flow_module_offset_x*1000.);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (int)(flow_module_offset_y*1000.);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (int)(flow_module_set_yaw*10.);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	
+	data_to_send[3] = _cnt-4;
+
+	for( i=0;i<_cnt;i++)
+		sum += data_to_send[i];
+	data_to_send[_cnt++] = sum;
+	
+	Send_Data_SD(data_to_send, _cnt);
+}
 
 void UART2_Put_Char(unsigned char DataToSend)
 {

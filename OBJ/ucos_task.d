@@ -40,6 +40,7 @@
 ..\obj\ucos_task.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\ucos_task.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\ucos_task.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\time.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\include.h
@@ -101,4 +102,3 @@
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\FastMath.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Double.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Quaternion.h
-..\obj\ucos_task.o: ..\HARDWARE\IIC\ekf_ins.h

@@ -40,6 +40,7 @@
 ..\obj\fliter.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\fliter.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\fliter.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\fliter.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\time.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\fliter.o: ..\HARDWARE\IIC\include.h

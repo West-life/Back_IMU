@@ -50,6 +50,7 @@
 ..\obj\ukf_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\ukf_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\ukf_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\ukf_task.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\time.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\include.h

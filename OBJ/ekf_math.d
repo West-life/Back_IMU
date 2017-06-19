@@ -41,6 +41,7 @@
 ..\obj\ekf_math.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\ekf_math.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\ekf_math.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\ekf_math.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\time.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\ekf_math.o: ..\HARDWARE\IIC\include.h

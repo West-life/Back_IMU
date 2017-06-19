@@ -394,6 +394,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>altUkfData_bmp</ItemText>
         </Ww>
+        <Ww>
+          <count>37</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>RxBuffer4_test</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -545,6 +550,21 @@
           <count>29</count>
           <WinNumber>2</WinNumber>
           <ItemText>fc_rx_time</ItemText>
+        </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>debug_pi_flow,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>31</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>pi_flow,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>pi_flow,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -1329,7 +1349,7 @@
 
   <Group>
     <GroupName>MEMS</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1456,8 +1476,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</PathWithFileName>
-      <FilenameWithoutPath>KF_OLDX_NAV.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\UKF_BARO\kf_oldx.c</PathWithFileName>
+      <FilenameWithoutPath>kf_oldx.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1468,8 +1488,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\KF\baro_ekf.c</PathWithFileName>
-      <FilenameWithoutPath>baro_ekf.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</PathWithFileName>
+      <FilenameWithoutPath>KF_OLDX_NAV.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1480,8 +1500,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\UKF_BARO\kf_oldx.c</PathWithFileName>
-      <FilenameWithoutPath>kf_oldx.c</FilenameWithoutPath>
+      <PathWithFileName>..\HARDWARE\KF\baro_ekf.c</PathWithFileName>
+      <FilenameWithoutPath>baro_ekf.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -41,6 +41,7 @@
 ..\obj\mpu6050.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\mpu6050.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\mpu6050.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\mpu6050.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\time.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\mpu6050.o: ..\HARDWARE\IIC\parameter.h

@@ -308,7 +308,7 @@ void data_per_uart4(u8 sel);
 
 extern float sonar_fc,baroAlt_fc;
 extern float k_flow_devide;
-extern float flow_module_offset_y,flow_module_offset_x;//光流安装位移 单位米
+extern float flow_module_offset_y,flow_module_offset_x,flow_module_set_yaw;//光流安装位移 单位米
 
 void GOL_LINK_TASK_DMA(void);
 extern u8 en_ble_debug;
@@ -345,9 +345,24 @@ float x,y,z,pit,rol,yaw;
 float spdx,spdy,spdz;
 u8 check,use_spd,connect;
 float yaw_off;
-	
+u8 insert;
+u16 loss_cnt;
 };
 extern struct _QR qr;
 
 
+struct _FLOW_PI{
+float x,y,z,pit,rol,yaw;
+float spdx,spdy,spdz;
+float yaw_off;
+u16 loss_cnt;
+u8 check,use_spd,connect,insert;
+struct _QR sensor;
+float acc[3];
+float gyro[3];
+int mark_map[10][5];	
+};
+extern struct _FLOW_PI pi_flow;
+void Send_TO_FLOW_PI(void);
+extern int debug_pi_flow[20];
 #endif

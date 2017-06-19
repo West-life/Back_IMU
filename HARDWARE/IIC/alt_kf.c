@@ -1286,7 +1286,7 @@ float r_acc1 =  0.1; // 0.5f;
 float k_spd=2;
 #include "kf_oldx.h"
 float gh=0.15;
-float gh_sonar=0.01;
+float gh_sonar=0.001;
 float ga=0.1;
 float gwa=0.1;
 double P_kf_baro[9]={1,0,0,1,0,0,1}; 
@@ -1371,7 +1371,7 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	  float acc_temp1=my_deathzoom(acc_neo[2],0.01);//my_deathzoom(((float)temp/4096.0f) *9.8,0.01);
 	  //ALT_POS_SONAR3+=dt*ALT_VEL_BMP_EKF*k_spd;
 		//double Z_kf[3]={(float)ultra_distance/1000,0,0};
-		double Z_kf[3]={(float)oldx_sonar,0,0};
+		double Z_kf[3]={(float)oldx_sonar+X_kf_sonar[1]*T,0,0};
 	   kf_oldx( X_kf_sonar,  P_kf_sonar,  Z_kf,  acc_temp1, gh_sonar,  ga,  gwa,dt);
 		
 		 float ultra_dis_tmp1=oldx_sonar;//(float)sonar.displacement/1000;		
@@ -1398,7 +1398,7 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		if(sonar_fc!=0&&!ultra_ok)
 		ALT_POS_SONAR2=sonar_fc;
 		else
-		ALT_POS_SONAR2=X_kf_sonar[0]*0.0+ALT_POS_SONAR3*1;
+		ALT_POS_SONAR2=X_kf_sonar[0]*1;
 	
 		//ALT_POS_SONAR3=sonar_temp*K_SONAR/10+(1-K_SONAR/10)*(ALT_POS_SONAR3-dt*ALT_VEL_BMP_EKF);
 		//ALT_POS_SONAR2=(float)sonar_fusion.fusion_displacement.out/1000.;
@@ -1528,7 +1528,7 @@ static u16 cnt_init;
 	}
     
 }
-#include "ekf_ins.h"
+
 GPS_Sensor_Struct Global_GPS_Sensor;
 
 //flow

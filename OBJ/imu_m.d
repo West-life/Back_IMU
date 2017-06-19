@@ -45,6 +45,7 @@
 ..\obj\imu_m.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 ..\obj\imu_m.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\imu_m.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\imu_m.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\time.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\imu_m.o: ..\HARDWARE\IIC\include.h

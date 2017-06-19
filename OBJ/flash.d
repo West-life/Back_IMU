@@ -40,6 +40,7 @@
 ..\obj\flash.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\flash.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\flash.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\flash.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\flash.o: ..\HARDWARE\IIC\time.h
 ..\obj\flash.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\flash.o: ..\HARDWARE\IIC\include.h

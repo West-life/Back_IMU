@@ -40,6 +40,7 @@
 ..\obj\hml_sample.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\hml_sample.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\hml_sample.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\hml_sample.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\time.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\hml_sample.o: ..\HARDWARE\IIC\include.h

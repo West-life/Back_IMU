@@ -743,6 +743,11 @@
               <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
             </File>
             <File>
+              <FileName>kf_oldx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
+            </File>
+            <File>
               <FileName>KF_OLDX_NAV.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
@@ -751,11 +756,6 @@
               <FileName>baro_ekf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\KF\baro_ekf.c</FilePath>
-            </File>
-            <File>
-              <FileName>kf_oldx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
             </File>
             <File>
               <FileName>ekf_math.c</FileName>

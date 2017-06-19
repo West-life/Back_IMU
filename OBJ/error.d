@@ -40,6 +40,7 @@
 ..\obj\error.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\error.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\error.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\error.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\error.o: ..\HARDWARE\IIC\time.h
 ..\obj\error.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\error.o: ..\HARDWARE\IIC\include.h

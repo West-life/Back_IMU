@@ -41,6 +41,7 @@
 ..\obj\gps.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\gps.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\gps.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\gps.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\gps.o: ..\HARDWARE\IIC\time.h
 ..\obj\gps.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\gps.o: ..\HARDWARE\IIC\include.h

@@ -42,6 +42,7 @@
 ..\obj\baro_ekf.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\baro_ekf.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\baro_ekf.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\baro_ekf.o: ..\HARDWARE\IIC\ekf_ins.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\time.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\baro_ekf.o: ..\HARDWARE\IIC\include.h

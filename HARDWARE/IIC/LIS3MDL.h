@@ -20,6 +20,11 @@ xyz_f_t Gyro_deg,Gyro_deg_t;
 
 xyz_f_t Acc_Offset;
 xyz_f_t Gyro_Offset;
+u8 acc_cal_3d_step;	
+xyz_f_t Gain_3d;
+xyz_f_t Off_3d;
+float att_off[2];
+	
 xyz_f_t Gyro_Auto_Offset;
 float Temprea_Offset;
 float Gyro_Temprea_Adjust;

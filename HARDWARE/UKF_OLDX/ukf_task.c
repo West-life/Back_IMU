@@ -7,7 +7,8 @@
 #include "hml5833l.h"
 #include "alt_kf.h"
 #include "insgps.h"
-NavStruct Nav;
+//#include "ekf_ins.h"
+
 #define INSGPS_GPS_TIMEOUT 2   /* 2 seconds triggers reinit of position */
 #define INSGPS_GPS_MINSAT  6   /* 2 seconds triggers reinit of position */
 #define INSGPS_GPS_MINPDOP 3.5 /* minimum PDOP for postition updates    */
@@ -93,6 +94,7 @@ u8 force_test;
 float Posx,Posy;
 void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,float accx,float accy,float T)
 {
+static int gps_h_off;	
 static u8 gps_init;
 float Sdpx,Accx;
 float Sdpy,Accy;
@@ -113,6 +115,7 @@ double H[9]={
  gps_init=1;
  local_Lon=gpsx.longitude;
  local_Lat=gpsx.latitude;
+ gps_h_off=	gpsx.altitude; 
  CalcEarthRadius(gpsx.latitude);
 
  }
@@ -137,6 +140,7 @@ if(kf_data_sel_temp==1){//GPS
 //	 if(par[2]!=0)
 //		 K_acc_gps=(float)par[2]/100.;
 	 CalcGlobalDistance(gpsx.latitude,gpsx.longitude); 
+	 
 	 static float dposEast,dposNorth;
 	 static u8 cnt;
 	 if(cnt++>0.2/T){cnt=0;
@@ -152,15 +156,15 @@ if(kf_data_sel_temp==1){//GPS
 	 if(!gps_data_vaild)
 	 H[0]=velEast=velNorth=0;
 	 
-
-   Posx=posNorth*K_pos_gps;
-	 Sdpx=velNorth*K_spd_gps;
+   Global_GPS_Sensor.NED_Pos[2]=(float)(gpsx.altitude-gps_h_off)/10.;
+   Global_GPS_Sensor.NED_Pos[1]=Posx=posNorth*K_pos_gps;
+	 Global_GPS_Sensor.NED_Vel[1]=Sdpx=velNorth*K_spd_gps;
 	 Accx=accNorth;
 	 double Zx[3]={Posx,Sdpx,0};
 	 if((gps_init&&gps_data_vaild)||force_test)//bei
    KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T);
-	 Posy=posEast*K_pos_gps;
-	 Sdpy=velEast*K_spd_gps;
+	 Global_GPS_Sensor.NED_Pos[0]=Posy=posEast*K_pos_gps;
+	 Global_GPS_Sensor.NED_Vel[0]=Sdpy=velEast*K_spd_gps;
 	 Accy=accEast;
 	 double Zy[3]={Posy,Sdpy,0};
 	 if((gps_init&&gps_data_vaild)||force_test)//dong 
@@ -256,7 +260,11 @@ if(kf_data_sel_temp==1){//GPS
   }
 	else if(kf_data_sel_temp==2){//---------------------flow in global---------------------------------------------------------
 	 static int qr_yaw_init;	
-	 float Yaw_qr=To_180_degrees(Yaw+yaw_qr_off);
+	 #if SENSOR_FORM_PI_FLOW	
+	 float Yaw_qr=To_180_degrees(Yaw+pi_flow.yaw_off);
+	 #else
+	 float Yaw_qr=To_180_degrees(Yaw+yaw_qr_off);	
+   #endif		
 	 float ACCY=flow_matlab_data[1];
    float ACCX=flow_matlab_data[0];
 	 float accEast=ACCY*sin(Yaw_qr*0.0173)+ACCX*cos(Yaw_qr*0.0173);
@@ -271,15 +279,27 @@ if(kf_data_sel_temp==1){//GPS
 //	 if(par[2]!=0)K_spd_flow=(float)par[2]/1000.;
 	 velNorth=SPDY*cos(Yaw_qr*0.0173)-SPDX*sin(Yaw_qr*0.0173);
    velEast=SPDY*sin(Yaw_qr*0.0173)+SPDX*cos(Yaw_qr*0.0173);
+	 #if SENSOR_FORM_PI_FLOW
+	 if(pi_flow.check==0&&pi_flow.connect)
+	 H[0]=0; 
+	 #else
 	 if(qr.check==0&&qr.connect)
 	 H[0]=0; 
+	 #endif
 	 static float pos_reg[2];
+	 #if SENSOR_FORM_PI_FLOW
+	 Qr_y=-pi_flow.sensor.y;
+	 Posy=Qr_y*K_pos_qr;
+	 Qr_x=pi_flow.sensor.x;
+	 Posx=Qr_x*K_pos_qr;
+	 #else
    Qr_y=-qr.y;
 	 Posy=Qr_y*K_pos_qr;
-	 Sdpy=velNorth*K_spd_gps;
-	 Accy=accNorth*flag_kf1[1];
 	 Qr_x=qr.x;
 	 Posx=Qr_x*K_pos_qr;
+	 #endif
+	 Sdpy=velNorth*K_spd_gps;
+	 Accy=accNorth*flag_kf1[1];
 	 Sdpx=velEast*K_spd_gps;
 	 Accx=accEast*flag_kf1[0];
 	 static u8 state_init_flow_pos;
@@ -303,10 +323,10 @@ if(kf_data_sel_temp==1){//GPS
 	 double Zx[3]={Posx,Sdpx,acc_bias[0]};
 	 if(1)//dong
    KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
-	 X_ukf[0]=X_KF_NAV[0][0];//East pos
+	 X_ukf[0]=X_KF_NAV[0][0]+X_ukf[2]*T*15;//East pos
 	 //X_ukf[1]=X_KF_NAV[0][1];//East vel
 	 X_ukf[2]=X_KF_NAV[0][2];
-	 X_ukf[3]=X_KF_NAV[1][0];//North  pos
+	 X_ukf[3]=X_KF_NAV[1][0]+X_ukf[5]*T*15;//North  pos
 	 //X_ukf[4]=X_KF_NAV[1][1];//North  vel
 	 X_ukf[5]=X_KF_NAV[1][2];							
 	 X_ukf[1]=-X_KF_NAV[1][1]*sin(Yaw_qr*0.0173)+X_KF_NAV[0][1]*cos(Yaw_qr*0.0173);//X
