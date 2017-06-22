@@ -1407,6 +1407,56 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		//ALT_POS_SONAR2=ALT_POS_SONAR3;
 		#endif
 }
+
+
+
+u8 OLDX_KF2(float *measure,float tau,float *r_sensor,u8 *flag_sensor,double *state,double *state_correct,float T)
+{
+float PosDealt;	
+float SpeedDealt;
+float K_ACC_Z;
+float K_VEL_Z;
+float K_POS_Z;
+
+if(!flag_sensor[0]&&!flag_sensor[1]&&!flag_sensor[2])	
+	return 0;
+K_ACC_Z =(5.0f / (tau * tau * tau));
+K_VEL_Z =(3.0f / (tau * tau));
+K_POS_Z =(3.0f / tau);
+//d spd	
+if(flag_sensor[0]&&!flag_sensor[1])	
+PosDealt=(measure[0]-state[0]);
+else if(flag_sensor[0]&&!flag_sensor[1])
+PosDealt=measure[1];
+else if(flag_sensor[1]&&!flag_sensor[1])
+PosDealt=(measure[0]-state[0])+state[1];
+else 
+return 0;	
+
+state_correct[3*0+2] += r_sensor[0]*PosDealt* K_ACC_Z ;
+state_correct[3*0+1] += r_sensor[1]*PosDealt* K_VEL_Z ;
+state_correct[3*0+0] += r_sensor[2]*PosDealt* K_POS_Z ;
+
+//acc correct
+if(!flag_sensor[1]&&flag_sensor[2])	
+state[2]=measure[2]+state_correct[0*3+2];
+else if(flag_sensor[1]&&flag_sensor[2])	
+state[2]=measure[1]+(measure[2]+state_correct[0*3+2]);
+	
+//d acc
+SpeedDealt=state[2]*T;
+
+//pos correct
+state_correct[1*3+0]+=(state[1]+0.5*SpeedDealt)*T;
+state[0]=state_correct[1*3+0]+state_correct[0*3+0];
+
+//vel correct
+state_correct[0*3+1]+=SpeedDealt;
+state[1]=state_correct[1*3+1]+state_correct[0*3+1];
+
+return 1;	
+}
+
 #include "LIS3MDL.h"
 float X_apo_height[2] = {0.0f, 0.0f};
 float P_apo_k_height[4] = {100.0f,0.0f,0.0f,100.0f};
@@ -1432,16 +1482,26 @@ float acc_est,acc_est_imu;
 u8 baro_ekf_ero;
 float ALT_VEL_BMP_UNION,ALT_POS_BMP_UNION;
 u8 baroAlt_sel=1;
+
+float  r_baro_new[4]={0.015,0.05,0.03,3};
+double state_correct_baro[6];
 void altUkfProcess(float measuredPres) {
 static float wz_speed_old; 
 float dt;
 static int temp_r,temp;
 float acc_temp1;  
-int baroAlt_temp;
+float baroAlt_temp;
+	  #if USE_M100_IMU
+	  if(m100.connect&&m100.m100_data_refresh)
+		baroAlt_temp=imu_fushion.Alt;
+		else
+		baroAlt_temp=baroAlt_fc;
+	  #else
 	  if(baroAlt_sel&&mpu6050.good)
 	  baroAlt_temp=baroAlt;
 		else
 		baroAlt_temp=baroAlt_fc;
+		#endif
 		//baroAlt_temp=lis3mdl.Alt*1000;	
 	  dt = Get_Cycle_T(GET_T_BARO_UKF);	
 		temp=(reference_vr_imd_down[2] *imu_fushion.Acc.z + reference_vr_imd_down[0] *imu_fushion.Acc.x + reference_vr_imd_down[1] *imu_fushion.Acc.y - 4096  )*k_flt_accz+(1-k_flt_accz)*temp_r;
@@ -1466,13 +1526,19 @@ int baroAlt_temp;
 		if(force_fly_ready!=0)fly_ready=1;
 		baro_matlab_data[0]=(float)baroAlt_temp/1000.;
     static u8 cnt_ekf;
-		  #define BARO_UKF
+		  //#define BARO_UKF
+		  #define BARO_KF2
 		 // #define BARO_EKF
 
 		if(mpu6050.good==0)
 		baro_set=1;
 		if(baro_set){cnt_ekf=0;
-			#if defined(BARO_UKF) //UKF with limit bias
+			
+			#if defined(BARO_KF2) //UKF with limit bias
+			u8 flag_sensor[3]={1,0,1};	
+			float Z_kf[3]={baroAlt_temp+LIMIT(my_deathzoom(X_kf_baro[1],0.68),-1,1)*dt*5,0,accz_bmp};
+			OLDX_KF2(Z_kf,r_baro_new[3],r_baro_new,flag_sensor,X_kf_baro,state_correct_baro,dt);
+			#elif defined(BARO_UKF) //UKF with limit bias
 		 float z[2] = { (float)baroAlt_temp/1000., (-accz_bmp)};
 		 float noise = ALT_PRES_NOISE;	
 		 srcdkfTimeUpdate(altUkfData_bmp.kf, &z[1],dt);//5000			    // us (200 Hz)		

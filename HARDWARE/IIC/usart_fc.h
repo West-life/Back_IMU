@@ -365,4 +365,30 @@ int mark_map[10][5];
 extern struct _FLOW_PI pi_flow;
 void Send_TO_FLOW_PI(void);
 extern int debug_pi_flow[20];
+
+
+
+ typedef struct
+{
+ float Pit,Rol,Yaw;
+ double Lat,Lon;
+ float H,H_Spd;	
+ u8 GPS_STATUS;	//>3  5->Best
+/*
+Flight status val	status name
+1	standby
+2	take_off
+3	in_air
+4	landing
+5	finish_landing
+*/
+ u8 STATUS;
+ float Bat;	
+ int Rc_pit,Rc_rol,Rc_yaw,Rc_thr,Rc_mode,Rc_gear;
+ u8 connect,m100_data_refresh;
+ u16 loss_cnt,cnt_m100_data_refresh;
+ float rx_dt;
+}M100;
+extern M100 m100;
+void UsartSend_M100(uint8_t ch);
 #endif

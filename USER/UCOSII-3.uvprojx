@@ -687,6 +687,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\usart_fc.c</FilePath>
             </File>
+            <File>
+              <FileName>m100.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\GPS\m100.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -27,6 +27,7 @@
 #include "flow.h"
 #include "filter.h"
 #include "imu_oldx.h"
+#include "m100.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -120,7 +121,21 @@ void outer_task(void *pdata)
 //						q_nav[3]=ref_q[3]=ref_q_m1[3];	
 		
 	if(mode.en_imu_ekf==0){
-	Yaw_mid_down=Yaw=YawR;
+		
+		static float off_yaw_m100; 
+		if (pi_flow.insert){
+		if(pi_flow.connect&&pi_flow.check)
+		pi_flow.yaw_off=pi_flow.yaw-YawR;	
+		Yaw_mid_down=Yaw=To_180_degrees(YawR+pi_flow.yaw_off);
+		}
+		else if (m100.connect){
+		if(m100.m100_data_refresh)
+		off_yaw_m100=m100.Yaw-YawR;	
+		Yaw_mid_down=Yaw=To_180_degrees(YawR+off_yaw_m100);
+		}
+		else
+		Yaw_mid_down=Yaw=YawR;	
+	
 	Pitch_mid_down=Pitch=PitchR;
 	Roll_mid_down=Roll=RollR;}
 //	#define SEL_1 1
@@ -138,6 +153,9 @@ void outer_task(void *pdata)
 	//}
   }
 	IWDG_Feed();//喂狗
+	#if USE_M100_IMU
+	m100_data(0);
+	#endif
 	delay_ms(10);
 	}
 }		
@@ -460,7 +478,7 @@ void uart_task(void *pdata)
 	}
 }	
 
-u8 UART_UP_LOAD_SEL=11;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=13;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -553,9 +571,9 @@ if(debug_pi_flow[0])
 								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
 								0,flow_rad.integrated_x*1000,accumulated_flow_x*1000);break;	
 								case 13:
-								Send_BLE_DEBUG(lis3mdl.Alt*100,0,0,
-								(ultra_distance),0,ultra_distance,
-								ALT_VEL_BMP_EKF*100,ALT_POS_BMP_EKF*100,ALT_POS_SONAR2*100);break;
+								Send_BLE_DEBUG(0,0,X_kf_baro[1]*100,
+								(ultra_distance),m100.H*100,X_kf_baro[0]*100,
+								m100.H_Spd*1000,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100);break;
 								}				
 								GOL_LINK_BUSY[1]=0;		
 								} 

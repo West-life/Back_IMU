@@ -459,7 +459,11 @@ mpu_fil_tmp[G_Z] = mpu6050_tmp[G_Z];
 	imu_fushion.Mag_Val.x=lis3mdl.Mag_Val_t.x;
 	imu_fushion.Mag_Val.y=lis3mdl.Mag_Val_t.y;
 	imu_fushion.Mag_Val.z=lis3mdl.Mag_Val_t.z;
+	#if USE_M100_IMU
+	imu_fushion.Alt = (m100.H);//ultra_distance;
+	#else
 	imu_fushion.Alt=lis3mdl.Alt;
+	#endif
 #else
   imu_fushion.Acc.x=mpu6050.Acc.x;
 	imu_fushion.Acc.y=mpu6050.Acc.y;

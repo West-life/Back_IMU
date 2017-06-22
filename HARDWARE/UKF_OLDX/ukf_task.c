@@ -111,6 +111,11 @@ double H[9]={
        0,1,0,
        0,0,0}; 
 
+ #if USE_M100_IMU
+gpsx.latitude=m100.Lat;
+gpsx.longitude=m100.Lon;
+ #endif			 
+			 
  if((gpsx.latitude!=0||force_test) && gps_init==0){
  gps_init=1;
  local_Lon=gpsx.longitude;
@@ -119,11 +124,14 @@ double H[9]={
  CalcEarthRadius(gpsx.latitude);
 
  }
- 
+#if USE_M100_IMU
+u8 kf_data_sel_temp=1;  
+#else 
 u8 kf_data_sel_temp=kf_data_sel; 
+#endif 
 // kf_data_sel_temp=0;
 #if NAV_USE_KF
- 
+
 if(kf_data_sel_temp==1){//GPS
    float ACCY=flow_matlab_data[1]*K_acc_gps;
    float ACCX=flow_matlab_data[0]*K_acc_gps;
@@ -261,7 +269,7 @@ if(kf_data_sel_temp==1){//GPS
 	else if(kf_data_sel_temp==2){//---------------------flow in global---------------------------------------------------------
 	 static int qr_yaw_init;	
 	 #if SENSOR_FORM_PI_FLOW	
-	 float Yaw_qr=To_180_degrees(Yaw+pi_flow.yaw_off);
+	 float Yaw_qr=To_180_degrees(Yaw);
 	 #else
 	 float Yaw_qr=To_180_degrees(Yaw+yaw_qr_off);	
    #endif		

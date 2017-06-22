@@ -51,7 +51,7 @@
 typedef float float32_t;
 extern float ALT_POS_SONAR2,acc_z_view[3],ALT_POS_SONAR3,ALT_VEL_BMP_UNION,ALT_POS_BMP_UNION;
 extern double v_test[2];
-extern double X_kf_sonar[3];
+extern double X_kf_sonar[3], X_kf_baro[3];;
 typedef void SRCDKFTimeUpdate_t(float32_t *x_I, float32_t *noise_I, float32_t *x_O, float32_t *u, float32_t dt, int n);
 typedef void SRCDKFMeasurementUpdate_t(float32_t *u, float32_t *x, float32_t *noise_I, float32_t *y);
 

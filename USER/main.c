@@ -53,7 +53,7 @@ void cpuidGetId(void)
 
 
 int main(void)
- { 
+  { 
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();
@@ -88,7 +88,11 @@ int main(void)
 	#if USE_LASER_AVOID
 	Usart4_Init(576000L);     //IMU2 Link
 	#else
-	Usart4_Init(256000L);     //IMU2 Link
+		#if USE_M100_IMU
+		Usart4_Init(115200L);     //IMU2 Link
+		#else
+		Usart4_Init(256000L);     //IMU2 Link
+		#endif
 	#endif
 	#if EN_DMA_UART4 
 	MYDMA_Config(DMA1_Stream4,DMA_Channel_4,(u32)&UART4->DR,(u32)SendBuff4,SEND_BUF_SIZE4+2,0);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.

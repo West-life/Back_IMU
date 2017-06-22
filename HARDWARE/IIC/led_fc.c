@@ -4,6 +4,7 @@
 #include "include.h"
 #include "mpu6050.h"
 #include "hml5833l.h"
+#include "usart_fc.h"
 void LEDRGB_COLOR(u8 color);
 void LED_Init()
 {
@@ -193,6 +194,9 @@ switch(idle_state)
 	break;
 //GPS1	
 	case 4:
+		if(m100.connect&&m100.m100_data_refresh)
+			LEDRGB_COLOR(WHITE);
+		else
 			LEDRGB_COLOR(BLUE);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=5;cnt_idle=0;}
@@ -215,11 +219,17 @@ switch(idle_state)
 		
 //GPS2
 	case 8:
+		if(m100.connect&&m100.m100_data_refresh)
+			LEDRGB_COLOR(WHITE);
+		else
 			LEDRGB_COLOR(BLUE);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=9;cnt_idle=0;}
 	break;
 	case 9:
+		if(m100.connect&&m100.m100_data_refresh)
+			LEDRGB_COLOR(WHITE);
+		else
 			LEDRGB_COLOR(BLUE);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=10;cnt_idle=0;}
@@ -236,11 +246,17 @@ switch(idle_state)
 	break;
 //GPS3	
 	case 12:
+		if(m100.connect&&m100.m100_data_refresh)
+			LEDRGB_COLOR(WHITE);
+		else
 			LEDRGB_COLOR(BLUE);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=13;cnt_idle=0;}
 	break;
 	case 13:
+		if(m100.connect&&m100.m100_data_refresh)
+			LEDRGB_COLOR(WHITE);
+		else
 			LEDRGB_COLOR(BLUE);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=14;cnt_idle=0;}

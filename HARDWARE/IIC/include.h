@@ -35,6 +35,7 @@
 #define NEW_IMU 1  //1使用LSD IMU
 #define FLOW_USE_FLY_LAB 0 //
 
+#define USE_M100_IMU 1
 #define SONAR_USE_FLOW 0 //使用光流超声波
 #define USE_US100           //使用us100型号超声波 
 //#define USE_KS103					//使用ks103型号超声波
@@ -50,7 +51,7 @@
 #define SONAR_HEIGHT 80
 
 
-#define USE_LASER_AVOID 1
+#define USE_LASER_AVOID 0
 
 #define USE_FLOW_SONAR 0
 

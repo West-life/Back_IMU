@@ -41,4 +41,5 @@ void TIM3_Int_Init(u16 arr,u16 psc);
 #define GET_T_FLOW_SAMPLE 13
 #define GET_T_UART 14
 #define GET_T_FC 15
+#define GET_T_M100 16
 #endif

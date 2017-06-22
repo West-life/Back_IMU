@@ -51,6 +51,7 @@
 "..\obj\ublox.o"
 "..\obj\dma.o"
 "..\obj\usart_fc.o"
+"..\obj\m100.o"
 "..\obj\lis3mdl.o"
 "..\obj\mpu6050.o"
 "..\obj\hml_sample.o"
