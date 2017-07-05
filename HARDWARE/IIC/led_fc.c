@@ -194,7 +194,7 @@ switch(idle_state)
 	break;
 //GPS1	
 	case 4:
-		if(m100.connect&&m100.m100_data_refresh)
+		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
 		else
 			LEDRGB_COLOR(BLUE);
@@ -219,7 +219,7 @@ switch(idle_state)
 		
 //GPS2
 	case 8:
-		if(m100.connect&&m100.m100_data_refresh)
+		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
 		else
 			LEDRGB_COLOR(BLUE);
@@ -227,7 +227,7 @@ switch(idle_state)
 	{idle_state=9;cnt_idle=0;}
 	break;
 	case 9:
-		if(m100.connect&&m100.m100_data_refresh)
+		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
 		else
 			LEDRGB_COLOR(BLUE);
@@ -246,7 +246,7 @@ switch(idle_state)
 	break;
 //GPS3	
 	case 12:
-		if(m100.connect&&m100.m100_data_refresh)
+		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
 		else
 			LEDRGB_COLOR(BLUE);
@@ -254,7 +254,7 @@ switch(idle_state)
 	{idle_state=13;cnt_idle=0;}
 	break;
 	case 13:
-		if(m100.connect&&m100.m100_data_refresh)
+		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
 		else
 			LEDRGB_COLOR(BLUE);

@@ -6,7 +6,7 @@
 extern FLOW flow;
 extern FLOW_RAD flow_rad,flow_rad_mine;
 extern int par[12];
-extern u8 Rx_Buf[], force_fly_ready;;
+extern u8 Rx_Buf[], force_fly_ready,acc_3d_step;
 void Usart2_Init(u32 br_num);
 void Usart2_IRQ(void);
 void Usart3_IRQ(void);
@@ -352,7 +352,7 @@ extern struct _QR qr;
 
 
 struct _FLOW_PI{
-float x,y,z,pit,rol,yaw;
+float x,y,z,z_o,pit,rol,yaw;
 float spdx,spdy,spdz;
 float yaw_off;
 u16 loss_cnt;
@@ -388,6 +388,7 @@ Flight status val	status name
  u8 connect,m100_data_refresh;
  u16 loss_cnt,cnt_m100_data_refresh;
  float rx_dt;
+ float spd[3];
 }M100;
 extern M100 m100;
 void UsartSend_M100(uint8_t ch);

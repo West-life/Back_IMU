@@ -15,6 +15,7 @@ typedef struct
 {
 	double NED_Pos[3];
 	double NED_Vel[3];
+	double NED_Acc[3];
 	float heading;
 	float groundspeed;
 	float quality;

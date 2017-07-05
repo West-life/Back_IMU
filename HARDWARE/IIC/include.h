@@ -35,7 +35,7 @@
 #define NEW_IMU 1  //1使用LSD IMU
 #define FLOW_USE_FLY_LAB 0 //
 
-#define USE_M100_IMU 1
+#define USE_M100_IMU 1  //M100
 #define SONAR_USE_FLOW 0 //使用光流超声波
 #define USE_US100           //使用us100型号超声波 
 //#define USE_KS103					//使用ks103型号超声波
@@ -44,6 +44,7 @@
 #define SONAR_SAMPLE3					//0-11m 68ms no fix
 
 #define SENSOR_FORM_PI_FLOW 0
+#define SENSOR_FORM_PI_FLOW_SONAR_NOT 1
 //#define SONAR_USE_SCL  
 //#define SONAR_USE_TIG
 #define SONAR_USE_UART 

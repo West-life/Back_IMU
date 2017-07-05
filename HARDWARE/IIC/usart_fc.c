@@ -103,6 +103,7 @@ float k_flow_opencv=0.88;
 float sonar_fc,baroAlt_fc;
 float fc_rx_time;
 float flow_module_set_yaw;
+u8 acc_3d_step;
 void Data_Receive_Anl(u8 *data_buf,u8 num)
 { static u8 flag;
 	vs16 rc_value_temp;
@@ -125,12 +126,13 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 		qr.yaw=((vs16)(*(data_buf+21)<<8)|*(data_buf+22));
 		qr.spdx=-((vs16)(*(data_buf+23)<<8)|*(data_buf+24))/10*k_flow_opencv;
 		qr.spdy=-((vs16)(*(data_buf+25)<<8)|*(data_buf+26))/10*k_flow_opencv;
-		yaw_qr_off=qr.yaw_off=(float)((int16_t)(*(data_buf+27)<<8)|*(data_buf+28))/10.;
+		qr.yaw_off=(float)((int16_t)(*(data_buf+27)<<8)|*(data_buf+28))/10.;
 		qr.connect=*(data_buf+29);
 		qr.check=*(data_buf+30);
 		qr.use_spd=*(data_buf+31);
 		sonar_fc=(float)((int16_t)(*(data_buf+32)<<8)|*(data_buf+33))/1000.;
     baroAlt_fc=(float)((int16_t)(*(data_buf+34)<<8)|*(data_buf+35));
+		acc_3d_step=*(data_buf+36);
 	}
 		else if(*(data_buf+2)==0x14)//IMU_FRAME
   {
@@ -876,7 +878,7 @@ switch(sel){
 	_temp=  (vs16)( baro_matlab_data[1]*1000);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-  _temp=  m100.connect&&m100.m100_data_refresh;//ultra_distance;
+  _temp=  m100.connect&&m100.m100_data_refresh&&(m100.GPS_STATUS>=3);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 
 	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
@@ -954,15 +956,15 @@ switch(sel){
 	
 	_temp = (vs16) (flow.rate);//ukf autoquad
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	if(pi_flow.insert)
-	_temp = (vs16)(	pi_flow.spdx*1000);
-	else
+//	if(pi_flow.insert)
+//	_temp = (vs16)(	pi_flow.spdx*1000);
+//	else
 	_temp = (vs16)( imu_nav.flow.speed.x*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	if(pi_flow.insert)
-	_temp = (vs16)(	pi_flow.spdy*1000);
-	else
+//	if(pi_flow.insert)
+//	_temp = (vs16)(	pi_flow.spdy*1000);
+//	else
 	_temp =  (vs16)(imu_nav.flow.speed.y*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -972,15 +974,15 @@ switch(sel){
 	_temp = (vs16) (flow_ground_temp[1]*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	if(pi_flow.insert)
-	_temp = (vs16)(	pi_flow.x*100);
-	else
+//	if(pi_flow.insert)
+//	_temp = (vs16)(	pi_flow.x*100);
+//	else
 	_temp = (vs16)( FLOW_POS_X*100);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	if(pi_flow.insert)
-	_temp = (vs16)(	pi_flow.y*100);
-	else
+//	if(pi_flow.insert)
+//	_temp = (vs16)(	pi_flow.y*100);
+//	else
 	_temp = (vs16) (FLOW_POS_Y*100);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -995,12 +997,19 @@ switch(sel){
 	#if SONAR_USE_FLOW
 	sys.sonar=1;
 	#endif
+	#if SENSOR_FORM_PI_FLOW_SONAR_NOT
+	if(sys.sonar)
+	_temp = (vs16)(ALT_POS_SONAR3*1000);//navUkfData.posE[0]*1000;
+	else
+	_temp= 9000;
+	#else
 	if(pi_flow.insert)
-	_temp = (vs16)(	pi_flow.z*1000);	
+	_temp = (vs16)(pi_flow.z_o*1000);	
 	else if(sys.sonar)
 	_temp = (vs16)(ALT_POS_SONAR3*1000);//navUkfData.posE[0]*1000;
 	else
 	_temp= 9000;
+	#endif
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp = (vs16)( ALT_VEL_BMP_EKF*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
@@ -1066,7 +1075,37 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=0xAF;
 	SendBuff2[nrf_uart_cnt++]=0x14;//功能字
 	SendBuff2[nrf_uart_cnt++]=0;//数据量
-  //origin
+ 
+	_temp = (vs32)(local_Lon);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((local_Lon-(int)(local_Lon))*1000000000);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+	
+	_temp = (vs32)(local_Lat);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((local_Lat-(int)(local_Lat))*1000000000);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+
+  _temp32 = (vs32)(r1);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+	_temp32 = (vs32)(r2);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+  
+	 //origin
 	_temp32 = (vs32)( gpsx.longitude*10000000);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
@@ -1085,11 +1124,10 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp = (vs16)(gpsx.gpssta);// gpsx.gpssta);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs16)( gpsx.posslnum);//ultra_distance;
+	_temp = (vs16)(gpsx.posslnum);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs16)( gpsx.svnum);//ultra_distance;
+	_temp = (vs16)(gpsx.svnum);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);	
-	
 	
 	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
 	for( i=cnt_reg;i< nrf_uart_cnt;i++)
@@ -1502,7 +1540,7 @@ switch(state1){
 		m100_attr[1]=m100.Rol;
 		m100_attr[2]=m100.Yaw;
 		
-		m100.H_Spd=(float)((int16_t)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
+		//m100.H_Spd=(float)((int16_t)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
 		zen=(*(data_buf+14)<<8)|*(data_buf+15);
 		xiao=(double)((u32)(*(data_buf+16)<<24)|(*(data_buf+17)<<16)|(*(data_buf+18)<<8)|*(data_buf+19))/1000000000.;
 		m100.Lat=zen+xiao;
@@ -1519,6 +1557,9 @@ switch(state1){
 		m100.Rc_gear=(float)((int16_t)(*(data_buf+38)<<8)|*(data_buf+39));
 		m100.STATUS=*(data_buf+40);		
 		m100.GPS_STATUS=*(data_buf+41);
+		m100.spd[0]=(float)((int16_t)(*(data_buf+42)<<8)|*(data_buf+43))/1000.;
+		m100.spd[1]=(float)((int16_t)(*(data_buf+44)<<8)|*(data_buf+45))/1000.;
+		m100.spd[2]=m100.H_Spd=(float)((int16_t)(*(data_buf+46)<<8)|*(data_buf+47))/1000.;
 	}	
   
 }
@@ -1743,6 +1784,7 @@ struct _FLOW_PI pi_flow;
 void Data_Receive_Anl4(u8 *data_buf,u8 num)
 { static u8 flag;
 	double zen,xiao;
+	float temp;
 	static float m100_hr,m100_attr[3];
 	vs16 rc_value_temp;
 	u8 sum = 0;
@@ -1758,9 +1800,15 @@ void Data_Receive_Anl4(u8 *data_buf,u8 num)
 		pi_flow.y=(float)((vs16)(*(data_buf+6)<<8)|*(data_buf+7))/100.;
 		pi_flow.z=(float)((vs16)(*(data_buf+8)<<8)|*(data_buf+9))/1000.;
 		
-		pi_flow.spdx=(float)((vs16)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
-		pi_flow.spdy=(float)((vs16)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
-		pi_flow.spdz=(float)((vs16)(*(data_buf+14)<<8)|*(data_buf+15))/1000.;
+		temp=(float)((vs16)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
+		if(fabs(temp)<8)
+		pi_flow.spdx=temp;
+		temp=(float)((vs16)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
+		if(fabs(temp)<8)
+		pi_flow.spdy=temp;
+		temp=(float)((vs16)(*(data_buf+14)<<8)|*(data_buf+15))/1000.;
+		if(fabs(temp)<8)
+		pi_flow.spdz=temp;
 		
 		pi_flow.pit=(float)((vs16)(*(data_buf+16)<<8)|*(data_buf+17))/100.;
 		pi_flow.rol=(float)((vs16)(*(data_buf+18)<<8)|*(data_buf+19))/100.;
@@ -1768,8 +1816,16 @@ void Data_Receive_Anl4(u8 *data_buf,u8 num)
 
     pi_flow.connect=*(data_buf+22);
 		pi_flow.check=*(data_buf+23);
+		
+		pi_flow.z_o=(float)((vs16)(*(data_buf+24)<<8)|*(data_buf+25))/1000.;
 	}
-	else  if(*(data_buf+2)==0x88)//PI_FLOW FUSION OUT
+	else  if(*(data_buf+2)==0x77)//PI_FLOW FUSION OUT
+  { 
+		pi_flow.sensor.spdx=(float)((vs16)(*(data_buf+4)<<8)|*(data_buf+5))/1000.;
+		pi_flow.sensor.spdy=(float)((vs16)(*(data_buf+6)<<8)|*(data_buf+7))/1000.;
+	
+	}	
+		else  if(*(data_buf+2)==0x88)//PI_FLOW FUSION OUT
   { 
 		pi_flow.sensor.x=((vs16)(*(data_buf+6)<<8)|*(data_buf+7));
 		pi_flow.sensor.y=((vs16)(*(data_buf+8)<<8)|*(data_buf+9));
@@ -1943,6 +1999,17 @@ void Send_TO_FLOW_PI(void)
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	_temp = (int)(flow_module_set_yaw*10.);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	
+	if(sys.sonar&&ALT_POS_SONAR3>0)
+	_temp = (int)(ALT_POS_SONAR3*1000);	
+	else
+	_temp = (int)(0*1000);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	
+	_temp = (int)((Yaw)*10);
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	

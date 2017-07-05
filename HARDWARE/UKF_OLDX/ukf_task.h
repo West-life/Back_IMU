@@ -28,7 +28,8 @@ void ukf_flow(float flowx,float flowy,float accx,float accy,float T);
 void ukf_pos_task(double JIN,double WEI,float Yaw,float flowx,float flowy,float accx,float accy,float T);
 void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,float accx,float accy,float T);
 
-
+extern float local_Lat,local_Lon;
+extern float r1,r2;
 //openpilot
 
 struct mag_sensor {

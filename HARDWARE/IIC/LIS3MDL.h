@@ -7,6 +7,7 @@
 
 typedef struct 
 { 
+u8 Cali_3d;	
 char Acc_CALIBRATE;
 char Gyro_CALIBRATE;
 xyz_s16_t Acc_I16;

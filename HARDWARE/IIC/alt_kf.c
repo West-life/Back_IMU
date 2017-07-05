@@ -1072,7 +1072,7 @@ void gpsUpdate(float *u, float *x, float *noise, float *y) {
 
 
 //flow
-float FLOW_NOISE =2.00000011e-005;//0.0003;//.00000011e-005;//5e-5f;//5e-4f;//0.00052f;
+float FLOW_NOISE =0.008;//2.00000011e-005;//0.0003;//.00000011e-005;//5e-5f;//5e-4f;//0.00052f;
 float flow_pos[2];
 static void flow_ukf_Update(float dt) {
     float noise;        // measurement variance
@@ -1483,7 +1483,7 @@ u8 baro_ekf_ero;
 float ALT_VEL_BMP_UNION,ALT_POS_BMP_UNION;
 u8 baroAlt_sel=1;
 
-float  r_baro_new[4]={0.015,0.05,0.03,3};
+float  r_baro_new[4]={0.015,0.05,0.03,1.5};
 double state_correct_baro[6];
 void altUkfProcess(float measuredPres) {
 static float wz_speed_old; 
@@ -1527,7 +1527,7 @@ float baroAlt_temp;
 		baro_matlab_data[0]=(float)baroAlt_temp/1000.;
     static u8 cnt_ekf;
 		  //#define BARO_UKF
-		  #define BARO_KF2
+		 // #define BARO_KF2
 		 // #define BARO_EKF
 
 		if(mpu6050.good==0)
@@ -1554,8 +1554,24 @@ float baroAlt_temp;
 			X_kf_baro[0]=X_apo_height[0];
       X_kf_baro[1]=X_apo_height[1];
 			#else
+			float T=dt;
+			double A[9]=
+			 {1,       0,    0,
+				T,       1,    0,
+				-T*T/2, -T,    1};
+
+			double B[3]={T*T/2,T,0}; 
+			double H[9]={
+			 1,0,0,
+			 0,1,0,
+			 0,0,0}; 
+      #if !USE_M100_IMU
 			double Z_kf[3]={baroAlt_temp/1000.,0,0};	
-    	kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
+		  #else
+			double Z_kf[3]={m100.H,m100.spd[2],0};	
+			#endif
+    	//kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
+			KF_OLDX_NAV(X_kf_baro,  P_kf_baro,  Z_kf,  accz_bmp, A,  B,  H,  0.1,  0.1, 0.001, 0.001,  T);
       #endif
 			
 		}

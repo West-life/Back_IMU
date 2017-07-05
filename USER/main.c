@@ -91,7 +91,7 @@ int main(void)
 		#if USE_M100_IMU
 		Usart4_Init(115200L);     //IMU2 Link
 		#else
-		Usart4_Init(256000L);     //IMU2 Link
+		Usart4_Init(576000L);     //IMU2 Link
 		#endif
 	#endif
 	#if EN_DMA_UART4 

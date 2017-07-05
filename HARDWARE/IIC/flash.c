@@ -91,7 +91,7 @@ void STMFLASH_Read(u32 ReadAddr,u32 *pBuffer,u32 NumToRead)
 		ReadAddr+=4;//偏移4个字节.	
 	}
 }
-#define SIZE_PARAM 50
+#define SIZE_PARAM 100
 u8 FLASH_READ_BUF[SIZE_PARAM]={0};
 u8 FLASH_Buffer[SIZE_PARAM]={0};
 u32 FLASH_SIZE=16*1024*1024;	//FLASH 大小为16字节
@@ -132,6 +132,14 @@ lis3mdl.Mag_Offset.z=(vs16)(FLASH_READ_BUF[41]<<8|FLASH_READ_BUF[40]);
 lis3mdl.Mag_Gain.x =(float)((vs16)((FLASH_READ_BUF[43]<<8|FLASH_READ_BUF[42])))/100.;
 lis3mdl.Mag_Gain.y=(float)((vs16)((FLASH_READ_BUF[45]<<8|FLASH_READ_BUF[44])))/100.;
 lis3mdl.Mag_Gain.z =(float)((vs16)((FLASH_READ_BUF[47]<<8|FLASH_READ_BUF[46])))/100.;	
+
+lis3mdl.Off_3d.x=(vs16)(FLASH_READ_BUF[49]<<8|FLASH_READ_BUF[48]);
+lis3mdl.Off_3d.y=(vs16)(FLASH_READ_BUF[51]<<8|FLASH_READ_BUF[50]);
+lis3mdl.Off_3d.z=(vs16)(FLASH_READ_BUF[53]<<8|FLASH_READ_BUF[52]);
+	
+lis3mdl.Gain_3d.x =(float)((vs16)((FLASH_READ_BUF[55]<<8|FLASH_READ_BUF[54])))/1000.;
+lis3mdl.Gain_3d.y=(float)((vs16)((FLASH_READ_BUF[57]<<8|FLASH_READ_BUF[56])))/1000.;
+lis3mdl.Gain_3d.z =(float)((vs16)((FLASH_READ_BUF[59]<<8|FLASH_READ_BUF[58])))/1000.;
 //dj_angle_offset[0] =(float)((vs16)((FLASH_READ_BUF[25]<<8|FLASH_READ_BUF[24])))/100.;
 //dj_angle_offset[1] =(float)((vs16)((FLASH_READ_BUF[27]<<8|FLASH_READ_BUF[26])))/100.;
 //dj_angle_offset[2] =(float)((vs16)((FLASH_READ_BUF[29]<<8|FLASH_READ_BUF[28])))/100.;
@@ -226,6 +234,27 @@ _temp=(int16_t)(lis3mdl.Mag_Gain.z*100);
 FLASH_Buffer[cnt++]=BYTE0(_temp);
 FLASH_Buffer[cnt++]=BYTE1(_temp);
 
+
+
+_temp=(int16_t)lis3mdl.Off_3d .x;
+FLASH_Buffer[cnt++]=BYTE0(_temp);
+FLASH_Buffer[cnt++]=BYTE1(_temp);
+_temp=(int16_t)lis3mdl.Off_3d.y;
+FLASH_Buffer[cnt++]=BYTE0(_temp);
+FLASH_Buffer[cnt++]=BYTE1(_temp);
+_temp=(int16_t)lis3mdl.Off_3d.z;
+FLASH_Buffer[cnt++]=BYTE0(_temp);
+FLASH_Buffer[cnt++]=BYTE1(_temp);
+
+_temp=(int16_t)(lis3mdl.Gain_3d.x*1000);
+FLASH_Buffer[cnt++]=BYTE0(_temp);
+FLASH_Buffer[cnt++]=BYTE1(_temp);
+_temp=(int16_t)(lis3mdl.Gain_3d.y*1000);
+FLASH_Buffer[cnt++]=BYTE0(_temp);
+FLASH_Buffer[cnt++]=BYTE1(_temp);
+_temp=(int16_t)(lis3mdl.Gain_3d.z*1000);
+FLASH_Buffer[cnt++]=BYTE0(_temp);
+FLASH_Buffer[cnt++]=BYTE1(_temp);
 //_temp=(int16_t)(dj_angle_offset[0]*100);
 //FLASH_Buffer[cnt++]=BYTE0(_temp);
 //FLASH_Buffer[cnt++]=BYTE1(_temp);

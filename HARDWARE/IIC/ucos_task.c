@@ -124,12 +124,12 @@ void outer_task(void *pdata)
 		
 		static float off_yaw_m100; 
 		if (pi_flow.insert){
-		if(pi_flow.connect&&pi_flow.check)
+		if(pi_flow.connect==1&&pi_flow.check==1)
 		pi_flow.yaw_off=pi_flow.yaw-YawR;	
 		Yaw_mid_down=Yaw=To_180_degrees(YawR+pi_flow.yaw_off);
 		}
 		else if (m100.connect){
-		if(m100.m100_data_refresh)
+		if(m100.m100_data_refresh==1&&m100.Yaw!=0&&fabs(m100.Yaw-YawR)>10)
 		off_yaw_m100=m100.Yaw-YawR;	
 		Yaw_mid_down=Yaw=To_180_degrees(YawR+off_yaw_m100);
 		}
@@ -154,7 +154,7 @@ void outer_task(void *pdata)
   }
 	IWDG_Feed();//喂狗
 	#if USE_M100_IMU
-	m100_data(0);
+	m100_data(1);
 	#endif
 	delay_ms(10);
 	}
@@ -248,7 +248,7 @@ if(cnt_init++>2&&!init){cnt_init=101;
 	//}
 		ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
 }
-	delay_ms(20);
+	delay_ms(10);
 	}
 }		
 
@@ -361,7 +361,7 @@ void flow_task1(void *pdata)
  FLOW_RAD flow_rad_use;  
  	while(1)
 	{
-	 #if SENSOR_FORM_PI_FLOW
+	 #if SENSOR_FORM_PI_FLOW&&!SENSOR_FORM_PI_FLOW_SONAR_NOT
 	 if(!pi_flow.insert)
 	 flow_height_fliter=0.666;
 	 else if(pi_flow.z>4)
@@ -398,10 +398,10 @@ void flow_task1(void *pdata)
 	  flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
 	  
 	  #if SENSOR_FORM_PI_FLOW
-	  flow_ground_temp[0]=pi_flow.sensor.spdx;
-		flow_ground_temp[1]=pi_flow.sensor.spdy;
-		flow_ground_temp[2]=pi_flow.spdx;
-	  flow_ground_temp[3]=pi_flow.spdy;
+	  flow_ground_temp[0]=pi_flow.sensor.spdy;
+		flow_ground_temp[1]=-pi_flow.sensor.spdx;
+		flow_ground_temp[2]=pi_flow.sensor.spdy;
+	  flow_ground_temp[3]=-pi_flow.sensor.spdx;
 	  #else 
 	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
 		flow_ground_temp[0]=flow_per_out[0];
@@ -478,7 +478,7 @@ void uart_task(void *pdata)
 	}
 }	
 
-u8 UART_UP_LOAD_SEL=13;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -493,7 +493,7 @@ void TIM3_IRQHandler(void)
 	}
 	else{
 		
-	if(pi_flow.insert&&cnt2++>10){cnt2=0;
+	if(pi_flow.insert&&cnt2++>5){cnt2=0;
 		Send_TO_FLOW_PI();	
   }		
 							//获取内环准确的执行周期
@@ -511,6 +511,8 @@ void TIM3_IRQHandler(void)
 								 GOL_LINK_TASK();
 					#endif
 //		SPI_ReadWriteByte(0xaa); 		
+debug_pi_flow[0]=0;  
+en_ble_debug=1;								
 if(debug_pi_flow[0])									
   en_ble_debug=1;
 	if(cnt++>4-1){cnt=0;	
@@ -574,6 +576,14 @@ if(debug_pi_flow[0])
 								Send_BLE_DEBUG(0,0,X_kf_baro[1]*100,
 								(ultra_distance),m100.H*100,X_kf_baro[0]*100,
 								m100.H_Spd*1000,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100);break;
+								case 14:
+								Send_BLE_DEBUG(X_ukf[1]*100,pi_flow.spdx*100,imu_nav.flow.speed.x*100,
+								X_ukf[4]*100,pi_flow.spdy*100,imu_nav.flow.speed.y*100,
+								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
+								case 15:
+								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,m100.H*100,
+								X_ukf[0]*100,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100,
+								X_kf_baro[0]*100, X_kf_baro[1]*100, m100.spd[2]*100);break;
 								}				
 								GOL_LINK_BUSY[1]=0;		
 								} 

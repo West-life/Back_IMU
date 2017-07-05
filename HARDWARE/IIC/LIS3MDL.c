@@ -9,6 +9,7 @@
 #include "cycle_cal_oldx.h"
 u8 IMU1_Fast;
 LIS3MDL_S lis3mdl;
+Cal_Cycle_OLDX acc_lsq;
 #define LIS3MDL_SA1_HIGH_ADDRESS  0x1E
 #define LIS3MDL_SA1_LOW_ADDRESS   0x1C
 #define LIS3MDL_ADDRESS1  (LIS3MDL_SA1_HIGH_ADDRESS << 1)
@@ -295,10 +296,12 @@ void LIS_CalOffset_Mag(void)
 
 	}
 }
-
+#define OFFSET_AV_NUM_ACC 18
 #define OFFSET_AV_NUM 50
-static s32 sum_temp[7]={0,0,0,0,0,0,0};
-static u16 acc_sum_cnt = 0,gyro_sum_cnt = 0;
+s32 sum_temp[7]= {0,0,0,0,0,0,0};
+float sum_temp_att[2]={0};
+s32 sum_temp_3d[7]= {0,0,0,0,0,0,0};
+u16 acc_sum_cnt = 0,acc_sum_cnt_3d=0,acc_smple_cnt_3d=0,gyro_sum_cnt = 0;
 void LIS_Data_Offset(void)
 {static u8 acc_cal_temp=0,gro_cal_temp=0;
 static u8 state_cal_acc,state_cal_gro;
@@ -324,8 +327,60 @@ static u8 init;
 		}	
 	}
 
+// 3d cal
+		static xyz_f_t ACC_Reg;
+		static u8 acc_3d_step_reg,acc_3d_step_imu;
+		float sphere_x,sphere_y,sphere_z,sphere_r;
+	
+	  if(acc_3d_step==6)
+		  acc_3d_step_imu=6;
+    else if(acc_3d_step_imu!=6)
+			acc_3d_step_imu=acc_3d_step;
+		switch(acc_3d_step_imu)
+			{ 
+			case 0:
+				acc_smple_cnt_3d=acc_sum_cnt_3d=sum_temp_3d[A_X] = sum_temp_3d[A_Y] = sum_temp_3d[A_Z] = sum_temp_3d[TEM] = 0;
+				cycle_init_oldx(&acc_lsq);
+			break;
+			default:
+			if(acc_lsq.size<360&&(fabs(ACC_Reg.x-lis3mdl.Acc_I16.x)>0||fabs(ACC_Reg.y-lis3mdl.Acc_I16.y)>0||fabs(ACC_Reg.z-lis3mdl.Acc_I16.z)>0))
+			{
+			if(acc_3d_step_imu>acc_3d_step_reg)
+			acc_smple_cnt_3d=acc_sum_cnt_3d=sum_temp_3d[A_X] = sum_temp_3d[A_Y] = sum_temp_3d[A_Z] = sum_temp_3d[TEM] = 0;		
+			acc_sum_cnt_3d++;
+      sum_temp_3d[A_X] += lis3mdl.Acc_I16.x;
+      sum_temp_3d[A_Y] += lis3mdl.Acc_I16.y;
+      sum_temp_3d[A_Z] += lis3mdl.Acc_I16.z;   
+				if(acc_sum_cnt_3d>OFFSET_AV_NUM_ACC){
+					if(acc_smple_cnt_3d<12){
+					acc_smple_cnt_3d++;	
+					xyz_f_t data;	
+					data.x = sum_temp_3d[A_X]/OFFSET_AV_NUM_ACC;
+					data.y = sum_temp_3d[A_Y]/OFFSET_AV_NUM_ACC;
+					data.z = sum_temp_3d[A_Z]/OFFSET_AV_NUM_ACC;	
+					acc_sum_cnt_3d=sum_temp_3d[A_X] = sum_temp_3d[A_Y] = sum_temp_3d[A_Z] = sum_temp_3d[TEM] = 0;	
+					cycle_data_add_oldx(&acc_lsq, (float)data.x/1000.,(float)data.y/1000.,(float)data.z/1000.);}
+					else if(acc_3d_step_imu==6){
+					acc_3d_step_imu=0;	
+					cycle_cal_oldx(&acc_lsq, 666,0.001,  &sphere_x, &sphere_y, &sphere_z, &sphere_r);	
+					lis3mdl.Off_3d.x=(acc_lsq.Off[0]*1000);
+					lis3mdl.Off_3d.y=(acc_lsq.Off[1]*1000);
+					lis3mdl.Off_3d.z=(acc_lsq.Off[2]*1000);
+					lis3mdl.Gain_3d.x =  (acc_lsq.Gain[0]);
+					lis3mdl.Gain_3d.y =  (acc_lsq.Gain[1]);
+					lis3mdl.Gain_3d.z =  (acc_lsq.Gain[2]);	
+          WRITE_PARM();						
+					}		 		
+				} 
+					acc_3d_step_reg=acc_3d_step_imu;	
+			}
+			break;
+		}
+		ACC_Reg.x=lis3mdl.Acc_I16.x;
+	  ACC_Reg.y=lis3mdl.Acc_I16.y;
+		ACC_Reg.z=lis3mdl.Acc_I16.z;
 
-
+//
 	if(lis3mdl.Gyro_CALIBRATE)
 	{
 		gyro_sum_cnt++;
@@ -446,10 +501,18 @@ void LIS_Data_Prepare(float T)
 	lis3mdl_tmp[G_Y] = IIR_I_Filter(Gyro_tmp[1] - lis3mdl.Gyro_Offset.y , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Z] = IIR_I_Filter(Gyro_tmp[2] - lis3mdl.Gyro_Offset.z , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 #else
+		if(fabs(lis3mdl.Off_3d.x)>10||fabs(lis3mdl.Off_3d.y)>10||fabs(lis3mdl.Off_3d.z)>10)
+		lis3mdl.Cali_3d=1;
+	if(lis3mdl.Cali_3d){
+	lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Off_3d.x)*lis3mdl.Gain_3d.x;// - lis3mdl.Acc_Offset.x*en_off_3d_off;
+	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Off_3d.y)*lis3mdl.Gain_3d.y;// - lis3mdl.Acc_Offset.y*en_off_3d_off;
+	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Off_3d.z)*lis3mdl.Gain_3d.z;// - lis3mdl.Acc_Offset.z*en_off_3d_off;
+	}
+   else{			
   lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x);//, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
 	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y);//, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
 	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z);//, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
-	
+	 }
 	lis3mdl_tmp[G_X] = (Gyro_tmp[0] - lis3mdl.Gyro_Offset.x );//, InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Y] = (Gyro_tmp[1] - lis3mdl.Gyro_Offset.y );//, InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Z] = (Gyro_tmp[2] - lis3mdl.Gyro_Offset.z );//, InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
