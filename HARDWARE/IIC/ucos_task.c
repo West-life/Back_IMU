@@ -122,19 +122,19 @@ void outer_task(void *pdata)
 		
 	if(mode.en_imu_ekf==0){
 		
-		static float off_yaw_m100; 
+		static float off_yaw; 
 		if (pi_flow.insert){
 		if(pi_flow.connect==1&&pi_flow.check==1)
-		pi_flow.yaw_off=pi_flow.yaw-YawR;	
-		Yaw_mid_down=Yaw=To_180_degrees(YawR+pi_flow.yaw_off);
+		off_yaw=pi_flow.yaw_off=pi_flow.yaw-YawR;	
+		//Yaw_mid_down=Yaw=To_180_degrees(YawR+pi_flow.yaw_off);
 		}
 		else if (m100.connect){
 		if(m100.m100_data_refresh==1&&m100.Yaw!=0&&fabs(m100.Yaw-YawR)>10)
-		off_yaw_m100=m100.Yaw-YawR;	
-		Yaw_mid_down=Yaw=To_180_degrees(YawR+off_yaw_m100);
+		off_yaw=m100.Yaw-YawR;	
+		//Yaw_mid_down=Yaw=To_180_degrees(YawR+off_yaw_m100);
 		}
-		else
-		Yaw_mid_down=Yaw=YawR;	
+
+		Yaw_mid_down=Yaw=To_180_degrees(YawR+off_yaw);	
 	
 	Pitch_mid_down=Pitch=PitchR;
 	Roll_mid_down=Roll=RollR;}
