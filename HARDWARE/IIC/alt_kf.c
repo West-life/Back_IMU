@@ -1067,8 +1067,8 @@ void flowUpdate(float *u, float *x, float *noise, float *y) {
     y[0] = x[ALT_STATE_VEL] + noise[0];     // return altitude
 }
 void gpsUpdate(float *u, float *x, float *noise, float *y) {
-   y[0] = x[ALT_STATE_VEL] + noise[0];     // return altitude
-	 //y[0] = x[ALT_STATE_POS] + noise[0];     // return altitude
+   //y[0] = x[ALT_STATE_VEL] + noise[0];     // return altitude
+	 y[0] = x[ALT_STATE_POS] + noise[0];     // return altitude
 }
 
 
@@ -1373,7 +1373,7 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	  //ALT_POS_SONAR3+=dt*ALT_VEL_BMP_EKF*k_spd;
 		//double Z_kf[3]={(float)ultra_distance/1000,0,0};
 		double Z_kf[3]={(float)oldx_sonar+X_kf_sonar[1]*T,0,0};
-	   kf_oldx( X_kf_sonar,  P_kf_sonar,  Z_kf,  acc_temp1, gh_sonar,  ga,  gwa,dt);
+	  // kf_oldx( X_kf_sonar,  P_kf_sonar,  Z_kf,  acc_temp1, gh_sonar,  ga,  gwa,dt);
 		
 		 float ultra_dis_tmp1=oldx_sonar;//(float)sonar.displacement/1000;		
 		if( fabs(ultra_dis_tmp1 - ALT_POS_SONAR3) < 0.1 )
@@ -1395,12 +1395,12 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 			ALT_POS_SONAR3 += ( 1 / ( 1 + 1 / ( K_SONAR*0.6f *3.14f *dt ) ) ) *(ultra_dis_tmp1- ALT_POS_SONAR3) ;
 		}	
 		
-		//ALT_POS_SONAR2=ALT_POS_SONAR3;
+		
 		if(sonar_fc!=0&&!ultra_ok)
 		ALT_POS_SONAR2=sonar_fc;
 		else
-		ALT_POS_SONAR2=X_kf_sonar[0]*1;
-	
+		//ALT_POS_SONAR2=X_kf_sonar[0]*1;
+	  ALT_POS_SONAR2=ALT_POS_SONAR3;
 		//ALT_POS_SONAR3=sonar_temp*K_SONAR/10+(1-K_SONAR/10)*(ALT_POS_SONAR3-dt*ALT_VEL_BMP_EKF);
 		//ALT_POS_SONAR2=(float)sonar_fusion.fusion_displacement.out/1000.;
 		//ALT_POS_SONAR2=X_apo_height1[0];

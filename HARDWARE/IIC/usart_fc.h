@@ -399,5 +399,5 @@ extern u8 en_px4_mapper,imu_feed_dog;
 void Send_TO_FLOW_NAV_GPS(void);
 extern u8 FC_CONNECT;
 extern u16 fc_loss_cnt;
-extern int gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
+extern uint32_t gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
 #endif

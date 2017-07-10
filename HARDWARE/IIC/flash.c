@@ -140,10 +140,20 @@ lis3mdl.Off_3d.z=(vs16)(FLASH_READ_BUF[53]<<8|FLASH_READ_BUF[52]);
 lis3mdl.Gain_3d.x =(float)((vs16)((FLASH_READ_BUF[55]<<8|FLASH_READ_BUF[54])))/1000.;
 lis3mdl.Gain_3d.y=(float)((vs16)((FLASH_READ_BUF[57]<<8|FLASH_READ_BUF[56])))/1000.;
 lis3mdl.Gain_3d.z =(float)((vs16)((FLASH_READ_BUF[59]<<8|FLASH_READ_BUF[58])))/1000.;
-//dj_angle_offset[0] =(float)((vs16)((FLASH_READ_BUF[25]<<8|FLASH_READ_BUF[24])))/100.;
-//dj_angle_offset[1] =(float)((vs16)((FLASH_READ_BUF[27]<<8|FLASH_READ_BUF[26])))/100.;
-//dj_angle_offset[2] =(float)((vs16)((FLASH_READ_BUF[29]<<8|FLASH_READ_BUF[28])))/100.;
 
+if(fabs(lis3mdl.Off_3d.x)<400&&fabs(lis3mdl.Off_3d.y)<400&&fabs(lis3mdl.Off_3d.z)<400)
+	module.acc=2;
+else
+	module.acc=1;
+
+if(fabs(lis3mdl.Gyro_Offset.x)<200&&fabs(lis3mdl.Gyro_Offset.y)<200&&fabs(lis3mdl.Gyro_Offset.z)<200)
+	module.gyro=2;
+else
+	module.gyro=1;
+
+if((fabs(lis3mdl.Off_3d.x)>10||fabs(lis3mdl.Off_3d.y)>10||fabs(lis3mdl.Off_3d.z)>10)
+	&&(fabs(lis3mdl.Off_3d.x)<600&&fabs(lis3mdl.Off_3d.y)<600&&fabs(lis3mdl.Off_3d.z)<600))
+lis3mdl.Cali_3d=1;
 }
 
 void WRITE_PARM(void)

@@ -7,6 +7,7 @@
 #include "filter.h"
 #include  <math.h> 
 #include "cycle_cal_oldx.h"
+#define FILTER_NUM 			10					//滑动平均滤波数值个数
 u8 IMU1_Fast;
 LIS3MDL_S lis3mdl;
 Cal_Cycle_OLDX acc_lsq;
@@ -217,19 +218,27 @@ void LIS_CalOffset_Mag(void)
 	static u8 hml_cal_temp=0;
   static u8 state_cal_hml;
 	static u8 init;
-	
+	static u16 cnt1;
 	if(lis3mdl.Mag_CALIBRATED)
 	{	
 		if(!init){init=1;
+		#if USE_CYCLE_HML_CAL	
 		cycle_init_oldx(&hml_lsq)	;
+		#endif
 		MagMAX.x=MagMAX.y=MagMAX.z=-100;MagMIN.x=MagMIN.y=MagMIN.z=100;		
 		}
 		
-
-		if(ABS(lis3mdl.Mag_Adc.x)<1500&&ABS(lis3mdl.Mag_Adc.y)<1500&&ABS(lis3mdl.Mag_Adc.z)<1500)
-		{ if(hml_lsq.size<350&&(fabs(Mag_Reg.x-lis3mdl.Mag_Adc.x)>25||fabs(Mag_Reg.y-lis3mdl.Mag_Adc.y)>25||fabs(Mag_Reg.z-lis3mdl.Mag_Adc.z)>25))
+		float norm=sqrt(lis3mdl.Gyro_deg.x*lis3mdl.Gyro_deg.x+lis3mdl.Gyro_deg.y*lis3mdl.Gyro_deg.y+lis3mdl.Gyro_deg.z*lis3mdl.Gyro_deg.z);		
+		if(norm<11)
+			cnt1++;
+		if(cnt1>888){cnt1=0;
+			lis3mdl.Mag_CALIBRATED=0;}
+		if(ABS(lis3mdl.Mag_Adc.x)<1500&&ABS(lis3mdl.Mag_Adc.y)<1500&&ABS(lis3mdl.Mag_Adc.z)<1500&&norm>11)
+		{ cnt1=0;
+			#if USE_CYCLE_HML_CAL
+			if(hml_lsq.size<350&&(fabs(Mag_Reg.x-lis3mdl.Mag_Adc.x)>25||fabs(Mag_Reg.y-lis3mdl.Mag_Adc.y)>25||fabs(Mag_Reg.z-lis3mdl.Mag_Adc.z)>25))
 			cycle_data_add_oldx(&hml_lsq, (float)lis3mdl.Mag_Adc.x/1000.,(float)lis3mdl.Mag_Adc.y/1000.,(float)lis3mdl.Mag_Adc.z/1000.);
-			
+			#endif
 			MagMAX.x = MAX(lis3mdl.Mag_Adc.x, MagMAX.x);
 			MagMAX.y = MAX(lis3mdl.Mag_Adc.y, MagMAX.y);
 			MagMAX.z = MAX(lis3mdl.Mag_Adc.z, MagMAX.z);
@@ -241,7 +250,8 @@ void LIS_CalOffset_Mag(void)
 			if(cnt_m >= CALIBRATING_MAG_CYCLES*3)
 			{ float sphere_x,sphere_y,sphere_z,sphere_r;
 				init=0;
-				cycle_cal_oldx(&hml_lsq, 666,0.001,  &sphere_x, &sphere_y, &sphere_z, &sphere_r);
+				#if USE_CYCLE_HML_CAL
+				cycle_cal_oldx(&hml_lsq, 855,0.001,  &sphere_x, &sphere_y, &sphere_z, &sphere_r);
 				if(fabs(sphere_r)>0){
 				lis3mdl.Mag_Offset_c.x=(hml_lsq.Off[0]*1000);
 				lis3mdl.Mag_Offset_c.y=(hml_lsq.Off[1]*1000);
@@ -250,6 +260,7 @@ void LIS_CalOffset_Mag(void)
 				lis3mdl.Mag_Gain_c.y =  (hml_lsq.Gain[1]);
 				lis3mdl.Mag_Gain_c.z =  (hml_lsq.Gain[2]);	
 				}
+				#endif
 				lis3mdl.Mag_Offset.x = (int16_t)((MagMAX.x + MagMIN.x) * 0.5f);
 				lis3mdl.Mag_Offset.y = (int16_t)((MagMAX.y + MagMIN.y) * 0.5f);
 				lis3mdl.Mag_Offset.z = (int16_t)((MagMAX.z + MagMIN.z) * 0.5f);
@@ -369,7 +380,17 @@ static u8 init;
 					lis3mdl.Gain_3d.x =  (acc_lsq.Gain[0]);
 					lis3mdl.Gain_3d.y =  (acc_lsq.Gain[1]);
 					lis3mdl.Gain_3d.z =  (acc_lsq.Gain[2]);	
-          WRITE_PARM();						
+          WRITE_PARM();					
+          init_hml_norm=1;
+					if(fabs(lis3mdl.Off_3d.x)<400&&fabs(lis3mdl.Off_3d.y)<400&&fabs(lis3mdl.Off_3d.z)<400)
+					module.acc=2;
+					else
+					module.acc=1;
+
+					if(fabs(lis3mdl.Gyro_Offset.x)<200&&fabs(lis3mdl.Gyro_Offset.y)<200&&fabs(lis3mdl.Gyro_Offset.z)<200)
+					module.gyro=2;
+					else
+					module.gyro=1;	
 					}		 		
 				} 
 					acc_3d_step_reg=acc_3d_step_imu;	
@@ -501,9 +522,7 @@ void LIS_Data_Prepare(float T)
 	lis3mdl_tmp[G_Y] = IIR_I_Filter(Gyro_tmp[1] - lis3mdl.Gyro_Offset.y , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Z] = IIR_I_Filter(Gyro_tmp[2] - lis3mdl.Gyro_Offset.z , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 #else
-		if((fabs(lis3mdl.Off_3d.x)>10||fabs(lis3mdl.Off_3d.y)>10||fabs(lis3mdl.Off_3d.z)>10)
-			&&(fabs(lis3mdl.Off_3d.x)<600&&fabs(lis3mdl.Off_3d.y)<600&&fabs(lis3mdl.Off_3d.z)<600))
-		lis3mdl.Cali_3d=1;
+	
 	if(lis3mdl.Cali_3d){
 	lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Off_3d.x)*lis3mdl.Gain_3d.x;// - lis3mdl.Acc_Offset.x*en_off_3d_off;
 	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Off_3d.y)*lis3mdl.Gain_3d.y;// - lis3mdl.Acc_Offset.y*en_off_3d_off;
@@ -577,14 +596,21 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Gyro_deg_t.y = lis3mdl.Gyro_t.y *TO_ANGLE;
 	lis3mdl.Gyro_deg_t.z = lis3mdl.Gyro_t.z *TO_ANGLE;
 
-  lis3mdl.Mag_Val.x = (lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x);//*lis3mdl.Mag_Gain.x ;
-	lis3mdl.Mag_Val.y = (lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y);//*lis3mdl.Mag_Gain.y ;
-	lis3mdl.Mag_Val.z = (lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z);//*lis3mdl.Mag_Gain.z ;
+  lis3mdl.Mag_Val.x = firstOrderFilter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x),&firstOrderFilters[HML_LOWPASS_X],T);//*lis3mdl.Mag_Gain.x ;
+	lis3mdl.Mag_Val.y = firstOrderFilter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y),&firstOrderFilters[HML_LOWPASS_Y],T);//*lis3mdl.Mag_Gain.y ;
+	lis3mdl.Mag_Val.z = firstOrderFilter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z),&firstOrderFilters[HML_LOWPASS_Z],T);//*lis3mdl.Mag_Gain.z ;
 	
-	lis3mdl.Mag_Val_t.x=firstOrderFilter(lis3mdl.Mag_Val.y,&firstOrderFilters[HML_LOWPASS_X],T);
-	lis3mdl.Mag_Val_t.y=firstOrderFilter(-lis3mdl.Mag_Val.x,&firstOrderFilters[HML_LOWPASS_Y],T);
-	lis3mdl.Mag_Val_t.z=firstOrderFilter(lis3mdl.Mag_Val.z,&firstOrderFilters[HML_LOWPASS_Z],T);
-	
+	lis3mdl.Mag_Val_t.x=lis3mdl.Mag_Val.y;
+	lis3mdl.Mag_Val_t.y=-lis3mdl.Mag_Val.x;
+	lis3mdl.Mag_Val_t.z=lis3mdl.Mag_Val.z;
+	static u8 cnt;
+	if(cnt++>125){cnt=0;
+	lis3mdl.hmlOneMAG = sqrt(lis3mdl.Mag_Val_t.x*(lis3mdl.Mag_Val_t.x) + lis3mdl.Mag_Val_t.y*(lis3mdl.Mag_Val_t.y) + lis3mdl.Mag_Val_t.z*lis3mdl.Mag_Val_t.z)*1.1;
+		if(lis3mdl.hmlOneMAG>440)
+			module.hml=2;
+		else 
+			module.hml=1;
+	}
 	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
 	static u8 state[3];
 	switch (state[0]){

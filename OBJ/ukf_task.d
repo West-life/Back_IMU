@@ -84,3 +84,5 @@
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\hml5833l.h
 ..\obj\ukf_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 ..\obj\ukf_task.o: ..\HARDWARE\AHRS\insgps.h
+..\obj\ukf_task.o: ..\HARDWARE\UKF_OLDX\nav_ukf.h
+..\obj\ukf_task.o: ..\HARDWARE\IIC\LIS3MDL.h

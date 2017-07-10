@@ -106,6 +106,7 @@ float flow_module_set_yaw;
 u8 acc_3d_step,imu_feed_dog;
 u8 FC_CONNECT;
 u16 fc_loss_cnt=0;
+u8 fly_ready_force_zero=1;
 void Data_Receive_Anl(u8 *data_buf,u8 num)
 { static u8 flag;
 	vs16 rc_value_temp;
@@ -120,7 +121,7 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 		fc_loss_cnt=0;
 		module.fc=1;
 		fc_rx_time = Get_Cycle_T(GET_T_FC);			
-    fly_ready=*(data_buf+10)||force_fly_ready||en_ble_debug;	
+    fly_ready=(*(data_buf+10)||force_fly_ready||en_ble_debug)&&fly_ready_force_zero;	
 		qr.x=((vs16)(*(data_buf+11)<<8)|*(data_buf+12));
 		qr.y=((vs16)(*(data_buf+13)<<8)|*(data_buf+14));
 		qr.z=((vs16)(*(data_buf+15)<<8)|*(data_buf+16));
@@ -685,6 +686,9 @@ u8 i;	u8 sum = 0;
 	data_to_send[_cnt++]=module.flow||module.flow_iic;
 	data_to_send[_cnt++]=module.laser;
 	data_to_send[_cnt++]=module.pi_flow;
+	data_to_send[_cnt++]=module.acc;
+	data_to_send[_cnt++]=module.gyro;
+	data_to_send[_cnt++]=module.hml;
 	data_to_send[3] = _cnt-4;
 
 	for( i=0;i<_cnt;i++)
@@ -1488,6 +1492,7 @@ float dlf_odroid=0.5;
 	 imu_nav.flow.speed.y_f= dlf_odroid*(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))+(1-dlf_odroid)*imu_nav.flow.speed.y_f;///10.; 
 	}
 }
+
 u8 TxBuffer_u1[256];
 u8 TxCounter_u1=0;
 u8 count_u1=0; 
@@ -1499,7 +1504,6 @@ u8 RxBufferNum_u1 = 0;
 u8 RxBufferCnt_u1 = 0;
 u8 RxLen_u1 = 0;
 static u8 _data_len_u1 = 0,_data_cnt_u1 = 0;
-
 //GPS
 #define TEST_GPS 0//<----------------------------------------------
 u16 USART3_RX_STA=0;
@@ -1561,46 +1565,46 @@ switch(state0){
 		}
 		
 //$GPGGA,134658.00,5106.9792,N,11402.3003,W,2,09,1.0,1048.47,M,-16.27,M,08,AAAA*60
-		static u8 state1,cnt_buf1;
-switch(state1){
-			case 0:if(data=='G')
-			state1=1;
-			break;
-			case 1:if(data=='G')
-			{state1=2;cnt_buf1=0;}
-			else
-			state1=0;
-			break;
-			case 2:if(data=='A')
-			{state1=3;cnt_buf1=0;}
-			else
-			state1=0;
-			break;
-			case 3:if(data==',')
-			{state1=4;cnt_buf1=0;}
-			else
-			state1=0;
-			break;
-			case 4:if(data=='*')
-			{buf_GPRMC[6+cnt_buf1++]=data;state1=5;}
-			else if(cnt_buf1>90)
-			{cnt_buf1=0;state1=0;}	
-			else
-			buf_GPGGA[6+cnt_buf1++]=data;
-			break;
-			case 5:
-			gps_good=1;
-			gps_loss_cnt=0;
-			#if TEST_GPS
-			NMEA_GPGGA_Analysis(&gpsx,buf_GPGGAt);	
-			#else
-			NMEA_GPGGA_Analysis(&gpsx,buf_GPGGA);	//GPRMC½âÎö	
-			#endif
-//			for(cnt_buf=6;cnt_buf<sizeof(buf_GPRMC);cnt_buf++)
-//			buf_GPRMC[cnt_buf]=0;
-			cnt_buf1=0;state1=0;
-			break;
-		}
+//static u8 state1,cnt_buf1;
+//switch(state1){
+//			case 0:if(data=='G')
+//			state1=1;
+//			break;
+//			case 1:if(data=='G')
+//			{state1=2;cnt_buf1=0;}
+//			else
+//			state1=0;
+//			break;
+//			case 2:if(data=='A')
+//			{state1=3;cnt_buf1=0;}
+//			else
+//			state1=0;
+//			break;
+//			case 3:if(data==',')
+//			{state1=4;cnt_buf1=0;}
+//			else
+//			state1=0;
+//			break;
+//			case 4:if(data=='*')
+//			{buf_GPRMC[6+cnt_buf1++]=data;state1=5;}
+//			else if(cnt_buf1>90)
+//			{cnt_buf1=0;state1=0;}	
+//			else
+//			buf_GPGGA[6+cnt_buf1++]=data;
+//			break;
+//			case 5:
+//			gps_good=1;
+//			gps_loss_cnt=0;
+//			#if TEST_GPS
+//			NMEA_GPGGA_Analysis(&gpsx,buf_GPGGAt);	
+//			#else
+//			NMEA_GPGGA_Analysis(&gpsx,buf_GPGGA);	//GPRMC½âÎö	
+//			#endif
+////			for(cnt_buf=6;cnt_buf<sizeof(buf_GPRMC);cnt_buf++)
+////			buf_GPRMC[cnt_buf]=0;
+//			cnt_buf1=0;state1=0;
+//			break;
+//		}
 }
 
 //GPS PVT
@@ -1622,7 +1626,28 @@ while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 USART_SendData(USART1, TX_BUF[i]); 
 }
 }
-int gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
+
+//GPS DOP
+void Ublox_DOP_Mode(void)
+{	 u8 TX_BUF[11],i;
+			TX_BUF[0]=0xB5;
+			TX_BUF[1]=0x62;
+			TX_BUF[2]=0x06;
+			TX_BUF[3]=0x01;
+			TX_BUF[4]=0x03;
+			TX_BUF[5]=0x00;
+			TX_BUF[6]=0x01;
+			TX_BUF[7]=0x04;//0x07;
+			TX_BUF[8]=0x01;
+			TX_BUF[9]=0x13;
+			TX_BUF[10]=0x51;
+for(i=0;i<11;i++){	
+while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+USART_SendData(USART1, TX_BUF[i]); 
+}
+}
+
+uint32_t gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
 u8 Gps_data_get(u8 in)
 {
 	static u8 buf[100],state;	
@@ -1696,12 +1721,19 @@ u8 Gps_data_get(u8 in)
 					 if(temp>0&&init_flag==0&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_numsv>=4)
 					 {off=temp;init_flag=1;}	 
 					 gpsx.pvt.PVT_height=temp-off;
-					 gpsx.pvt.PVT_Hacc=(int)((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));		
-					 gpsx.pvt.PVT_Vacc=(int)((((u32)buf[47+6])<<24)|((u32)buf[46+6])<<16|((u32)buf[45+6])<<8|((u32)buf[44+6]));		 	 
+					
+					 gpsx.pvt.PVT_Hacc=((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));		
+					 gpsx.pvt.PVT_Vacc=((((u32)buf[47+6])<<24)|((u32)buf[46+6])<<16|((u32)buf[45+6])<<8|((u32)buf[44+6]));		 
+					 gpsx.pvt.PVT_Sacc=((((u32)buf[71+6])<<24)|((u32)buf[70+6])<<16|((u32)buf[69+6])<<8|((u32)buf[68+6]));		
+					 gpsx.pvt.PVT_Headacc=((((u32)buf[75+6])<<24)|((u32)buf[74+6])<<16|((u32)buf[73+6])<<8|((u32)buf[72+6]))*1e-5;								 
+					 
 					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
 					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
-					 gpsx.pvt.PVT_Down_speed=-(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;
+					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.*-1;
 					 gpsx.pvt.PVT_speed=(float)(int)((((u32)buf[63+6])<<24)|((u32)buf[62+6])<<16|((u32)buf[61+6])<<8|((u32)buf[60+6]))/1000.;	
+
+					 gpsx.pvt.headMot=(int)((((u32)buf[67+6])<<24)|((u32)buf[66+6])<<16|((u32)buf[65+6])<<8|((u32)buf[64+6]))*1e-5;
+				   gpsx.pvt.headVeh=(int)((((u32)buf[87+6])<<24)|((u32)buf[86+6])<<16|((u32)buf[85+6])<<8|((u32)buf[84+6]))*1e-5;								 
 					}
 					state=0;
 			 }

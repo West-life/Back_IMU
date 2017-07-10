@@ -28,6 +28,7 @@
 #include "filter.h"
 #include "imu_oldx.h"
 #include "m100.h"
+#include "nav_ukf.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -129,6 +130,7 @@ void outer_task(void *pdata)
 	q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
 	q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
 	q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
+
 //  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
 //						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
 //						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
@@ -165,7 +167,7 @@ void outer_task(void *pdata)
 	#if USE_M100_IMU
 	m100_data(1);
 	#endif
-	delay_ms(10);
+	delay_ms(5);
 	}
 }		
 
@@ -177,87 +179,49 @@ float ekf_loop_time;
 #include "FastMath.h"
 #include "Quaternion.h"
 #include "ekf_ins.h"
-//#define USE_EKF
-//#define USE_UKF
-//#define USE_CKF
-//#define USE_SRCKF
-//#define USE_9AXIS_EKF
-//#define USE_EKF_INS
 
-#ifdef USE_EKF
-	#include "EKF.h"
-#elif defined USE_UKF
-  #include "UKF.h"
-#elif defined USE_CKF
-	#include "CKF.h"
-#elif defined USE_SRCKF
-	#include "SRCKF.h"
-#elif defined USE_9AXIS_EKF
-  #include "miniARSH.h"
-#endif
-
-
-#ifdef USE_EKF
-	EKF_Filter ekf;
-#elif defined USE_UKF
-	UKF_Filter ukf;
-#elif defined USE_CKF
-	CKF_Filter ckf;
-#elif defined USE_SRCKF
-	SRCKF_Filter srckf;
-#endif
-	float fRealGyro[3] = {0}, fRealAccel[3] = {0,0,0};
-	float fRealMag[3] = {0}, fRealQ[4] = {0,0,0,0};
-	long lQuat[4] = {0,0,0,0};
-	float fRPY[3] = {0};
-	float fQ[4] = {0};
-	int flag_mag[3]={1,1,-1};
-	float Kp_ekf=0.3f,Kp_ekf_pr=6; 
-	float reference_v_ekf[3];
 void ekf_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
-	float fRPYr[3] = {0};
  	while(1)
 	{	
 ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
 if(cnt_init++>2&&!init){cnt_init=101;
-		init=1;
-#ifdef USE_EKF
-	EKF_New(&ekf);
-#elif defined USE_UKF
-	UKF_New(&ukf);
-#elif defined USE_CKF
-	CKF_New(&ckf);
-#elif defined USE_SRCKF
-	SRCKF_New(&srckf);
-#endif
-#ifdef USE_EKF
-				EKF_Init(&ekf, fRealQ, fRealGyro);
-#elif defined USE_UKF
-				UKF_Init(&ukf, fRealQ, fRealGyro);
-#elif defined USE_CKF
-				CKF_Init(&ckf, fRealQ, fRealGyro);
-#elif defined USE_SRCKF
-				SRCKF_Init(&srckf, fRealAccel, fRealMag);
-#elif defined USE_6AXIS_EKF
-				EKF_IMUInit(fRealAccel, fRealGyro);
-#elif defined USE_6AXIS_FP_EKF
-				FP_EKF_IMUInit(fRealAccel, fRealGyro);
-#elif defined USE_9AXIS_EKF
-				EKF_AHRSInit(fRealAccel, fRealMag);
-#endif		
+		init=1;	
 	}
 	else{
 	if(ekf_loop_time<0.000002)ekf_loop_time=0.02;
-	static u8 ekf_gps_cnt;	
-	//if(ekf_gps_cnt++>1){ekf_gps_cnt=0;	
-	//EKF_INS_GPS_Run(0.015);		
-	//GpsUkfProcess(0.05);
-	//}
-		ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
-}
+	static u8 ekf_gps_cnt;
+  if(!lis3mdl.Mag_CALIBRATED)		
+	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
+  #if USE_UKF_FROM_AUTOQUAD	
+	RollR=RollRm=AQ_ROLL;
+	PitchR=PitchRm=AQ_PITCH;
+	YawR=YawRm=AQ_YAW;
+
+	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
+	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
+	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
+	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
+	reference_vr[0]=reference_vr_imd_down[0];
+	reference_vr[1]=reference_vr_imd_down[1]; 
+	reference_vr[2]=reference_vr_imd_down[2];
+	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
+	Pitch_mid_down=Pitch=PitchR;
+	Roll_mid_down=Roll=RollR;
+	if(imu_feed_dog==1&&FC_CONNECT==1)
+	IWDG_Feed();//喂狗
+	#endif
+	
+	}
+	#if USE_UKF_FROM_AUTOQUAD
+  delay_ms(5);
+ #else
 	delay_ms(10);
+ #endif
 	}
 }		
 
@@ -462,11 +426,11 @@ void flow_task1(void *pdata)
 		acc_neo[0]=acc_flt[0];
 		acc_neo[1]=acc_flt[1];
 		acc_neo[2]=acc_flt[2];
-	 	flow_matlab_data[0]=acc_neo[0];
+	 	flow_matlab_data[0]=acc_neo[0];//acc
 		flow_matlab_data[1]=acc_neo[1];}
 	  }
 	 }
-		flow_matlab_data[2]=flow_ground_temp[2];
+		flow_matlab_data[2]=flow_ground_temp[2];//spd
 		flow_matlab_data[3]=flow_ground_temp[3];
 		
 
@@ -597,9 +561,9 @@ if(debug_pi_flow[0])
 								X_ukf[4]*100,pi_flow.spdy*100,imu_nav.flow.speed.y*100,
 								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
 								case 15:
-								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100, Global_GPS_Sensor.NED_Vel[1]*100,
-								Global_GPS_Sensor.NED_Vel[0]*100,gpsx.pvt.PVT_speed*100,Global_GPS_Sensor.NED_Pos[0]*100,
-								UKF_POSD*100, UKF_VELD*100, gpsx.pvt.PVT_height*100);break;
+								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,0,
+								Global_GPS_Sensor.NED_Vel[0]*100, Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Pos[0]*100,
+								Global_GPS_Sensor.NED_Acc[0]*10, Global_GPS_Sensor.NED_Acc[1]*10, gpsx.pvt.PVT_height*100);break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
 								flow_rad.integrated_xgyro,flow_rad.integrated_ygyro,flow_rad.integrated_zgyro,

@@ -43,4 +43,5 @@ void TIM3_Int_Init(u16 arr,u16 psc);
 #define GET_T_FC 15
 #define GET_T_M100 16
 #define GET_T_PVT 17
+#define GET_T_UKF_GPS 18
 #endif

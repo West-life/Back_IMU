@@ -40,19 +40,23 @@ __packed typedef struct
 
 
 __packed typedef struct  
-{u32 rx_cnt;
+{
+ u32 rx_cnt;
  float rx_dt;	
- u8 PVT_fixtype;
+ u8 PVT_fixtype;//2-2D  3-3D
  u8 PVT_numsv;
  double PVT_longitude;
  double PVT_latitude;
- float PVT_height;
- int PVT_Hacc,PVT_Vacc;	
- float PVT_North_speed,PVT_East_speed,PVT_Down_speed,PVT_speed;	
+ float PVT_height;//m
+ u16 PVT_Hacc,PVT_Vacc,PVT_Sacc;//mm
+ float PVT_Headacc;	//degree
+ float headMot,headVeh;//degree
+ float PVT_North_speed,PVT_East_speed,PVT_Down_speed,PVT_speed;//m/s	
 }PVT;
 
 __packed typedef struct  
-{										    
+{	
+  u8 rmc_mode;	
  	u8 svnum;					//可见卫星数
 	nmea_slmsg slmsg[12];		//最多12颗卫星
 	nmea_utc_time utc;			//UTC时间
@@ -67,12 +71,14 @@ __packed typedef struct
 	u16 pdop;					//位置精度因子 0~500,对应实际值0~50.0
 	u16 hdop;					//水平精度因子 0~500,对应实际值0~50.0
 	u16 vdop;					//垂直精度因子 0~500,对应实际值0~50.0 
-
+  
 	int altitude;			 	//海拔高度,放大了10倍,实际除以10.单位:0.1m	 
 	u16 speed;					//地面速率,放大了1000倍,实际除以10.单位:0.001公里/小时	 
 	uint16_t course_earth;                    //?????????????(0-359?)
   uint16_t course_mag;                      //?????????????(0-359?)
 	float spd,angle;
+	float angle_off;
+	u8 ewhemi_angle_off;
   PVT pvt; 
 }nmea_msg; 
 //////////////////////////////////////////////////////////////////////////////////////////////////// 	

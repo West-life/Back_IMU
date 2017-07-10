@@ -46,6 +46,7 @@ float yaw;
 float Pressure;
 float Tem_bmp;
 float Alt;
+float hmlOneMAG,hmlOneACC;
 }LIS3MDL_S;
 
 extern LIS3MDL_S lis3mdl;

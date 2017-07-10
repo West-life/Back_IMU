@@ -194,15 +194,22 @@ switch(idle_state)
 	break;
 //GPS1	
 	case 4:
-		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
+		if(module.acc==2)//m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
-		else
+		else if(module.acc==1)
 			LEDRGB_COLOR(BLUE);
+		else
+			LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=5;cnt_idle=0;}
 	break;
 	case 5:
+	  if(module.acc==2)//m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
+			LEDRGB_COLOR(WHITE);
+		else if(module.acc==1)
 			LEDRGB_COLOR(BLUE);
+		else
+			LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=6;cnt_idle=0;}
 	break;
@@ -219,18 +226,22 @@ switch(idle_state)
 		
 //GPS2
 	case 8:
-		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
+	  if(module.gyro==2)//m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
-		else
+		else if(module.gyro==1)
 			LEDRGB_COLOR(BLUE);
+		else
+			LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=9;cnt_idle=0;}
 	break;
 	case 9:
-		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
+	  if(module.gyro==2)//m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
-		else
+		else if(module.gyro==1)
 			LEDRGB_COLOR(BLUE);
+		else
+			LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=10;cnt_idle=0;}
 	break;
@@ -246,18 +257,22 @@ switch(idle_state)
 	break;
 //GPS3	
 	case 12:
-		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
+	  if(module.hml==2)//m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
-		else
+		else if(module.hml==1)
 			LEDRGB_COLOR(BLUE);
+		else
+			LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=13;cnt_idle=0;}
 	break;
 	case 13:
-		if(m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
+	  if(module.hml==2)//m100.connect&&m100.m100_data_refresh&&m100.GPS_STATUS>=3)
 			LEDRGB_COLOR(WHITE);
-		else
+		else if(module.hml==1)
 			LEDRGB_COLOR(BLUE);
+		else
+			LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
 	{idle_state=14;cnt_idle=0;}
 	break;
@@ -269,7 +284,7 @@ switch(idle_state)
 	case 15:
 			LEDRGB_COLOR(BLACK);
 	if(cnt_idle++>RGB_DELAY)
-	{idle_state=16;cnt_idle=0;}
+	{idle_state=0;cnt_idle=0;}
 	break;
 //MODE
 	case 16:

@@ -311,7 +311,7 @@
           <Cads>
             <interw>1</interw>
             <Optim>1</Optim>
-            <oTime>1</oTime>
+            <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
             <Strict>0</Strict>
@@ -743,14 +743,14 @@
               <FilePath>..\HARDWARE\IIC\laser.c</FilePath>
             </File>
             <File>
-              <FileName>flow_oldx.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\IIC\flow_oldx.lib</FilePath>
-            </File>
-            <File>
               <FileName>cycle_cal_oldx.lib</FileName>
               <FileType>4</FileType>
               <FilePath>..\HARDWARE\IIC\cycle_cal_oldx.lib</FilePath>
+            </File>
+            <File>
+              <FileName>flow_oldx.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\flow_oldx.lib</FilePath>
             </File>
           </Files>
         </Group>
@@ -766,16 +766,6 @@
               <FileName>kf_oldx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
-            </File>
-            <File>
-              <FileName>baro_ekf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\KF\baro_ekf.c</FilePath>
-            </File>
-            <File>
-              <FileName>ekf_math.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ekf_math.c</FilePath>
             </File>
             <File>
               <FileName>Matrix.c</FileName>
@@ -818,14 +808,14 @@
               <FilePath>..\HARDWARE\IIC\imu_m.c</FilePath>
             </File>
             <File>
+              <FileName>nav_ukf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
+            </File>
+            <File>
               <FileName>imu_oldx.lib</FileName>
               <FileType>4</FileType>
               <FilePath>..\HARDWARE\IIC\imu_oldx.lib</FilePath>
-            </File>
-            <File>
-              <FileName>kf_oldx_yaw.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\IIC\kf_oldx_yaw.lib</FilePath>
             </File>
           </Files>
         </Group>
