@@ -35,22 +35,23 @@
 #define NEW_IMU 1  //1使用LSD IMU
 #define FLOW_USE_FLY_LAB 0 //
 
-#define USE_M100_IMU 1  //M100
-#define SONAR_USE_FLOW 0 //使用光流超声波
+#define USE_M100_IMU 0  //M100
+#define SONAR_USE_FLOW 0 //使用光流  的 超声波
 #define USE_US100           //使用us100型号超声波 
 //#define USE_KS103					//使用ks103型号超声波
 //#define SONAR_SAMPLE1					//0-5m 32ms  no fix
 //#define SONAR_SAMPLE2					//0-5m 100ms T fix
 #define SONAR_SAMPLE3					//0-11m 68ms no fix
 
-#define SENSOR_FORM_PI_FLOW 0
-#define SENSOR_FORM_PI_FLOW_SONAR_NOT 1
+#define SENSOR_FORM_PI_FLOW 0  //使用OLDX光流模块
+#define SENSOR_FORM_PI_FLOW_SONAR_NOT 1 //使用OLDX光流模块 但是超声波由IMU采集
 //#define SONAR_USE_SCL  
 //#define SONAR_USE_TIG
 #define SONAR_USE_UART 
 
 #define SONAR_HEIGHT 80
 
+#define FLOW_USE_IIC 0
 
 #define USE_LASER_AVOID 0
 

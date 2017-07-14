@@ -17,6 +17,7 @@
 #include "ukf_task.h"
 #include "stm32f4xx_dma.h"
 #include "LSM303.h"
+#include "Soft_I2C_PX4.h"
 #include "LIS3MDL.h"
  /////////////////////////UCOSII启动任务设置///////////////////////////////////
 //START 任务
@@ -105,7 +106,11 @@ int main(void)
 	//#if EN_DMA_UART3
 	//MYDMA_Config(DMA1_Stream3,DMA_Channel_4,(u32)&USART3->DR,(u32)SendBuff3,SEND_BUF_SIZE3+2,2);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	// #endif
+	#if FLOW_USE_IIC
+	Soft_I2C_Init_PX4();
+	#else
   Uart5_Init(115200L);			//FLOW
+	#endif
 	Delay_ms(10);
 //-------------------------Para Init------------------------------------	
 	//Para_Init();							//参数初始化

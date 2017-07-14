@@ -361,6 +361,9 @@ void flow_task1(void *pdata)
  FLOW_RAD flow_rad_use;  
  	while(1)
 	{
+	 #if FLOW_USE_IIC
+		Read_Px4flow();		
+	 #endif	
 	 #if SENSOR_FORM_PI_FLOW&&!SENSOR_FORM_PI_FLOW_SONAR_NOT
 	 if(!pi_flow.insert)
 	 flow_height_fliter=0.666;
@@ -478,7 +481,7 @@ void uart_task(void *pdata)
 	}
 }	
 
-u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=16;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -584,6 +587,10 @@ if(debug_pi_flow[0])
 								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,m100.H*100,
 								X_ukf[0]*100,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100,
 								X_kf_baro[0]*100, X_kf_baro[1]*100, m100.spd[2]*100);break;
+								case 16:
+								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
+								flow_rad.integrated_xgyro,flow_rad.integrated_ygyro,flow_rad.integrated_zgyro,
+								0,0,0);break;
 								}				
 								GOL_LINK_BUSY[1]=0;		
 								} 

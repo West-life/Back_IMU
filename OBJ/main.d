@@ -88,4 +88,5 @@
 ..\obj\main.o: ..\HARDWARE\IIC\dog.h
 ..\obj\main.o: ..\HARDWARE\UKF_OLDX\ukf_task.h
 ..\obj\main.o: ..\HARDWARE\IIC\LSM303.h
+..\obj\main.o: ..\HARDWARE\IIC\Soft_I2C_PX4.h
 ..\obj\main.o: ..\HARDWARE\IIC\LIS3MDL.h

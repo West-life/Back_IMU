@@ -47,6 +47,8 @@
 "..\obj\flash_w25.o"
 "..\obj\time.o"
 "..\obj\watch_dog.o"
+"..\obj\px4flow_iic.o"
+"..\obj\soft_i2c_px4.o"
 "..\obj\gps.o"
 "..\obj\ublox.o"
 "..\obj\dma.o"

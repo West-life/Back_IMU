@@ -68,6 +68,7 @@ extern float flow_per_out[4];//光流最终输出为数组中 [2] [3]
 extern float k_flow_devide;//光流输出增益  按实际波形和运动情况进行调节
 extern float flow_module_offset_y,flow_module_offset_x;//光流安装偏移/m
 
+void Read_Px4flow(void);
 
 //----------Example---------
 /*

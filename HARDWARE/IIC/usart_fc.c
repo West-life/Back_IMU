@@ -1253,12 +1253,58 @@ void Uart5_Init(u32 br_num)//-----video sonar Flow
 //	}
 
 }
+
+
+
+//数据解析
+void Data_Receive_Anl_FLOW(u8 *data_buf,u8 num)
+{
+	u8 i;
+	u8 sum = 0;
+	for(i=0;i<(num-1);i++)
+	{
+		sum += *(data_buf+i);
+	}
+	
+	if(!(sum==*(data_buf+num-1)))		
+	{	
+		return;		//验证sum
+	}
+	
+	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		
+	{	
+		return;		//验证帧头
+	}
+	
+	//数据
+	if(*(data_buf+2)==0X01)
+	{
+		//flow_rad.frame_count = (*(data_buf+4)<<8)|*(data_buf+5);
+		flow_rad.integrated_x = (int16_t)((*(data_buf+6)<<8)|*(data_buf+7));
+		flow_rad.integrated_y = (int16_t)((*(data_buf+8)<<8)|*(data_buf+9));
+		flow_rad.integrated_xgyro = (int16_t)((*(data_buf+10)<<8)|*(data_buf+11));
+		flow_rad.integrated_ygyro = (int16_t)((*(data_buf+12)<<8)|*(data_buf+13));
+		flow_rad.integrated_zgyro = (int16_t)((*(data_buf+14)<<8)|*(data_buf+15));
+		flow_rad.integration_time_us = (*(data_buf+16)<<24)|(*(data_buf+17)<<16)|(*(data_buf+18)<<8)|*(data_buf+19);
+		//flow_rad. = (*(data_buf+20)<<24)|(*(data_buf+21)<<16)|(*(data_buf+22)<<8)|*(data_buf+23);
+		flow_rad.distance = (*(data_buf+24)<<8)|*(data_buf+25);
+		flow_rad.temperature = (*(data_buf+26)<<8)|*(data_buf+27);
+		flow_rad.quality = *(data_buf+28);
+	}
+
+}
+
+
 u8 Tx5Buffer[256];
 u8 Tx5Counter=0;
 u8 count5=0; 
 
 void UART5_IRQHandler(void)
 {
+static u8 RxBuffer[50];
+static u8 _data_len = 0,_data_cnt = 0;
+static u8 state = 0;
+	
 	u8 com_data;
  OSIntEnter();    
   //接收中断
@@ -1273,6 +1319,45 @@ void UART5_IRQHandler(void)
 
 		com_data = UART5->DR;
 		
+	
+		if(state==0&&com_data==0xAA)
+		{
+			state=1;
+			RxBuffer[0]=com_data;
+		}
+		else if(state==1&&com_data==0xAF)
+		{
+			state=2;
+			RxBuffer[1]=com_data;
+		}
+		else if(state==2&&com_data<0XF1)
+		{
+			state=3;
+			RxBuffer[2]=com_data;
+		}
+		else if(state==3&&com_data<50)
+		{
+			state = 4;
+			RxBuffer[3]=com_data;
+			_data_len = com_data;
+			_data_cnt = 0;
+		}
+		else if(state==4&&_data_len>0)
+		{
+			_data_len--;
+			RxBuffer[4+_data_cnt++]=com_data;
+			if(_data_len==0)
+				state = 5;
+		}
+		else if(state==5)
+		{
+			state = 0;
+			RxBuffer[4+_data_cnt]=com_data;
+			Data_Receive_Anl_FLOW(RxBuffer,_data_cnt+5);
+		}
+		else
+			state = 0;
+	
 		flow_uart_rx_oldx(com_data,&flow,&flow_rad);//Ultra_Get(com_data);
 	}
 

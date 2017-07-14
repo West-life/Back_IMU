@@ -662,6 +662,16 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\watch_dog.c</FilePath>
             </File>
+            <File>
+              <FileName>px4flow_IIC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\px4flow_IIC.c</FilePath>
+            </File>
+            <File>
+              <FileName>Soft_I2C_PX4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\Soft_I2C_PX4.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
