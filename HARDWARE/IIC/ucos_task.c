@@ -355,6 +355,7 @@ float acc_neo[3],flow_ground_temp[4];
 float flow_matlab_data[4];
 float baro_matlab_data[2];
 float flow_loop_time;
+float k_flow_1=1;//0.0005
 void flow_task1(void *pdata)
 {float flow_height_fliter;		
  static float acc_neo_off[3];
@@ -382,7 +383,7 @@ void flow_task1(void *pdata)
 	 flow_sample();
 	 if(qr.use_spd==0)
 	 {
-	 flow_rad_use.integration_time_us=flow_rad.integration_time_us;
+	 flow_rad_use.time_usec=flow_rad_use.integration_time_us=flow_rad.integration_time_us;
 	 flow_rad_use.integrated_xgyro=flow_rad.integrated_xgyro;
 	 flow_rad_use.integrated_ygyro=flow_rad.integrated_ygyro;
    flow_rad_use.integrated_zgyro=flow_rad.integrated_zgyro;		 
@@ -409,8 +410,8 @@ void flow_task1(void *pdata)
 	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
-		flow_ground_temp[2]=flow_per_out[2];
-	  flow_ground_temp[3]=flow_per_out[3];
+		flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
+	  flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
     #endif
 		static float a_br[3]={0};	
 		static float acc_temp[3]={0};
