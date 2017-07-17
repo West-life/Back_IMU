@@ -269,6 +269,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>k_flow_1</ItemText>
         </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>gpsx,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

@@ -1481,10 +1481,12 @@ float k_flt_accz=0.75;
 float acc_est,acc_est_imu;
 u8 baro_ekf_ero;
 float ALT_VEL_BMP_UNION,ALT_POS_BMP_UNION;
-u8 baroAlt_sel=1;
+u8 baroAlt_sel=0;
 
 float  r_baro_new[4]={0.015,0.05,0.03,1.5};
 double state_correct_baro[6];
+
+float g_baro_h=0.001,g_baro_spd=0.001;
 void altUkfProcess(float measuredPres) {
 static float wz_speed_old; 
 float dt;
@@ -1566,12 +1568,25 @@ float baroAlt_temp;
 			 0,1,0,
 			 0,0,0}; 
       #if !USE_M100_IMU
-			double Z_kf[3]={baroAlt_temp/1000.,0,0};	
+			double Z_kf[3];	
+			static float off_gps_baro; 
+			 if(gpsx.pvt.PVT_Hacc>100&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype==1)
+			 {
+			  Z_kf[0]=gpsx.pvt.PVT_height;
+				Z_kf[1]=gpsx.pvt.PVT_Down_speed; 
+				if(gpsx.pvt.PVT_height>0) 
+				off_gps_baro=gpsx.pvt.PVT_height-baroAlt_temp/1000.; 
+			 }
+			 else 
+			 {
+				Z[4]=0; 
+			  Z_kf[0]= baroAlt_temp/1000.+off_gps_baro;
+			 }	 
 		  #else
 			double Z_kf[3]={m100.H,m100.spd[2],0};	
 			#endif
-    	//kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
-			KF_OLDX_NAV(X_kf_baro,  P_kf_baro,  Z_kf,  accz_bmp, A,  B,  H,  0.1,  0.1, 0.001, 0.001,  T);
+    	 //kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
+			 KF_OLDX_NAV(X_kf_baro,  P_kf_baro,  Z_kf,  accz_bmp, A,  B,  H,  0.1,  0.1, g_baro_h,g_baro_spd,  T);
       #endif
 			
 		}

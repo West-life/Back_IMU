@@ -392,4 +392,6 @@ Flight status val	status name
 }M100;
 extern M100 m100;
 void UsartSend_M100(uint8_t ch);
+
+void Ublox_PVT_Mode(void);
 #endif

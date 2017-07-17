@@ -1106,28 +1106,27 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
   
 	 //origin
-	_temp32 = (vs32)( gpsx.longitude*10000000);//ultra_distance;
+	_temp = (vs16)(gpsx.pvt.PVT_fixtype);// gpsx.gpssta);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(gpsx.pvt.PVT_numsv);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)( gpsx.pvt.PVT_longitude*10000000);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
-	_temp32 = (vs32)( gpsx.latitude*10000000);//ultra_distance;
+	_temp32 = (vs32)( gpsx.pvt.PVT_latitude*10000000);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
-	_temp = (vs16)( gpsx.spd*100);//ultra_distance;
+	_temp = (vs16)( gpsx.pvt.PVT_speed*100);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp = (vs16)( gpsx.angle*10);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs16)(gpsx.gpssta);// gpsx.gpssta);//ultra_distance;
-	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs16)(gpsx.posslnum);//ultra_distance;
-	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs16)(gpsx.svnum);//ultra_distance;
-	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);	
+
 	
 	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
 	for( i=cnt_reg;i< nrf_uart_cnt;i++)
@@ -1592,6 +1591,112 @@ switch(state1){
 		}
 }
 
+//GPS PVT
+void Ublox_PVT_Mode(void)
+{	 u8 TX_BUF[11],i;
+			TX_BUF[0]=0xB5;
+			TX_BUF[1]=0x62;
+			TX_BUF[2]=0x06;
+			TX_BUF[3]=0x01;
+			TX_BUF[4]=0x03;
+			TX_BUF[5]=0x00;
+			TX_BUF[6]=0x01;
+			TX_BUF[7]=0x07;
+			TX_BUF[8]=0x01;
+			TX_BUF[9]=0x13;
+			TX_BUF[10]=0x51;
+for(i=0;i<11;i++){	
+while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+USART_SendData(USART1, TX_BUF[i]); 
+}
+}
+
+u8 Gps_data_get(u8 in)
+{
+	static u8 buf[100],state;	
+	static u16 cnt;
+	u16 j;
+	u8 i=0,sum_a=0,sum_b=0;
+	switch(state)
+	{
+		case 0:
+			if(in==0xB5)
+			{
+			 for(j=0;j<100;j++)
+			 buf[j]=0;
+			cnt=0;buf[cnt++]=in;state++;}
+		break;
+	  case 1:
+			if(in==0x62)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+	  case 2:
+			if(in==0x01)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 3:
+			if(in==0x07)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 4:
+			if(in==0x5c)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 5:
+			if(in==0x00)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 6:
+     if(cnt<100)
+			 buf[cnt++]=in;
+		 else 
+			 {
+					for(i=2;i<98;i++)
+					{
+					sum_a+=buf[i];
+					sum_b+=sum_a;
+					}
+			   if(sum_a==buf[98]&&sum_b==buf[99])//0.1~0.2delay
+					{gpsx.pvt.rx_cnt++;
+					 gpsx.pvt.rx_dt=Get_Cycle_T(GET_T_PVT); 	
+					 gpsx.pvt.PVT_fixtype=buf[20+6];
+					 gpsx.pvt.PVT_numsv=buf[23+6];
+					 gpsx.pvt.PVT_longitude=(double)(long)((((u32)buf[27+6])<<24)|((u32)buf[26+6])<<16|((u32)buf[25+6])<<8|((u32)buf[24+6]))/10000000.;
+					 gpsx.pvt.PVT_latitude=(double)(long)((((u32)buf[31+6])<<24)|((u32)buf[30+6])<<16|((u32)buf[29+6])<<8|((u32)buf[28+6]))/10000000.;
+					 static float off;
+					 static u8 init_flag;
+           float temp;					 
+					 temp=(float)(int)((((u32)buf[39+6])<<24)|((u32)buf[38+6])<<16|((u32)buf[37+6])<<8|((u32)buf[36+6]))/1000.;						 
+					 if(temp>0&&init_flag==0&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_numsv>5)
+					 {off=temp;init_flag=1;}	 
+					 gpsx.pvt.PVT_height=temp-off;
+					 gpsx.pvt.PVT_Hacc=(int)((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));				 
+					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
+					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
+					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;
+					 gpsx.pvt.PVT_speed=(float)(int)((((u32)buf[63+6])<<24)|((u32)buf[62+6])<<16|((u32)buf[61+6])<<8|((u32)buf[60+6]))/1000.;	
+					}
+					state=0;
+			 }
+    break;		
+	}
+}
+
+
+
+
+
+///--
  void Data_Receive_Anl11(u8 *data_buf,u8 num)
 { static u8 flag;
 	double zen,xiao;
@@ -1672,8 +1777,11 @@ void USART1_IRQHandler(void)//-------------------GPS
 		USART_ClearITPendingBit(USART1,USART_IT_RXNE);//清除中断标志
 
 		com_data = USART1->DR;
+		#if !USE_M100_IMU
 		IMU_DJ_ANGLE(com_data);
-		ubloxCharIn(com_data);
+		//ubloxCharIn(com_data);
+		Gps_data_get(com_data);
+		#endif
 		if(cnt++>50)
 			cnt=0;
 		else
@@ -1709,11 +1817,11 @@ void USART1_IRQHandler(void)//-------------------GPS
 			if(_data_len11==0)
 				RxState11 = 5;
 		}
-		else if(RxState11=5)
+		else if(RxState11==5)
 		{
 			RxState11 = 0;
 			RxBuffer11[4+_data_cnt11]=com_data;
-			Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
+			//Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
 		}
 		else
 			RxState11 = 0;
@@ -2005,6 +2113,7 @@ void UART4_IRQHandler(void)
 			RxState4 = 0;
 			RxBuffer4[4+_data_cnt4]=com_data;
 			Data_Receive_Anl4(RxBuffer4,_data_cnt4+5);
+			Data_Receive_Anl11(RxBuffer4,_data_cnt4+5);
 		}
 		else
 			RxState4 = 0;
@@ -2017,8 +2126,8 @@ void UART4_IRQHandler(void)
 void UsartSend_M100(uint8_t ch)
 {
 
-while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
-USART_SendData(USART1, ch);  
+while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET);
+USART_SendData(UART4, ch);  
 }
 
 

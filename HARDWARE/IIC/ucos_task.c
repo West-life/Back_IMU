@@ -356,6 +356,7 @@ float flow_matlab_data[4];
 float baro_matlab_data[2];
 float flow_loop_time;
 float k_flow_1=1;//0.0005
+
 void flow_task1(void *pdata)
 {float flow_height_fliter;		
  static float acc_neo_off[3];
@@ -443,6 +444,7 @@ void flow_task1(void *pdata)
 		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
 		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
 		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+		
 //		acc_flt[0]=acc_neo_temp1[0];
 //		acc_flt[1]=acc_neo_temp1[1];
 //		acc_flt[2]=acc_neo_temp1[2];//
@@ -482,7 +484,7 @@ void uart_task(void *pdata)
 	}
 }	
 
-u8 UART_UP_LOAD_SEL=16;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=11;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -570,7 +572,7 @@ if(debug_pi_flow[0])
 								0,0,yaw_mag_view[4]);break;
 								case 11:
 								Send_BLE_DEBUG(Global_GPS_Sensor.NED_Pos[0]*100,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[2]*100,
-								Global_GPS_Sensor.NED_Vel[0]*100,Global_GPS_Sensor.NED_Vel[1]*100,0,
+								Global_GPS_Sensor.NED_Vel[0]*100,Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Vel[2]*100,
 								0,0,0);break;
 								case 12:
 								Send_BLE_DEBUG(flow_rad.integrated_xgyro*1000,accumulated_flow_x*1000,accumulated_gyro_x*1000,

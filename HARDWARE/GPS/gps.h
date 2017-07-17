@@ -35,6 +35,22 @@ __packed typedef struct
 	u8 sec; 	//秒钟
 }nmea_utc_time;   	   
 //NMEA 0183 协议解析后数据存放结构体
+
+
+
+
+__packed typedef struct  
+{u32 rx_cnt;
+ float rx_dt;	
+ u8 PVT_fixtype;
+ u8 PVT_numsv;
+ double PVT_longitude;
+ double PVT_latitude;
+ float PVT_height;
+ int PVT_Hacc;	
+ float PVT_North_speed,PVT_East_speed,PVT_Down_speed,PVT_speed;	
+}PVT;
+
 __packed typedef struct  
 {										    
  	u8 svnum;					//可见卫星数
@@ -57,7 +73,7 @@ __packed typedef struct
 	uint16_t course_earth;                    //?????????????(0-359?)
   uint16_t course_mag;                      //?????????????(0-359?)
 	float spd,angle;
-
+  PVT pvt; 
 }nmea_msg; 
 //////////////////////////////////////////////////////////////////////////////////////////////////// 	
 //UBLOX NEO-6M 配置(清除,保存,加载等)结构体

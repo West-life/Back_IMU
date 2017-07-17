@@ -78,6 +78,7 @@ int main(void)
 	Delay_ms(10);
 //------------------------Uart Init-------------------------------------
 	Usart1_Init(115200L);			//GPS_LINK
+	Ublox_PVT_Mode();
 //	TIM7_Int_Init(100-1,8400-1);		//100ms中断
 //	#if EN_DMA_UART1 
 //	MYDMA_Config(DMA2_Stream7,DMA_Channel_4,(u32)&USART1->DR,(u32)SendBuff1,SEND_BUF_SIZE1+2,1);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
@@ -92,7 +93,7 @@ int main(void)
 		#if USE_M100_IMU
 		Usart4_Init(115200L);     //IMU2 Link
 		#else
-		Usart4_Init(576000L);     //IMU2 Link
+		Usart4_Init(576000L);     //PI FLOW
 		#endif
 	#endif
 	#if EN_DMA_UART4 
@@ -109,7 +110,7 @@ int main(void)
 	#if FLOW_USE_IIC
 	Soft_I2C_Init_PX4();
 	#else
-  Uart5_Init(115200L);			//FLOW
+  Uart5_Init(115200L);			//FLOW PX4
 	#endif
 	Delay_ms(10);
 //-------------------------Para Init------------------------------------	
