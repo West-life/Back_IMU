@@ -291,7 +291,7 @@ void Ultra_Get(u8 com_data)
 		ultra_start_f = 2;
 	}
 	else if( ultra_start_f == 2 )
-	{
+	{ module.sonar=1;
 		temp = (ultra_tmp<<8) + com_data;
 		ultra_start_f = 0; 
 		dt=Get_Cycle_T(GET_T_SONAR_SAMPLE);

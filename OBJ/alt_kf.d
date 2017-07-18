@@ -73,6 +73,7 @@
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\filter.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\ms5611_2.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\iic.h
+..\obj\alt_kf.o: ..\HARDWARE\GPS\gps.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\kf_oldx.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rt_nonfinite.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rtwtypes.h

@@ -8,6 +8,7 @@
 #include "stdlib.h"
 #include "filter.h"
 #include "baro_ekf.h"
+#include "gps.h"
 altUkfStruct_t altUkfData,altUkfData_sonar,altUkfData_bmp;
 altUkfStruct_t flowUkfData_x,flowUkfData_y;
 altUkfStruct_t gpsUkfData_e,gpsUkfData_n;
@@ -1290,7 +1291,7 @@ float gh_sonar=0.001;
 float ga=0.1;
 float gwa=0.1;
 double P_kf_baro[9]={1,0,0,1,0,0,1}; 
-double X_kf_baro[3];
+double X_kf_baro[3], X_kf_baro_temp[3];
 double P_kf_sonar[9]={1,0,0,1,0,0,1}; 
 double X_kf_sonar[3];
 static void altDoPresUpdate(float measuredPres,float dt) {
@@ -1457,6 +1458,37 @@ state[1]=state_correct[1*3+1]+state_correct[0*3+1];
 return 1;	
 }
 
+
+#define GPS_DELAY 0.0
+static float acc_body_bufz[40];
+static void feed_acc_bufz(float in1)
+{
+u8 i,j;	
+float reg[40];	
+static u8 cnt;
+	for(j=0;j<40;j++)
+   reg[j]=acc_body_bufz[j];
+	
+
+	for(j=0;j<40-1;j++)
+   acc_body_bufz[j]=reg[j-1];	
+	
+	acc_body_bufz[0]=in1;
+
+}	
+
+static float get_acc_delayz(float delay,float dt)
+{
+u8 id[2];
+id[0]=(int)(delay/dt);
+id[1]=id[0]+1;	
+if(delay>0)	
+return acc_body_bufz[id[0]]/2+acc_body_bufz[id[1]]/2;
+else
+return acc_body_bufz[0];	
+}	
+
+
 #include "LIS3MDL.h"
 float X_apo_height[2] = {0.0f, 0.0f};
 float P_apo_k_height[4] = {100.0f,0.0f,0.0f,100.0f};
@@ -1486,7 +1518,7 @@ u8 baroAlt_sel=0;
 float  r_baro_new[4]={0.015,0.05,0.03,1.5};
 double state_correct_baro[6];
 
-float g_baro_h=0.001,g_baro_spd=0.001;
+float g_baro_h=0.0025,g_baro_spd=0.0035;
 void altUkfProcess(float measuredPres) {
 static float wz_speed_old; 
 float dt;
@@ -1556,6 +1588,7 @@ float baroAlt_temp;
 			X_kf_baro[0]=X_apo_height[0];
       X_kf_baro[1]=X_apo_height[1];
 			#else
+			feed_acc_bufz(accz_bmp);
 			float T=dt;
 			double A[9]=
 			 {1,       0,    0,
@@ -1570,7 +1603,7 @@ float baroAlt_temp;
       #if !USE_M100_IMU
 			double Z_kf[3];	
 			static float off_gps_baro; 
-			 if(gpsx.pvt.PVT_Hacc>100&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype==1)
+			 if(gpsx.pvt.PVT_Hacc>100&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1)
 			 {
 			  Z_kf[0]=gpsx.pvt.PVT_height;
 				Z_kf[1]=gpsx.pvt.PVT_Down_speed; 
@@ -1579,14 +1612,20 @@ float baroAlt_temp;
 			 }
 			 else 
 			 {
-				Z[4]=0; 
+				H[4]=0; 
 			  Z_kf[0]= baroAlt_temp/1000.+off_gps_baro;
 			 }	 
 		  #else
 			double Z_kf[3]={m100.H,m100.spd[2],0};	
 			#endif
+			float accz_bmp_temp=get_acc_delayz(GPS_DELAY,T);
     	 //kf_oldx( X_kf_baro,  P_kf_baro,  Z_kf,  (accz_bmp), gh,  ga,  gwa,dt);
-			 KF_OLDX_NAV(X_kf_baro,  P_kf_baro,  Z_kf,  accz_bmp, A,  B,  H,  0.1,  0.1, g_baro_h,g_baro_spd,  T);
+	
+			KF_OLDX_NAV(X_kf_baro_temp,  P_kf_baro,  Z_kf,  accz_bmp_temp, A,  B,  H,  0.1,  0.1, g_baro_h,g_baro_spd,  T);
+			X_kf_baro[0]=X_kf_baro_temp[0]+GPS_DELAY*X_kf_baro_temp[1]+1/2*pow(GPS_DELAY,2)*(accz_bmp_temp+0*X_kf_baro_temp[2]);
+			X_kf_baro[1]=X_kf_baro_temp[1]+GPS_DELAY*(accz_bmp_temp+0*X_kf_baro_temp[2]);
+			X_kf_baro[2]=X_kf_baro_temp[2];
+			
       #endif
 			
 		}

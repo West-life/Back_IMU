@@ -36,6 +36,7 @@ OS_EVENT * q_msg;			//消息队列
 
 OS_FLAG_GRP * flags_key;	//按键信号量集
 void * MsgGrp[256];			//消息队列存储地址,最大支持256个消息
+SYSTEM module;
 uint16_t cpuGetFlashSize(void)
 {
 
@@ -58,7 +59,7 @@ int main(void)
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();
-	Delay_ms(10);
+	Delay_ms(4000);
   I2c_Soft_Init();					//初始化模拟I2C
   IIC_IMU1_Init();
 	HMC5883L_SetUp();	
@@ -78,7 +79,7 @@ int main(void)
 	Delay_ms(10);
 //------------------------Uart Init-------------------------------------
 	Usart1_Init(115200L);			//GPS_LINK
-	Ublox_PVT_Mode();
+	
 //	TIM7_Int_Init(100-1,8400-1);		//100ms中断
 //	#if EN_DMA_UART1 
 //	MYDMA_Config(DMA2_Stream7,DMA_Channel_4,(u32)&USART1->DR,(u32)SendBuff1,SEND_BUF_SIZE1+2,1);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
@@ -88,7 +89,7 @@ int main(void)
 	MYDMA_Config(DMA1_Stream6,DMA_Channel_4,(u32)&USART2->DR,(u32)SendBuff2,SEND_BUF_SIZE2+2,1);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	#endif
 	#if USE_LASER_AVOID
-	Usart4_Init(576000L);     //IMU2 Link
+	Usart4_Init(576000L);     //AVOID BOARD
 	#else
 		#if USE_M100_IMU
 		Usart4_Init(115200L);     //IMU2 Link
@@ -108,13 +109,12 @@ int main(void)
 	//MYDMA_Config(DMA1_Stream3,DMA_Channel_4,(u32)&USART3->DR,(u32)SendBuff3,SEND_BUF_SIZE3+2,2);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	// #endif
 	#if FLOW_USE_IIC
-	Soft_I2C_Init_PX4();
+	Soft_I2C_Init_PX4();      //FLOW PX4 IIC
 	#else
   Uart5_Init(115200L);			//FLOW PX4
 	#endif
 	Delay_ms(10);
 //-------------------------Para Init------------------------------------	
-	//Para_Init();							//参数初始化
 	W25QXX_Init();			//W25QXX初始化
 	while(W25QXX_ReadID()!=W25Q32&&W25QXX_ReadID()!=W25Q16)								//检测不到W25Q128
 	{	LEDRGB_COLOR(RED);
@@ -153,20 +153,6 @@ int main(void)
   TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
 	//IWDG_Init(4,1500); //与分频数为64,重载值为500,溢出时间为1s	
-	//---------------初始化UCOSII--------------------------
-
-//	while(1)
-//	{Ultra_Duty(); 
-//		//ukf_task(flow_matlab_data[2],flow_matlab_data[3],flow_matlab_data[0],flow_matlab_data[1],0.04);
-//		
-//			static char flag[2]={1,0};
-//		oldx_nav(0,0,baro_matlab_data[0],
-//		flow_matlab_data[2],flow_matlab_data[3],0,
-//		flow_matlab_data[0],flow_matlab_data[1],baro_matlab_data[1],
-//		0.04,flag,0);
-//		Delay_ms(40);
-//	}
-//  TIM3_Int_Init(500-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	OSInit();  	 				
 	OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
 	OSStart();	    

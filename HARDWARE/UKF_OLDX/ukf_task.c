@@ -8,7 +8,7 @@
 #include "alt_kf.h"
 #include "insgps.h"
 //#include "ekf_ins.h"
-#define DELAY_GPS 0.1 //s
+#define DELAY_GPS 0.0//s
 #define INSGPS_GPS_TIMEOUT 2   /* 2 seconds triggers reinit of position */
 #define INSGPS_GPS_MINSAT  6   /* 2 seconds triggers reinit of position */
 #define INSGPS_GPS_MINPDOP 3.5 /* minimum PDOP for postition updates    */
@@ -116,8 +116,8 @@ static void CalcGlobalLocation(float posNorth,float posEast){
     GPS_J_F=(float)posEast/(float)(r2+0.1)+local_Lon;
 }
 
-float acc_body_buf[2][40];
-void feed_acc_buf(float in1,float in2)
+static float acc_body_buf[2][40];
+static void feed_acc_buf(float in1,float in2)
 {
 u8 i,j;	
 float reg[2][40];	
@@ -134,10 +134,10 @@ static u8 cnt;
 	acc_body_buf[1][0]=in2;
 }	
 
-float get_acc_delay(u8 sel,float delay)
+static float get_acc_delay(u8 sel,float delay,float dt)
 {
 u8 id[2];
-id[0]=(int)(delay/0.01);
+id[0]=(int)(delay/dt);
 id[1]=id[0]+1;	
 if(delay>0)	
 return acc_body_buf[sel][id[0]]/2+acc_body_buf[sel][id[1]]/2;
@@ -145,7 +145,7 @@ else
 return acc_body_buf[sel][0];	
 }	
 
-u8 kf_data_sel=2;//0->flow 1->gps 2->flow global 3->openpilot
+u8 kf_data_sel=1;//0->flow 1->gps 2->flow global 3->openpilot
 double X_KF_NAV[2][3];
 double P_KF_NAV[2][9];
 float ga_nav= 0.1; 
@@ -160,8 +160,13 @@ float K_spd_flow=0.86;//1.2;//0.86;
 float K_acc_gps=1;  
 float K_pos_gps=1;
 float K_spd_gps=1;
+#if  USE_M100_IMU
 float g_pos_gps= 0.001;//10;
-float g_spd_gps= 0.001;//0.1;//0.1;                          
+float g_spd_gps= 0.001;//0.1;//0.1; 
+#else
+float g_pos_gps= 0.0015125;//10;
+float g_spd_gps= 0.0015125;//0.1;//0.1; 
+#endif
 float velNorth_gps,velEast_gps;
 int flag_kf1[2]={1,1};
 u8 force_test;
@@ -195,13 +200,13 @@ double H[9]={
 gpsx.pvt.PVT_latitude=m100.Lat;
 gpsx.pvt.PVT_longitude=m100.Lon;	
 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)	
-{gpsx.pvt.PVT_numsv=6;gpsx.pvt.PVT_fixtype=1;}
+{gpsx.pvt.PVT_numsv=6;gpsx.pvt.PVT_fixtype=3;}
 #endif			 
 			 
- if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype==1){
+ if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=3){
  gps_init=1;
- local_Lon=gpsx.pvt.PVT_latitude;
- local_Lat=gpsx.pvt.PVT_longitude;
+ local_Lat=gpsx.pvt.PVT_latitude;
+ local_Lon=gpsx.pvt.PVT_longitude;
  gps_h_off=gpsx.pvt.PVT_height; 
  CalcEarthRadius(gpsx.pvt.PVT_latitude);
 
@@ -224,7 +229,7 @@ if(kf_data_sel_temp==1){
 	 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #else
-	 if(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype==1&&gpsx.pvt.PVT_latitude!=0)
+	 if(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #endif
 //	 if(par[0]!=0)
@@ -252,15 +257,19 @@ if(kf_data_sel_temp==1){
 	 velEast=LIMIT(m100.spd[1],-3,3);//LIMIT(-gpsx.spd*sin((gpsx.angle-180)*0.0173),-3,3);
    velNorth=LIMIT(m100.spd[0],-3,3);//LIMIT(-gpsx.spd*cos((gpsx.angle-180)*0.0173),-3,3); 
 	 #endif
-
+   #if !USE_M100_IMU
+	 Global_GPS_Sensor.NED_Pos[2]=gpsx.pvt.PVT_height-gps_h_off;
+	 #else
    Global_GPS_Sensor.NED_Pos[2]=(float)(gpsx.altitude-gps_h_off)/10.;
-   Global_GPS_Sensor.NED_Pos[1]=Posy=posNorth*K_pos_gps;
+	 #endif
 	 Global_GPS_Sensor.NED_Vel[2]=gpsx.pvt.PVT_Down_speed;
+	 
+   Global_GPS_Sensor.NED_Pos[1]=Posy=posNorth*K_pos_gps;
 	 Global_GPS_Sensor.NED_Vel[1]=Sdpy=velNorth*K_spd_gps;
-	 Global_GPS_Sensor.NED_Acc[1]=Accy=get_acc_delay(1,DELAY_GPS);//accNorth;
+	 Global_GPS_Sensor.NED_Acc[1]=Accy=get_acc_delay(1,DELAY_GPS,T);//accNorth;
 	 Global_GPS_Sensor.NED_Pos[0]=Posx=posEast*K_pos_gps;
 	 Global_GPS_Sensor.NED_Vel[0]=Sdpx=velEast*K_spd_gps;
-	 Global_GPS_Sensor.NED_Acc[0]=Accx=get_acc_delay(0,DELAY_GPS);//accEast;
+	 Global_GPS_Sensor.NED_Acc[0]=Accx=get_acc_delay(0,DELAY_GPS,T);//accEast;
 	 u8 flag_sensor[3]={1,0,1};
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
@@ -278,12 +287,12 @@ if(kf_data_sel_temp==1){
 //	 
 //	 X_KF_NAV[1][0]=X_kf2_y[0];
 //	 X_KF_NAV[1][1]=X_kf2_y[1];
-	 float X_KF_NAV_TEMP[2][3];
-	 X_KF_NAV_TEMP[0][0]=X_KF_NAV[0][0]+DELAY_GPS*X_KF_NAV[0][1]+1/2*pow(DELAY_GPS,2)*X_KF_NAV[0][2];
-	 X_KF_NAV_TEMP[0][1]=X_KF_NAV[0][1]+DELAY_GPS*X_KF_NAV[0][1];
+	 float X_KF_NAV_TEMP[2][3];//0->x->east  1->y->north
+	 X_KF_NAV_TEMP[0][0]=X_KF_NAV[0][0]+DELAY_GPS*X_KF_NAV[0][1]+1/2*pow(DELAY_GPS,2)*(Accx+X_KF_NAV[0][2]);
+	 X_KF_NAV_TEMP[0][1]=X_KF_NAV[0][1]+DELAY_GPS*(Accx+X_KF_NAV[0][2]);
 	 X_KF_NAV_TEMP[0][2]=X_KF_NAV[0][2];
-	 X_KF_NAV_TEMP[1][0]=X_KF_NAV[1][0]+DELAY_GPS*X_KF_NAV[1][1]+1/2*pow(DELAY_GPS,2)*X_KF_NAV[1][2];
-	 X_KF_NAV_TEMP[1][1]=X_KF_NAV[1][1]+DELAY_GPS*X_KF_NAV[1][1];
+	 X_KF_NAV_TEMP[1][0]=X_KF_NAV[1][0]+DELAY_GPS*X_KF_NAV[1][1]+1/2*pow(DELAY_GPS,2)*(Accy+X_KF_NAV[1][2]);
+	 X_KF_NAV_TEMP[1][1]=X_KF_NAV[1][1]+DELAY_GPS*(Accy+X_KF_NAV[1][2]);
 	 X_KF_NAV_TEMP[1][2]=X_KF_NAV[1][2];
 	 
 	 X_ukf[0]=X_KF_NAV_TEMP[0][0];//North pos

@@ -43,6 +43,7 @@ float yaw_qr_off;
 u8 dis_angle_lock;
 u8 yaw_cal_by_qr;
 float yaw_qr_off_local;
+float yaw_off_earth=0;//90;
 void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, float az,float *rol,float *pit,float *yaw) 
 {		
 	float ref_err_lpf_hz;
@@ -97,7 +98,7 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 
 		yaw_mag_view[0] = fast_atan2(calMagY, calMagX) * RAD_DEG; //计算Yaw (-PI < Roll < PI) 并将弧度转化成角度
 	  yaw_mag_view[3]=yaw_mag_view[0]/2+yaw_mag_view[1]/2;
-  	yaw_mag=yaw_mag_view[1] ;
+  	//yaw_mag=yaw_mag_view[1] ;
 	
 		magTmp2[0]=imu_fushion.Mag_Val.x;
 		magTmp2[1]=imu_fushion.Mag_Val.y;
@@ -107,35 +108,37 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
     calMagY = magTmp2[0] * cos(euler[1]) + magTmp2[1] * sin(euler[1])* sin(euler[0])+magTmp2[2] * sin(euler[1]) * cos(euler[0]); 
     calMagX = magTmp2[1] * cos(euler[0]) + magTmp2[2] * sin(euler[0]);
 		float tempy;
+		
+		
 		if( dis_angle_lock||(fabs(Roll_mid_down)<12 && fabs(Pitch_mid_down)<12))
 		tempy=To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG );
-		else
-		tempy=X_kf_yaw[0];
+//		else
+//		tempy=X_kf_yaw[0];
 	  
-		if(qr.check)
-			yaw_cal_by_qr=1;
+//		if(qr.check)
+//			yaw_cal_by_qr=1;
 	
-		static u8 init_check_qr;
-		if(yaw_cal_by_qr){
-		if(!init_check_qr&&qr.check)
-		{init_check_qr=1;
-			
-		X_kf_yaw[0]=qr.yaw;
-		yaw_qr_off_local=	To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG -qr.yaw);
-		}
-					
-		if(fabs(Roll_mid_down)<5 && fabs(Pitch_mid_down)<5&&qr.check)	
-		yaw_qr_off_local=	To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG -qr.yaw);//yaw_qr_off_local=	To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG );
-		if(qr.check)	
-		tempy=qr.yaw;	
-		else{
-			if( dis_angle_lock||(fabs(Roll_mid_down)<12 && fabs(Pitch_mid_down)<12))
-			tempy=To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG -yaw_qr_off_local);
-			else
-			tempy=X_kf_yaw[0];
-	  }
-		}
-		yaw_mag_view[4]=Moving_Median(14,5,tempy);	
+//		static u8 init_check_qr;
+//		if(yaw_cal_by_qr){
+//		if(!init_check_qr&&qr.check)
+//		{init_check_qr=1;
+//			
+//		X_kf_yaw[0]=qr.yaw;
+//		yaw_qr_off_local=	To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG -qr.yaw);
+//		}
+//					
+//		if(fabs(Roll_mid_down)<5 && fabs(Pitch_mid_down)<5&&qr.check)	
+//		yaw_qr_off_local=	To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG -qr.yaw);//yaw_qr_off_local=	To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG );
+//		if(qr.check)	
+//		tempy=qr.yaw;	
+//		else{
+//			if( dis_angle_lock||(fabs(Roll_mid_down)<12 && fabs(Pitch_mid_down)<12))
+//			tempy=To_180_degrees(fast_atan2(calMagX,calMagY)* RAD_DEG -yaw_qr_off_local);
+//			else
+//			tempy=X_kf_yaw[0];
+//	  }
+//		}
+		yaw_mag_view[4]=Moving_Median(14,5,tempy+yaw_off_earth);	
 		
 		double Z_yaw[2]={ yaw_mag_view[4] , 0 };
 		if(yaw_mag_view[4]*X_kf_yaw[0]<0&&!(fabs(yaw_mag_view[4])<90))
@@ -143,7 +146,7 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 		else
 		yaw_cross=0;
 		
-		kf_oldx_yaw( X_kf_yaw,  P_kf_yaw,  Z_yaw,  -gz*k_kf_z, gh_yaw,  ga_yaw,  gw_yaw,  half_T*2);
+		//kf_oldx_yaw( X_kf_yaw,  P_kf_yaw,  Z_yaw,  -gz*k_kf_z, gh_yaw,  ga_yaw,  gw_yaw,  half_T*2);
 	
 	//=============================================================================
 	// 计算等效重力向量//十分重要
@@ -166,6 +169,12 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 	norm_acc = my_sqrt(ax*ax + ay*ay + az*az);   
 	norm_acc_lpf +=  NORM_ACC_LPF_HZ *(6.28f *half_T) *(norm_acc - norm_acc_lpf);  //10hz *3.14 * 2*0.001
   yaw_mag=yaw_mag_view[4];
+	static u8 hml_cal_reg;
+	if(ak8975.Mag_CALIBRATED==1&&hml_cal_reg==0)
+	YawR=yaw_mag;
+	hml_cal_reg=ak8975.Mag_CALIBRATED;
+	
+	
   	if(norm_acc==0)norm_acc=0.0001;
 	if(ABS(ax)<4400 && ABS(ay)<4400 && ABS(az)<4400 )
 	{	
@@ -213,12 +222,12 @@ void IMUupdate(float half_T,float gx, float gy, float gz, float ax, float ay, fl
 		if(( fly_ready||(fabs(Pitch)>10)||(fabs(Roll)>10))&&init_mag_cnt++>400  )
 		{ init_mag_cnt=401;
 	//	yaw_correct = Kp *0.2f *To_180_degrees(yaw_mag - YAW_R);
-			yaw_correct = Kp *0.1f *LIMIT( my_deathzoom( To_180_degrees(yaw_mag - Yaw), 10),-20,20 );
+			yaw_correct = Kp *0.23f *LIMIT( ( To_180_degrees(yaw_mag - YawR), 1),-20,20 );
 			//已经解锁，只需要低速纠正。
 		}
 		else
 		{
-			yaw_correct = Kp *1.5f *To_180_degrees(yaw_mag - Yaw);
+			yaw_correct = Kp *1.5f *To_180_degrees(yaw_mag - YawR);
 			//没有解锁，视作开机时刻，快速纠正
 		}
 	}

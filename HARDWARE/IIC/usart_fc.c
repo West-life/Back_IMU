@@ -115,7 +115,7 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
    if(*(data_buf+2)==0x01)//IMU_FRAME  QR
   {
-		
+		module.fc=1;
 		fc_rx_time = Get_Cycle_T(GET_T_FC);			
     fly_ready=*(data_buf+10)||force_fly_ready||en_ble_debug;	
 		qr.x=((vs16)(*(data_buf+11)<<8)|*(data_buf+12));
@@ -988,7 +988,7 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	
 	//-------------------
-	if(pi_flow.insert)
+	if(pi_flow.insert&&module.sonar==0)
 	_temp = (vs16)(	pi_flow.spdz*1000);
 	else
 	_temp = (vs16)(ALT_VEL_SONAR*1000);//navUkfData.posE[0]*1000;
@@ -1003,7 +1003,7 @@ switch(sel){
 	else
 	_temp= 9000;
 	#else
-	if(pi_flow.insert)
+	if(pi_flow.insert&&module.sonar==0)
 	_temp = (vs16)(pi_flow.z_o*1000);	
 	else if(sys.sonar)
 	_temp = (vs16)(ALT_POS_SONAR3*1000);//navUkfData.posE[0]*1000;
@@ -1029,26 +1029,26 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
 	//-------------oldx_ukf flow qr fushion
-	if(pi_flow.insert)
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.x*1000);
 	else
 	_temp = (vs16)( X_ukf_Pos[0]*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	if(pi_flow.insert)
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.y*1000);
 	else
 	_temp = (vs16) (X_ukf_Pos[1]*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	//spd
-	if(pi_flow.insert)
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.spdx*1000);
 	else
 	_temp = (vs16)( X_ukf[1]*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	if(pi_flow.insert)
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.spdy*1000);
 	else
 	_temp = (vs16) (X_ukf[4]*1000);//navUkfData.posE[0]*1000;
@@ -1106,9 +1106,9 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
   
 	 //origin
-	_temp = (vs16)(gpsx.pvt.PVT_fixtype);// gpsx.gpssta);//ultra_distance;
+	_temp = (gpsx.pvt.PVT_fixtype);// gpsx.gpssta);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs16)(gpsx.pvt.PVT_numsv);//ultra_distance;
+	_temp = (gpsx.pvt.PVT_numsv);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp32 = (vs32)( gpsx.pvt.PVT_longitude*10000000);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
@@ -1277,7 +1277,7 @@ void Data_Receive_Anl_FLOW(u8 *data_buf,u8 num)
 	
 	//数据
 	if(*(data_buf+2)==0X01)
-	{
+	{ module.flow_iic=1;
 		//flow_rad.frame_count = (*(data_buf+4)<<8)|*(data_buf+5);
 		flow_rad.integrated_x = (int16_t)((*(data_buf+6)<<8)|*(data_buf+7));
 		flow_rad.integrated_y = (int16_t)((*(data_buf+8)<<8)|*(data_buf+9));
@@ -1358,6 +1358,7 @@ static u8 state = 0;
 			state = 0;
 	
 		flow_uart_rx_oldx(com_data,&flow,&flow_rad);//Ultra_Get(com_data);
+		module.flow=1;
 	}
 
 	//发送（进入移位）中断
@@ -1456,7 +1457,8 @@ void Usart1_Init(u32 br_num)//-------GPS
 //	{
 //		USART_ITConfig(USART2, USART_IT_TXE, ENABLE); 
 //	}
-
+   delay_ms(100);
+   Ublox_PVT_Mode();
 
 }
 
@@ -1660,14 +1662,16 @@ u8 Gps_data_get(u8 in)
      if(cnt<100)
 			 buf[cnt++]=in;
 		 else 
-			 {
+			 {  
 					for(i=2;i<98;i++)
 					{
 					sum_a+=buf[i];
 					sum_b+=sum_a;
 					}
 			   if(sum_a==buf[98]&&sum_b==buf[99])//0.1~0.2delay
-					{gpsx.pvt.rx_cnt++;
+					{
+					 module.gps=1;
+					 gpsx.pvt.rx_cnt++;	
 					 gpsx.pvt.rx_dt=Get_Cycle_T(GET_T_PVT); 	
 					 gpsx.pvt.PVT_fixtype=buf[20+6];
 					 gpsx.pvt.PVT_numsv=buf[23+6];
@@ -1683,7 +1687,7 @@ u8 Gps_data_get(u8 in)
 					 gpsx.pvt.PVT_Hacc=(int)((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));				 
 					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
 					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
-					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;
+					 gpsx.pvt.PVT_Down_speed=-(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;
 					 gpsx.pvt.PVT_speed=(float)(int)((((u32)buf[63+6])<<24)|((u32)buf[62+6])<<16|((u32)buf[61+6])<<8|((u32)buf[60+6]))/1000.;	
 					}
 					state=0;
@@ -1987,7 +1991,9 @@ void Data_Receive_Anl4(u8 *data_buf,u8 num)
 	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
 	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
   if(*(data_buf+2)==0x66)//PI_FLOW FUSION OUT
-  { pi_flow.loss_cnt=0;
+  { 
+		module.pi_flow=1;
+		pi_flow.loss_cnt=0;
 		pi_flow.insert=1;
 		pi_flow.x=(float)((vs16)(*(data_buf+4)<<8)|*(data_buf+5))/100.;
 		pi_flow.y=(float)((vs16)(*(data_buf+6)<<8)|*(data_buf+7))/100.;
@@ -2079,7 +2085,7 @@ void UART4_IRQHandler(void)
 		if(RxBuffer4_test_cnt>24)
 			RxBuffer4_test_cnt=0;
 		 Laser_Get(com_data);
-				if(RxState4==0&&com_data==0xAA)
+		if(RxState4==0&&com_data==0xAA)
 		{
 			RxState4=1;
 			RxBuffer4[0]=com_data;

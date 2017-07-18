@@ -172,8 +172,8 @@ switch(idle_state)
 			{idle_state=1;cnt_idle=0;}
 	break;
 	case 1:
-	 if(fly_ready==0)
-				LEDRGB_COLOR(WHITE); 
+	 if(lis3mdl.Cali_3d)
+				LEDRGB_COLOR(GREEN); 
 		 else
 				LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY*2)
@@ -185,8 +185,8 @@ switch(idle_state)
 	{idle_state=3;cnt_idle=0;}
 	break;
 	case 3:
-			 if(fly_ready==0)
-				LEDRGB_COLOR(WHITE); 
+			 if(lis3mdl.Cali_3d)
+				LEDRGB_COLOR(GREEN); 
 		 else
 				LEDRGB_COLOR(RED);
 	if(cnt_idle++>RGB_DELAY)
