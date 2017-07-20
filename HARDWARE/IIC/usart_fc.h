@@ -394,4 +394,9 @@ extern M100 m100;
 void UsartSend_M100(uint8_t ch);
 
 void Ublox_PVT_Mode(void);
+
+extern u8 en_px4_mapper,imu_feed_dog;
+void Send_TO_FLOW_NAV_GPS(void);
+extern u8 FC_CONNECT;
+extern u16 fc_loss_cnt;
 #endif

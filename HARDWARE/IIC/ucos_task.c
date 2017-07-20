@@ -91,6 +91,7 @@ void inner_task(void *pdata)
 //========================外环  任务函数============================
 OS_STK OUTER_TASK_STK[OUTER_STK_SIZE];
 float YawR,PitchR,RollR;
+float YawRm,PitchRm,RollRm;
 float outer_loop_time;
 void outer_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
@@ -104,22 +105,40 @@ void outer_task(void *pdata)
 	outer_loop_time=0.01;
 	}
 	else{
-  #define AHRS_SEL 1
+  #define AHRS_SEL 0
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
 	#if AHRS_SEL
 	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
-  #else
-  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
-						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
-						1,&RollR,&PitchR,&YawR,outer_loop_time);
-						reference_vr[0]=reference_v.x=reference_v_m1[0];
-						reference_vr[1]=reference_v.y=reference_v_m1[1];
-						reference_vr[2]=reference_v.z=reference_v_m1[2];
-						q_nav[0]=ref_q[0]=ref_q_m1[0];
-						q_nav[1]=ref_q[1]=ref_q_m1[1];
-						q_nav[2]=ref_q[2]=ref_q_m1[2];
-						q_nav[3]=ref_q[3]=ref_q_m1[3];	
+  
+
+	#else
+		
+	madgwick_update_new(
+	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.1)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.1)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.1)*0.0173,
+	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+	&RollRm,&PitchRm,&YawRm,outer_loop_time);	
+	RollR=RollRm;
+	PitchR=PitchRm;
+	YawR=YawRm;
+	reference_vr[0]=reference_vr_imd_down[0];
+	reference_vr[1]=reference_vr_imd_down[1]; 
+	reference_vr[2]=reference_vr_imd_down[2];
+	q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
+	q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
+	q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
+//  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
+//						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+//						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+//						1,&RollR,&PitchR,&YawR,outer_loop_time);
+//						reference_vr[0]=reference_v.x=reference_v_m1[0];
+//						reference_vr[1]=reference_v.y=reference_v_m1[1];
+//						reference_vr[2]=reference_v.z=reference_v_m1[2];
+//						q_nav[0]=ref_q[0]=ref_q_m1[0];
+//						q_nav[1]=ref_q[1]=ref_q_m1[1];
+//						q_nav[2]=ref_q[2]=ref_q_m1[2];
+//						q_nav[3]=ref_q[3]=ref_q_m1[3];	
 	#endif	
 	//if(mode.en_imu_ekf==0){
 		
@@ -136,24 +155,11 @@ void outer_task(void *pdata)
 		}
 
 		Yaw_mid_down=Yaw=To_180_degrees(YawR+off_yaw);	
-	
-	Pitch_mid_down=Pitch=PitchR;
-	Roll_mid_down=Roll=RollR;
-	//}
-//	#define SEL_1 1
-//	#if SEL_1//1 梯度
-//	MadgwickAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
-//	my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)/57.3,(float)imu_fushion.Acc.x/4096., (float)imu_fushion.Acc.y/4096., (float)imu_fushion.Acc.z/4096.,
-//	0,0,0,
-//	&Roll_mid_down,&Pitch_mid_down,&Yaw_mid_down);
-//	#else //0 互补
-//	MahonyAHRSupdate(outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)/57.3, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)/57.3, 
-//	my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)/57.3,(float)imu_fushion.Acc.x/4096., (float)imu_fushion.Acc.y/4096., (float)imu_fushion.Acc.z/4096.,
-//	0,0,0,
-//	&Roll_mid_down,&Pitch_mid_down,&Yaw_mid_down);
-//	#endif
-	//}
+		Pitch_mid_down=Pitch=PitchR;
+		Roll_mid_down=Roll=RollR;
+		
   }
+	if(imu_feed_dog==1&&FC_CONNECT==1)
 	IWDG_Feed();//喂狗
 	#if USE_M100_IMU
 	m100_data(1);
@@ -490,7 +496,7 @@ u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
-	OSIntEnter();static u16 cnt,cnt1,cnt2,cnt_init,init;
+	OSIntEnter();static u16 cnt,cnt1,cnt2,cnt3,cnt_init,init;
 	if(TIM_GetITStatus(TIM3,TIM_IT_Update)==SET) //溢出中断
 	{
 	time_uart = Get_Cycle_T(GET_T_UART); 	
@@ -501,8 +507,9 @@ void TIM3_IRQHandler(void)
 	}
 	else{
 		
-	if(pi_flow.insert&&cnt2++>5){cnt2=0;
-		Send_TO_FLOW_PI();	
+	if(pi_flow.insert&&cnt2++>2){cnt2=0;
+		Send_TO_FLOW_NAV_GPS();
+		Send_TO_FLOW_PI();		
   }		
 							//获取内环准确的执行周期
 	if(time_uart<0.000002)time_uart=0.0025;
@@ -616,7 +623,9 @@ void error_task(void *pdata)
 			gps_good=0;
 		if(pi_flow.loss_cnt++>1/0.2)
 			pi_flow.insert=0;
-	
+	  if(fc_loss_cnt++>3/0.2)
+			FC_CONNECT=0;
+		
 		flow.rate=flow.flow_cnt;
 	  flow.flow_cnt=0;
 		if(fly_ready)

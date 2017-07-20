@@ -200,10 +200,10 @@ double H[9]={
 gpsx.pvt.PVT_latitude=m100.Lat;
 gpsx.pvt.PVT_longitude=m100.Lon;	
 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)	
-{gpsx.pvt.PVT_numsv=6;gpsx.pvt.PVT_fixtype=3;}
+{gpsx.pvt.PVT_numsv=3;gpsx.pvt.PVT_fixtype=3;}
 #endif			 
 			 
- if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=3){
+ if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=3){
  gps_init=1;
  local_Lat=gpsx.pvt.PVT_latitude;
  local_Lon=gpsx.pvt.PVT_longitude;
@@ -216,6 +216,11 @@ u8 kf_data_sel_temp=1;
 #else 
 u8 kf_data_sel_temp=kf_data_sel; 
 #endif 
+ 
+if(module.gps&& gpsx.pvt.PVT_numsv>=1&&gpsx.pvt.PVT_fixtype>=3)
+kf_data_sel_temp=1;	
+else if(module.flow||module.flow_iic)
+{kf_data_sel_temp=2;gps_init=0;}	
 // kf_data_sel_temp=0;
 #if NAV_USE_KF
 //--------------------------------GPS_KF------------------------------------- 
@@ -229,7 +234,7 @@ if(kf_data_sel_temp==1){
 	 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #else
-	 if(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
+	 if(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #endif
 //	 if(par[0]!=0)

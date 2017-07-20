@@ -1603,7 +1603,7 @@ float baroAlt_temp;
       #if !USE_M100_IMU
 			double Z_kf[3];	
 			static float off_gps_baro; 
-			 if(gpsx.pvt.PVT_Hacc>100&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1)
+			 if(gpsx.pvt.PVT_Hacc>100&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1)
 			 {
 			  Z_kf[0]=gpsx.pvt.PVT_height;
 				Z_kf[1]=gpsx.pvt.PVT_Down_speed; 

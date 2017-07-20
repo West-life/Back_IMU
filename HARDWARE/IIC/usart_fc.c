@@ -103,7 +103,9 @@ float k_flow_opencv=0.88;
 float sonar_fc,baroAlt_fc;
 float fc_rx_time;
 float flow_module_set_yaw;
-u8 acc_3d_step;
+u8 acc_3d_step,imu_feed_dog;
+u8 FC_CONNECT;
+u16 fc_loss_cnt=0;
 void Data_Receive_Anl(u8 *data_buf,u8 num)
 { static u8 flag;
 	vs16 rc_value_temp;
@@ -114,7 +116,8 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
 	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
    if(*(data_buf+2)==0x01)//IMU_FRAME  QR
-  {
+  { FC_CONNECT=1;
+		fc_loss_cnt=0;
 		module.fc=1;
 		fc_rx_time = Get_Cycle_T(GET_T_FC);			
     fly_ready=*(data_buf+10)||force_fly_ready||en_ble_debug;	
@@ -143,7 +146,7 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 		mpu6050.Gyro_CALIBRATE=1;
 		if(!ak8975.Mag_CALIBRATED&&*(data_buf+24)==1)
 		ak8975.Mag_CALIBRATED=1;
-
+ 
 	}
 		else if(*(data_buf+2)==0x82)//
   {
@@ -177,6 +180,8 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
    flow_module_offset_x=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/1000.;
 	 flow_module_offset_y=(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/1000.;
 	 flow_module_set_yaw=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11))/10.;
+	 en_px4_mapper=*(data_buf+12);
+   imu_feed_dog=*(data_buf+13);		
 	}
   	
 }
@@ -1681,7 +1686,7 @@ u8 Gps_data_get(u8 in)
 					 static u8 init_flag;
            float temp;					 
 					 temp=(float)(int)((((u32)buf[39+6])<<24)|((u32)buf[38+6])<<16|((u32)buf[37+6])<<8|((u32)buf[36+6]))/1000.;						 
-					 if(temp>0&&init_flag==0&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_numsv>5)
+					 if(temp>0&&init_flag==0&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_numsv>=4)
 					 {off=temp;init_flag=1;}	 
 					 gpsx.pvt.PVT_height=temp-off;
 					 gpsx.pvt.PVT_Hacc=(int)((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));				 
@@ -2213,6 +2218,61 @@ void Send_TO_FLOW_PI(void)
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	
+	data_to_send[3] = _cnt-4;
+
+	for( i=0;i<_cnt;i++)
+		sum += data_to_send[i];
+	data_to_send[_cnt++] = sum;
+	
+	Send_Data_SD(data_to_send, _cnt);
+}
+
+u8 en_px4_mapper;
+void Send_TO_FLOW_NAV_GPS(void)
+{u8 i;	u8 sum = 0;
+	u8 data_to_send[50]={0};
+	u8 _cnt=0;
+	vs16 _temp;
+	vs32 _temp32;
+	data_to_send[_cnt++]=0xAA;
+	data_to_send[_cnt++]=0xAF;
+	data_to_send[_cnt++]=0x99;//功能字
+	data_to_send[_cnt++]=0;//数据量
+	_temp = (vs16)((Pitch)*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (vs16)((Roll)*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (vs16)((Yaw)*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	
+	_temp = (vs32)(GPS_J_F);//latitude;
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((GPS_J_F-(int)(GPS_J_F))*1000000000);//latitude;
+	data_to_send[_cnt++]=BYTE3(_temp32);
+	data_to_send[_cnt++]=BYTE2(_temp32);
+	data_to_send[_cnt++]=BYTE1(_temp32);
+	data_to_send[_cnt++]=BYTE0(_temp32);
+	
+	_temp = (vs32)(GPS_W_F);//latitude;
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((GPS_W_F-(int)(GPS_W_F))*1000000000);//latitude;
+	data_to_send[_cnt++]=BYTE3(_temp32);
+	data_to_send[_cnt++]=BYTE2(_temp32);
+	data_to_send[_cnt++]=BYTE1(_temp32);
+	data_to_send[_cnt++]=BYTE0(_temp32);
+	
+  _temp = (vs16) ((X_kf_baro[0])*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+  //_temp = en_px4_mapper;
+  _temp = en_px4_mapper&&module.gps&&gpsx.pvt.PVT_numsv>=1&&gpsx.pvt.PVT_fixtype>=3;
+	data_to_send[_cnt++]=BYTE0(_temp);
+
 	data_to_send[3] = _cnt-4;
 
 	for( i=0;i<_cnt;i++)

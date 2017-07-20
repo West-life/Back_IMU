@@ -76,7 +76,7 @@ int main(void)
 	#endif
 	altUkfInit();
 	LED_Init();								//LED功能初始化
-	Delay_ms(10);
+	Delay_ms(500);
 //------------------------Uart Init-------------------------------------
 	Usart1_Init(115200L);			//GPS_LINK
 	
@@ -152,7 +152,7 @@ int main(void)
 #endif	
   TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
-	//IWDG_Init(4,1500); //与分频数为64,重载值为500,溢出时间为1s	
+	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
 	OSInit();  	 				
 	OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
 	OSStart();	    
