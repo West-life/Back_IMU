@@ -93,6 +93,7 @@ OS_STK OUTER_TASK_STK[OUTER_STK_SIZE];
 float YawR,PitchR,RollR;
 float YawRm,PitchRm,RollRm;
 float outer_loop_time;
+float k_gyro_z=1.2;
 void outer_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
@@ -115,7 +116,7 @@ void outer_task(void *pdata)
 		
 	madgwick_update_new(
 	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.1)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.1)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.1)*0.0173,
+	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*k_gyro_z,
 	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
 	&RollRm,&PitchRm,&YawRm,outer_loop_time);	
 	RollR=RollRm;
@@ -597,8 +598,8 @@ if(debug_pi_flow[0])
 								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
 								case 15:
 								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100, Global_GPS_Sensor.NED_Vel[1]*100,
-								X_ukf[0]*100,gpsx.pvt.PVT_Down_speed*100,Global_GPS_Sensor.NED_Pos[0]*100,
-								X_kf_baro[0]*100, X_kf_baro[1]*100, gpsx.pvt.PVT_height*100);break;
+								Global_GPS_Sensor.NED_Vel[0]*100,gpsx.pvt.PVT_speed*100,Global_GPS_Sensor.NED_Pos[0]*100,
+								UKF_POSD*100, UKF_VELD*100, gpsx.pvt.PVT_height*100);break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
 								flow_rad.integrated_xgyro,flow_rad.integrated_ygyro,flow_rad.integrated_zgyro,

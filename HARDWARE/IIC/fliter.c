@@ -272,7 +272,7 @@ float ACC_LOWPASS_GX2      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
 float ACC_LOWPASS_GX3      ;// ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
 
 
-float HML_LOWPASS_TAU        = 0.005f;
+float HML_LOWPASS_TAU        = 0.086f;
 float HML_LOWPASS_SAMPLE_TIME =0.02f;
 float HML_LOWPASS_A        ;//   (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
 float HML_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))

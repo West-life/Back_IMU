@@ -680,6 +680,11 @@ u8 i;	u8 sum = 0;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	
+	data_to_send[_cnt++]=module.sonar;
+	data_to_send[_cnt++]=module.gps;
+	data_to_send[_cnt++]=module.flow||module.flow_iic;
+	data_to_send[_cnt++]=module.laser;
+	data_to_send[_cnt++]=module.pi_flow;
 	data_to_send[3] = _cnt-4;
 
 	for( i=0;i<_cnt;i++)
@@ -1617,7 +1622,7 @@ while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 USART_SendData(USART1, TX_BUF[i]); 
 }
 }
-
+int gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
 u8 Gps_data_get(u8 in)
 {
 	static u8 buf[100],state;	
@@ -1677,6 +1682,8 @@ u8 Gps_data_get(u8 in)
 					{
 					 module.gps=1;
 					 gpsx.pvt.rx_cnt++;	
+					 gps_update=1;
+					 gpsData_lastVelUpdate=gpsData_lastPosUpdate = micros() - GPS_LATENCY;	
 					 gpsx.pvt.rx_dt=Get_Cycle_T(GET_T_PVT); 	
 					 gpsx.pvt.PVT_fixtype=buf[20+6];
 					 gpsx.pvt.PVT_numsv=buf[23+6];
@@ -1689,7 +1696,8 @@ u8 Gps_data_get(u8 in)
 					 if(temp>0&&init_flag==0&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_numsv>=4)
 					 {off=temp;init_flag=1;}	 
 					 gpsx.pvt.PVT_height=temp-off;
-					 gpsx.pvt.PVT_Hacc=(int)((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));				 
+					 gpsx.pvt.PVT_Hacc=(int)((((u32)buf[43+6])<<24)|((u32)buf[42+6])<<16|((u32)buf[41+6])<<8|((u32)buf[40+6]));		
+					 gpsx.pvt.PVT_Vacc=(int)((((u32)buf[47+6])<<24)|((u32)buf[46+6])<<16|((u32)buf[45+6])<<8|((u32)buf[44+6]));		 	 
 					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
 					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
 					 gpsx.pvt.PVT_Down_speed=-(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;

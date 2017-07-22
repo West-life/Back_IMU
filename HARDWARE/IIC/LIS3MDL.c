@@ -501,7 +501,8 @@ void LIS_Data_Prepare(float T)
 	lis3mdl_tmp[G_Y] = IIR_I_Filter(Gyro_tmp[1] - lis3mdl.Gyro_Offset.y , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 	lis3mdl_tmp[G_Z] = IIR_I_Filter(Gyro_tmp[2] - lis3mdl.Gyro_Offset.z , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
 #else
-		if(fabs(lis3mdl.Off_3d.x)>10||fabs(lis3mdl.Off_3d.y)>10||fabs(lis3mdl.Off_3d.z)>10)
+		if((fabs(lis3mdl.Off_3d.x)>10||fabs(lis3mdl.Off_3d.y)>10||fabs(lis3mdl.Off_3d.z)>10)
+			&&(fabs(lis3mdl.Off_3d.x)<600&&fabs(lis3mdl.Off_3d.y)<600&&fabs(lis3mdl.Off_3d.z)<600))
 		lis3mdl.Cali_3d=1;
 	if(lis3mdl.Cali_3d){
 	lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Off_3d.x)*lis3mdl.Gain_3d.x;// - lis3mdl.Acc_Offset.x*en_off_3d_off;
@@ -576,9 +577,9 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Gyro_deg_t.y = lis3mdl.Gyro_t.y *TO_ANGLE;
 	lis3mdl.Gyro_deg_t.z = lis3mdl.Gyro_t.z *TO_ANGLE;
 
-  lis3mdl.Mag_Val.x = (lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x)*lis3mdl.Mag_Gain.x ;
-	lis3mdl.Mag_Val.y = (lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y)*lis3mdl.Mag_Gain.y ;
-	lis3mdl.Mag_Val.z = (lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z)*lis3mdl.Mag_Gain.z ;
+  lis3mdl.Mag_Val.x = (lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x);//*lis3mdl.Mag_Gain.x ;
+	lis3mdl.Mag_Val.y = (lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y);//*lis3mdl.Mag_Gain.y ;
+	lis3mdl.Mag_Val.z = (lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z);//*lis3mdl.Mag_Gain.z ;
 	
 	lis3mdl.Mag_Val_t.x=firstOrderFilter(lis3mdl.Mag_Val.y,&firstOrderFilters[HML_LOWPASS_X],T);
 	lis3mdl.Mag_Val_t.y=firstOrderFilter(-lis3mdl.Mag_Val.x,&firstOrderFilters[HML_LOWPASS_Y],T);

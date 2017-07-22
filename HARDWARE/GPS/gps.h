@@ -47,7 +47,7 @@ __packed typedef struct
  double PVT_longitude;
  double PVT_latitude;
  float PVT_height;
- int PVT_Hacc;	
+ int PVT_Hacc,PVT_Vacc;	
  float PVT_North_speed,PVT_East_speed,PVT_Down_speed,PVT_speed;	
 }PVT;
 

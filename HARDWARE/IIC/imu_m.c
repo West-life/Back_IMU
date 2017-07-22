@@ -526,7 +526,7 @@ void MahonyAHRSupdateIMU(float dt,float gx, float gy, float gz, float ax, float 
 //5.0f, 0.01f, 0.01f
 //5.0f, 0.25f, 0.01f
 volatile float beta_start=5;
-volatile float beta_end=0.05;
+volatile float beta_end=0.25;
 volatile float beta_step=0.01;
 
 volatile float beta;

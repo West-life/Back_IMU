@@ -123,7 +123,7 @@ int main(void)
 		Delay_ms(100);
 	}
 	READ_PARM();//¶ÁÈ¡²ÎÊý
-	Delay_ms(10);
+	Delay_ms(100);
 //-----------------------Mode &  Flag init--------------------	
 //--system
 	fly_ready=0;
