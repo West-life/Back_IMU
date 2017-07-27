@@ -201,14 +201,14 @@ if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
  CalcEarthRadius(gpsx.pvt.PVT_latitude);
 
  }
-#if USE_M100_IMU
+#if USE_M100_IMU //<<----------------------------------------------------------------------
 u8 kf_data_sel_temp=1;  
 #else 
 u8 kf_data_sel_temp=kf_data_sel; 
 #endif 
  
 if(module.gps&& gpsx.pvt.PVT_numsv>=1&&gpsx.pvt.PVT_fixtype>=3)
-kf_data_sel_temp=4;	
+kf_data_sel_temp=1;	
 else if(module.flow||module.flow_iic)
 {kf_data_sel_temp=2;gps_init=0;}	
 // kf_data_sel_temp=0;
@@ -259,12 +259,12 @@ if(kf_data_sel_temp==1){
 	 #endif
 	 Global_GPS_Sensor.NED_Vel[2]=gpsx.pvt.PVT_Down_speed;
 	 
-   Global_GPS_Sensor.NED_Pos[1]=Posy=posNorth*K_pos_gps;
+   Global_GPS_Sensor.NED_Pos[1]=Posy=posNorth*K_pos_gps;//1-> west north
 	 Global_GPS_Sensor.NED_Vel[1]=Sdpy=velNorth*K_spd_gps;
-	 Global_GPS_Sensor.NED_Acc[1]=Accy=get_acc_delay(1,DELAY_GPS,T);//accNorth;
-	 Global_GPS_Sensor.NED_Pos[0]=Posx=posEast*K_pos_gps;
+	 Global_GPS_Sensor.NED_Acc[1]=Accy=get_acc_delay(1,DELAY_GPS,T);
+	 Global_GPS_Sensor.NED_Pos[0]=Posx=posEast*K_pos_gps;//0->  east
 	 Global_GPS_Sensor.NED_Vel[0]=Sdpx=velEast*K_spd_gps;
-	 Global_GPS_Sensor.NED_Acc[0]=Accx=get_acc_delay(0,DELAY_GPS,T);//accEast;
+	 Global_GPS_Sensor.NED_Acc[0]=Accx=get_acc_delay(0,DELAY_GPS,T);
 	 u8 flag_sensor[3]={1,0,1};
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
@@ -297,14 +297,15 @@ if(kf_data_sel_temp==1){
 	 X_KF_NAV_TEMP[1][0]=X_KF_NAV[1][0]+DELAY_GPS*X_KF_NAV[1][1]+1/2*pow(DELAY_GPS,2)*(Accy+X_KF_NAV[1][2]);
 	 X_KF_NAV_TEMP[1][1]=X_KF_NAV[1][1]+DELAY_GPS*(Accy+X_KF_NAV[1][2]);
 	 X_KF_NAV_TEMP[1][2]=X_KF_NAV[1][2];						
-#else//<<---------------------------------UKF-----------------------------------	
+#else//<<---------------------------------UKF-AUTOQUAD----------------------------------	
   static u16 init_ukf,init_ukf_cnt;	 
 	 float X_KF_NAV_TEMP[2][3];//0->x->east  1->y->north 
 	//if((gps_init&&gps_data_vaild)||force_test){//0->x->east  1->y->north
-	if(init_ukf_cnt++>168)init_ukf=1;
+	if(init_ukf_cnt++>320)init_ukf=1;
 		
 	if(init_ukf)
-  runTaskCode(0,0,0,0,0,0,T );
+  runTaskCode(Global_GPS_Sensor.NED_Pos[1],Global_GPS_Sensor.NED_Pos[0],Global_GPS_Sensor.NED_Pos[2],
+	            Global_GPS_Sensor.NED_Vel[1],Global_GPS_Sensor.NED_Vel[0],Global_GPS_Sensor.NED_Vel[2],T );
 		
 	X_KF_NAV_TEMP[0][0]=UKF_POSE;
 	X_KF_NAV_TEMP[0][1]=UKF_VELE;
@@ -315,16 +316,19 @@ if(kf_data_sel_temp==1){
 	//}
 #endif
 
-	 X_ukf[0]=X_KF_NAV_TEMP[0][0];//North pos	
-	 X_ukf[2]=X_KF_NAV_TEMP[0][2];
-	 X_ukf[3]=X_KF_NAV_TEMP[1][0];//East  pos
-	 X_ukf[5]=X_KF_NAV_TEMP[1][2];
+	 X_ukf[0]=X_KF_NAV_TEMP[1][0];//North pos	
+	 X_ukf[2]=X_KF_NAV_TEMP[1][2];
+	 X_ukf[3]=X_KF_NAV_TEMP[0][0];//East  pos
+	 X_ukf[5]=X_KF_NAV_TEMP[0][2];
+	//global
+	 X_ukf[1]=X_KF_NAV_TEMP[1][1];//North vel
+	 X_ukf[4]=X_KF_NAV_TEMP[0][1];//East  vel
 	//turn to body frame
-	 X_ukf[1]=X_KF_NAV_TEMP[0][1];//North vel
-	 X_ukf[4]=X_KF_NAV_TEMP[1][1];//East  vel
-	 //X_ukf[4]=X_KF_NAV_TEMP[1][1]*cos(Yaw*0.0173)+X_KF_NAV_TEMP[0][1]*sin(Yaw*0.0173);//Y
-	 //X_ukf[1]=-X_KF_NAV_TEMP[1][1]*sin(Yaw*0.0173)+X_KF_NAV_TEMP[0][1]*cos(Yaw*0.0173);//X
-	
+	 X_ukf[4]=X_KF_NAV_TEMP[1][1]*cos(Yaw*0.0173)+X_KF_NAV_TEMP[0][1]*sin(Yaw*0.0173);//Y
+	 X_ukf[1]=-X_KF_NAV_TEMP[1][1]*sin(Yaw*0.0173)+X_KF_NAV_TEMP[0][1]*cos(Yaw*0.0173);//X
+	//output to fc 
+	 X_ukf_Pos[1]=X_ukf[0];//North Pos
+   X_ukf_Pos[0]=X_ukf[3];//East Pos  
    CalcGlobalLocation(X_ukf[0],X_ukf[3]);}
 //---------------------------GPS _UKF-----------------------------------------------------------
 else if(kf_data_sel_temp==4){   

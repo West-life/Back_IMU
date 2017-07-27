@@ -1055,7 +1055,7 @@ switch(sel){
 	_temp = (vs16) (X_ukf_Pos[1]*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	//spd
+	//spd-----------------------------------------
 	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.spdx*1000);
 	else

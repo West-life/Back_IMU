@@ -633,11 +633,6 @@
               <FilePath>..\HARDWARE\IIC\iic_imu1.c</FilePath>
             </File>
             <File>
-              <FileName>iic_sonar.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_sonar.c</FilePath>
-            </File>
-            <File>
               <FileName>iic_soft.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\iic_soft.c</FilePath>
@@ -666,11 +661,6 @@
               <FileName>watch_dog.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\watch_dog.c</FilePath>
-            </File>
-            <File>
-              <FileName>Soft_I2C_PX4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\Soft_I2C_PX4.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -733,11 +723,6 @@
               <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
             </File>
             <File>
-              <FileName>px4flow_IIC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\px4flow_IIC.c</FilePath>
-            </File>
-            <File>
               <FileName>laser.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\laser.c</FilePath>
@@ -763,24 +748,9 @@
               <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
             </File>
             <File>
-              <FileName>kf_oldx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_BARO\kf_oldx.c</FilePath>
-            </File>
-            <File>
-              <FileName>Matrix.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\Matrix.c</FilePath>
-            </File>
-            <File>
               <FileName>FastMath.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\FastMath.c</FilePath>
-            </File>
-            <File>
-              <FileName>Quaternion.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\Quaternion.c</FilePath>
             </File>
             <File>
               <FileName>my_math.c</FileName>
@@ -811,11 +781,6 @@
               <FileName>nav_ukf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
-            </File>
-            <File>
-              <FileName>imu_oldx.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\IIC\imu_oldx.lib</FilePath>
             </File>
           </Files>
         </Group>

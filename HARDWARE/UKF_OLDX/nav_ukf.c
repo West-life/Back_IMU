@@ -24,7 +24,7 @@
 navUkfStruct_t navUkfData;
 u32 dImuData_lastUpdate;
 
-
+float navData_presAltOffset;
 float compassNormalize(float heading) {
     while (heading < 0.0f)
 	heading += 360.0f;
@@ -364,7 +364,7 @@ void navUkfInertialUpdate(float T) {
     u[4] = IMU_RATEY;
     u[5] = IMU_RATEZ;
 
-    srcdkfTimeUpdate(navUkfData.kf, u, T);
+    srcdkfTimeUpdate(navUkfData.kf, u, T);//acc 
 
     // store history
     navUkfData.posN[navUkfData.navHistIndex] = UKF_POSN;
@@ -398,14 +398,14 @@ void simDoPresUpdate(float pres) {
 
     noise[1] = noise[0];
 
-    y[0] = navUkfPresToAlt(pres);
+    y[0] = (pres);
     y[1] = y[0];
 
     // if GPS altitude data has been available, only update pressure altitude
-//    if (navData.presAltOffset != 0.0f)
-//	srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 1, 1, noise, navUkfPresUpdate);
-//    // otherwise update pressure and GPS altitude from the single pressure reading
-//    else
+  if (navData_presAltOffset!= 0.0f)
+	srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 1, 1, noise, navUkfPresUpdate);
+    // otherwise update pressure and GPS altitude from the single pressure reading
+    else
 	srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 2, 2, noise, navUkfPresGPSAltUpdate);
 }
 
@@ -437,7 +437,7 @@ void simDoAccUpdate(float accX, float accY, float accZ) {
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfAccUpdate);
 }
-float UKF_MAG_N_TEMP=UKF_MAG_N;
+float UKF_MAG_N_TEMP=UKF_MAG_N/2;
 void simDoMagUpdate(float magX, float magY, float magZ) {
     float noise[3];        // measurement variance
     float y[3];            // measurement(s)
@@ -465,7 +465,7 @@ void navUkfZeroPos(void) {
 
     y[0] = 0.0f;
     y[1] = 0.0f;
-    y[2] = navUkfPresToAlt(0);//AQ_PRESSURE);
+    y[2] = AQ_PRESSURE;//navUkfPresToAlt(AQ_PRESSURE);
 
     if (fly_ready) {
 	noise[0] = 1e1f;
@@ -480,8 +480,8 @@ void navUkfZeroPos(void) {
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfPosUpdate);
 }
-
-void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, float hAcc, float vAcc ,float T) {
+float UKF_GPS_POS_N_TEMP=1;
+void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, float hAcc, float vAcc ,float T,float posN,float posE,float posZ) {
     float y[3];
     float noise[3];
     float posDelta[3];
@@ -490,9 +490,12 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
     if (lat!=0&&!init) {init=1;
 			navUkfCalcEarthRadius(lat);
     }
-    else {
-		navUkfCalcGlobalDistance(lat, lon, &y[0], &y[1]);
-	  y[2] = alt;
+		
+   if(init){
+		//navUkfCalcGlobalDistance(lat, lon, &y[0], &y[1]);
+	   y[0]=posN;
+		 y[1]=posE;
+		 y[2] = alt;
 
 	// determine how far back this GPS position update came from
 	histIndex = (micros() - (gpsMicros + UKF_POS_DELAY)) / (int)(1e6f * T);
@@ -501,7 +504,7 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
 	    histIndex += UKF_HIST;
 	if (histIndex < 0 || histIndex >= UKF_HIST)
 	    histIndex = 0;
-
+  
 	// calculate delta from current position
 	posDelta[0] = UKF_POSN - navUkfData.posN[histIndex];
 	posDelta[1] = UKF_POSE - navUkfData.posE[histIndex];
@@ -512,8 +515,8 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
 	UKF_POSE = navUkfData.posE[histIndex];
 	UKF_POSD = navUkfData.posD[histIndex];
 
-	noise[0] = UKF_GPS_POS_N ;//+ hAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.nDOP*gpsData.nDOP) * UKF_GPS_POS_M_N;
-	noise[1] = UKF_GPS_POS_N ;//+ hAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.eDOP*gpsData.eDOP) * UKF_GPS_POS_M_N;
+	noise[0] = UKF_GPS_POS_N*UKF_GPS_POS_N_TEMP ;//+ hAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.nDOP*gpsData.nDOP) * UKF_GPS_POS_M_N;
+	noise[1] = UKF_GPS_POS_N*UKF_GPS_POS_N_TEMP ;//+ hAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.eDOP*gpsData.eDOP) * UKF_GPS_POS_M_N;
 	noise[2] = UKF_GPS_ALT_N ;//+ vAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.vDOP*gpsData.vDOP) * UKF_GPS_ALT_M_N;
 
 	srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfPosUpdate);
@@ -522,8 +525,8 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
 	UKF_POSN += posDelta[0];
 	UKF_POSE += posDelta[1];
 	UKF_POSD += posDelta[2];
-
-    }
+  }
+    
 }
 
 void navUkfZeroVel(void) {
@@ -547,7 +550,8 @@ void navUkfZeroVel(void) {
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfVelUpdate);
 }
-
+float UKF_GPS_VEL_N_TEMP=0.00035;
+float UKF_GPS_VD_N_TEMP=1;
 void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, float sAcc,float T) {
     float y[3];
     float noise[3];
@@ -576,9 +580,9 @@ void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, 
     UKF_VELE = navUkfData.velE[histIndex];
     UKF_VELD = navUkfData.velD[histIndex];
 
-    noise[0] = UKF_GPS_VEL_N ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.nDOP*gpsData.nDOP) * UKF_GPS_VEL_M_N;
-    noise[1] = UKF_GPS_VEL_N ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.eDOP*gpsData.eDOP) * UKF_GPS_VEL_M_N;
-    noise[2] = UKF_GPS_VD_N  ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.vDOP*gpsData.vDOP) * UKF_GPS_VD_M_N;
+    noise[0] = UKF_GPS_VEL_N*UKF_GPS_VEL_N_TEMP ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.nDOP*gpsData.nDOP) * UKF_GPS_VEL_M_N;
+    noise[1] = UKF_GPS_VEL_N*UKF_GPS_VEL_N_TEMP ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.eDOP*gpsData.eDOP) * UKF_GPS_VEL_M_N;
+    noise[2] = UKF_GPS_VD_N*UKF_GPS_VD_N_TEMP  ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.vDOP*gpsData.vDOP) * UKF_GPS_VD_M_N;
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfVelUpdate);
 
@@ -735,7 +739,7 @@ void navUkfInitState(void) {
     // pos
     UKF_POSN = 0.0f;
     UKF_POSE = 0.0f;
-    UKF_POSD = navUkfPresToAlt(0);//AQ_PRESSURE);
+    UKF_POSD = AQ_PRESSURE;
 
     // acc bias
     UKF_ACC_BIAS_X = 0.0f;
@@ -753,7 +757,7 @@ void navUkfInitState(void) {
     UKF_Q3 =  0.0f;
     UKF_Q4 =  0.0f;
 
-    UKF_PRES_ALT = navUkfPresToAlt(0);//AQ_PRESSURE);
+    UKF_PRES_ALT = AQ_PRESSURE;
 
     // wait for lack of movement
    // imuQuasiStatic(UKF_GYO_AVG_NUM);
@@ -872,10 +876,15 @@ void navUkfInit(void) {
 
 }
 
+// reset current sea level static pressure based on better GPS estimate
+void navPressureAdjust(float altitude) {
+    navData_presAltOffset = altitude - ALTITUDE;
+}
+
 //--------------------------
 #include "ublox.h"
 runStruct_t runData;
-void runTaskCode(float posN,float PosE,float PosZ,float spdN,float spdE,float spdZ,float AQ_OUTER_TIMESTEP ) {
+void runTaskCode(float PosN,float PosE,float PosZ,float spdN,float spdE,float spdZ,float AQ_OUTER_TIMESTEP ) {
 static u8 init ;
 static  uint32_t axis = 0;
 static  uint32_t loops = 0;
@@ -919,7 +928,7 @@ if(!init){init=1;
 
 	// pressure
 	runData.sumPres -= runData.presHist[runData.sensorHistIndex];
-	runData.presHist[runData.sensorHistIndex] = 0;//AQ_PRESSURE;
+	runData.presHist[runData.sensorHistIndex] = AQ_PRESSURE;
 	runData.sumPres += runData.presHist[runData.sensorHistIndex];
 
 	runData.sensorHistIndex = (runData.sensorHistIndex + 1) % RUN_SENSOR_HIST;
@@ -942,16 +951,29 @@ if(!init){init=1;
 	// only accept GPS updates if there is no optical flow
 	else if (gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update&&((gps_init&&gps_data_vaild)||force_test)) {
 		  gps_update=0;
-		  float dt = Get_Cycle_T(GET_T_UKF_GPS);		
-	    navUkfGpsPosUpdate(gpsData_lastPosUpdate, gpsx.pvt.PVT_latitude, gpsx.pvt.PVT_longitude, gpsx.pvt.PVT_height, gpsx.pvt.PVT_Hacc+ runData.accMask,gpsx.pvt.PVT_Vacc + runData.accMask,dt);
-      navUkfGpsVelUpdate(gpsData_lastVelUpdate, gpsx.pvt.PVT_North_speed, gpsx.pvt.PVT_East_speed, gpsx.pvt.PVT_Down_speed, gpsx.pvt.PVT_Sacc + runData.accMask,dt);
+		  float dt = Get_Cycle_T(GET_T_UKF_GPS);
+		
+		if ( gpsx.pvt.PVT_Hacc*0.001< NAV_MIN_GPS_ACC &&1) 
+	  navUkfGpsPosUpdate(gpsData_lastPosUpdate, gpsx.pvt.PVT_latitude, gpsx.pvt.PVT_longitude, gpsx.pvt.PVT_height, gpsx.pvt.PVT_Hacc+ runData.accMask,gpsx.pvt.PVT_Vacc + runData.accMask,dt,PosN,PosE,PosZ);
+		else			
+    navUkfZeroPos();		
+	   //   
+    if ( gpsx.pvt.PVT_Sacc*0.001< NAV_MIN_GPS_ACC/2 &&1) 
+		navUkfGpsVelUpdate(gpsData_lastVelUpdate, gpsx.pvt.PVT_North_speed, gpsx.pvt.PVT_East_speed, -gpsx.pvt.PVT_Down_speed, gpsx.pvt.PVT_Sacc + runData.accMask,dt);
+    else
+		navUkfZeroVel();
+		// refine static sea level pressure based on better GPS altitude fixes
+	    if (gpsx.pvt.PVT_Hacc < runData.bestHacc && gpsx.pvt.PVT_Hacc*0.001 < NAV_MIN_GPS_ACC) {
+                navPressureAdjust(gpsx.pvt.PVT_height);
+		  runData.bestHacc =gpsx.pvt.PVT_Hacc;}
+
 	}
 	// observe zero position
 	else if (!((loops+4) % 20) && (gpsx.pvt.PVT_Hacc*0.001 >= NAV_MIN_GPS_ACC) ) {
 	    navUkfZeroPos();
 	}
 	// observer zero velocity
-	else if (!((loops+10) % 20) && (gpsx.pvt.PVT_Hacc*0.001 >= NAV_MIN_GPS_ACC/2 ) ) {
+	else if (!((loops+10) % 20) && (gpsx.pvt.PVT_Sacc*0.001 >= NAV_MIN_GPS_ACC/2 ) ) {
 	    navUkfZeroVel();
 	}
 	// observe that the rates are exactly 0 if not flying or moving
@@ -978,11 +1000,11 @@ if(!init){init=1;
 
         // determine which altitude estimate to use
         if (gpsx.pvt.PVT_Hacc*0.001 > 0.8f) {
-            runData.altPos = &ALT_POS;
+            runData.altPos = &ALT_POS;//baro ukf
             runData.altVel = &ALT_VEL;
         }
         else {
-            runData.altPos = &UKF_ALTITUDE;
+            runData.altPos = &UKF_ALTITUDE;//gps
             runData.altVel = &UKF_VELD;
         }
 
@@ -1026,7 +1048,7 @@ void runInit(void) {
     mag[1] = IMU_MAGY;
     mag[2] = IMU_MAGZ;
 
-    pres = 0;//AQ_PRESSURE;
+    pres = AQ_PRESSURE;
 
     // initialize sensor history
     for (i = 0; i < RUN_SENSOR_HIST; i++) {

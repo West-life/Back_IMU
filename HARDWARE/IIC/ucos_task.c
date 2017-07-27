@@ -185,8 +185,8 @@ void ekf_task(void *pdata)
   static u8 init,cnt_init;	
  	while(1)
 	{	
-ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
-if(cnt_init++>2&&!init){cnt_init=101;
+	ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
+	if(cnt_init++>2&&!init){cnt_init=101;
 		init=1;	
 	}
 	else{
@@ -218,7 +218,7 @@ if(cnt_init++>2&&!init){cnt_init=101;
 	
 	}
 	#if USE_UKF_FROM_AUTOQUAD
-  delay_ms(5);
+  delay_ms(10);
  #else
 	delay_ms(10);
  #endif
@@ -561,9 +561,9 @@ if(debug_pi_flow[0])
 								X_ukf[4]*100,pi_flow.spdy*100,imu_nav.flow.speed.y*100,
 								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
 								case 15:
-								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,0,
-								Global_GPS_Sensor.NED_Vel[0]*100, Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Pos[0]*100,
-								Global_GPS_Sensor.NED_Acc[0]*10, Global_GPS_Sensor.NED_Acc[1]*10, gpsx.pvt.PVT_height*100);break;
+								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,UKF_VELD*100,
+								Global_GPS_Sensor.NED_Vel[0]*100, Global_GPS_Sensor.NED_Vel[1]*100,gpsx.pvt.PVT_Down_speed*100,
+								UKF_POSE*100, UKF_POSD*100, gpsx.pvt.PVT_height*100);break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
 								flow_rad.integrated_xgyro,flow_rad.integrated_ygyro,flow_rad.integrated_zgyro,
