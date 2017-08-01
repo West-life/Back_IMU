@@ -8,7 +8,7 @@
 #include  <math.h> 
 #include "cycle_cal_oldx.h"
 #define FILTER_NUM 			10					//滑动平均滤波数值个数
-u8 IMU1_Fast;
+u8 IMU1_Fast=0;
 LIS3MDL_S lis3mdl;
 Cal_Cycle_OLDX acc_lsq;
 #define LIS3MDL_SA1_HIGH_ADDRESS  0x1E
@@ -471,22 +471,90 @@ static float Data_conversion(float *AccBuffer,float *MagBuffer)
 	    return HeadingValue ;
 }
 
-#define  IIR_ORDER     4      //使用IIR滤波器的阶数
-static double b_IIR[IIR_ORDER+1] ={ 0.0004  ,  0.0017  ,  0.0025  ,  0.0017 ,   0.0004};  //系数b
-static double a_IIR[IIR_ORDER+1] ={ 1.0000   ,-3.1806   , 3.8612  , -2.1122  ,  0.4383};//系数a
-static double InPut_IIR[3][IIR_ORDER+1] = {0};
-static double OutPut_IIR[3][IIR_ORDER+1] = {0};
+//#define IIR_ACC_ODER_20HZ_4
+//#define IIR_ACC_ODER_20HZ_10
+#define IIR_ACC_ODER_50HZ_10
+#if defined(IIR_ACC_ODER_20HZ_4)
+#define  IIR_ORDER_ACC     4      //使用IIR滤波器的阶数
+static double b_IIR[IIR_ORDER_ACC+1] ={ 0.004824  ,  0.0193  ,  0.02894  ,  0.01929 ,   0.0048};  //系数b
+static double a_IIR[IIR_ORDER_ACC+1] ={ 1.0000   ,-2.3695   , 2.3139  , -1.0546  ,  0.1873};//系数a
+#elif defined(IIR_ACC_ODER_20HZ_10)
+#define  IIR_ORDER_ACC     10      //使用IIR滤波器的阶数
+static double b_IIR[IIR_ORDER_ACC+1] ={ 0.0000016835  ,  0.000016835  ,  0.0000757611  ,  0.0002020 ,   0.00035355, 0.00042426, 0.0003535520 ,0.0002020,0.00007576,0.000016835,0.0000016835};  //系数b
+static double a_IIR[IIR_ORDER_ACC+1] ={ 1.0000   ,-5.987589   , 16.67219 , -28.25878  ,  32.15975648, -25.601749, 14.405687, -5.6470743,1.473727,-0.230919345,0.016479};//系数a
+#elif defined(IIR_ACC_ODER_50HZ_10)
+#define  IIR_ORDER_ACC     10      //使用IIR滤波器的阶数
+static double b_IIR[IIR_ORDER_ACC+1] ={
+0.002896  , 
+0.028964  ,  
+0.130344  , 
+0.347573 ,   
+0.608253,
+	0.7299,
+0.608253,
+0.34757,
+0.13034,
+0.02896,
+0.00289644};  //系数b
+static double a_IIR[IIR_ORDER_ACC+1] ={ 
+1.0000   ,
+-0.00000000000000070392394887475548 ,   
+1.3403832676990335             ,    
+-0.00000000000000071634263963324618  ,
+0.54535390952381768              ,     
+-0.0000000000000002072992030116616 ,   
+0.077041166101195616           ,     
+-0.00000000000000001851233148950247   ,
+0.0031654815483433932      ,
+-0.00000000000000000036075315368053437,	
+0.000016778797726675533              
+};//系数a
 
-static double b_IIR_gro[IIR_ORDER+1] ={0.0008f, 0.0032f, 0.0048f, 0.0032f, 0.0008f};  //系数b
-static double a_IIR_gro[IIR_ORDER+1] ={1.0000f, -3.0176f, 3.5072f, -1.8476f, 0.3708f};//系数a
-static double InPut_IIR_gro[3][IIR_ORDER+1] = {0};
-static double OutPut_IIR_gro[3][IIR_ORDER+1] = {0};
+#endif
+static double InPut_IIR[3][IIR_ORDER_ACC+1] = {0};
+static double OutPut_IIR[3][IIR_ORDER_ACC+1] = {0};
+
+#define IIR_ORDER_GRO 10
+static double b_IIR_gro[IIR_ORDER_GRO+1] ={ 0.0000016835  ,  0.000016835  ,  0.0000757611  ,  0.0002020 ,   0.00035355, 0.00042426, 0.0003535520 ,0.0002020,0.00007576,0.000016835,0.0000016835};  //系数b
+static double a_IIR_gro[IIR_ORDER_GRO+1] ={ 1.0000   ,-5.987589   , 16.67219 , -28.25878  ,  32.15975648, -25.601749, 14.405687, -5.6470743,1.473727,-0.230919345,0.016479};//系数a
+static double InPut_IIR_gro[3][IIR_ORDER_GRO+1] = {0};
+static double OutPut_IIR_gro[3][IIR_ORDER_GRO+1] = {0};
+
+#define IIR_ORDER_MAG 10
+static double b_IIR_mag[IIR_ORDER_MAG+1] ={
+0.002896  , 
+0.028964  ,  
+0.130344  , 
+0.347573 ,   
+0.608253,
+	0.7299,
+0.608253,
+0.34757,
+0.13034,
+0.02896,
+0.00289644};  //系数b
+static double a_IIR_mag[IIR_ORDER_MAG+1] ={ 
+1.0000   ,
+-0.00000000000000070392394887475548 ,   
+1.3403832676990335             ,    
+-0.00000000000000071634263963324618  ,
+0.54535390952381768              ,     
+-0.0000000000000002072992030116616 ,   
+0.077041166101195616           ,     
+-0.00000000000000001851233148950247   ,
+0.0031654815483433932      ,
+-0.00000000000000000036075315368053437,	
+0.000016778797726675533              
+};
+static double InPut_IIR_mag[3][IIR_ORDER_MAG+1] = {0};
+static double OutPut_IIR_mag[3][IIR_ORDER_MAG+1] = {0};
 
 static float lis3mdl_tmp[7],mpu_fil_tmp[7];
 static s16 FILT_BUF[7][(FILTER_NUM + 1)];
 static uint8_t filter_cnt = 0,filter_cnt_old = 0;
+utilFilter_t acc_tempFilter;
 void LIS_Data_Prepare(float T)
-{	
+{	static u8 init;
 	u8 i;
 	s32 FILT_TMP[7] = {0,0,0,0,0,0,0};
   float Gyro_tmp[3];
@@ -495,7 +563,10 @@ void LIS_Data_Prepare(float T)
 	Gyro_tmp[0] = lis3mdl.Gyro_I16.x ;//
   Gyro_tmp[1] = lis3mdl.Gyro_I16.y ;//
 	Gyro_tmp[2] = lis3mdl.Gyro_I16.z ;//
-
+  if(!init)
+	{init=1;
+	utilFilterInit(&acc_tempFilter, 0.005, 5.0, 20);
+	}
 
 	lis3mdl.TEM_LPF += 2 *3.14f *T *(lis3mdl.Tempreature - lis3mdl.TEM_LPF);
 	lis3mdl.Ftempreature = lis3mdl.TEM_LPF/340.0f + 36.5f;
@@ -511,33 +582,21 @@ void LIS_Data_Prepare(float T)
 		filter_cnt_old = (filter_cnt == FILTER_NUM)? 0 : (filter_cnt + 1);
 	}
 //10 170 4056
-	/* 得出校准后的数据 */
-#define EN_ODR_MINE 0	
-#if EN_ODR_MINE
-	lis3mdl_tmp[A_X] = IIR_I_Filter(lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
-	lis3mdl_tmp[A_Y] = IIR_I_Filter(lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
-	lis3mdl_tmp[A_Z] = IIR_I_Filter(lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
-	
-	lis3mdl_tmp[G_X] = IIR_I_Filter(Gyro_tmp[0] - lis3mdl.Gyro_Offset.x , InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-	lis3mdl_tmp[G_Y] = IIR_I_Filter(Gyro_tmp[1] - lis3mdl.Gyro_Offset.y , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-	lis3mdl_tmp[G_Z] = IIR_I_Filter(Gyro_tmp[2] - lis3mdl.Gyro_Offset.z , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-#else
-	
+	/* 得出校准后的数据 */	
 	if(lis3mdl.Cali_3d){
 	lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Off_3d.x)*lis3mdl.Gain_3d.x;// - lis3mdl.Acc_Offset.x*en_off_3d_off;
 	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Off_3d.y)*lis3mdl.Gain_3d.y;// - lis3mdl.Acc_Offset.y*en_off_3d_off;
 	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Off_3d.z)*lis3mdl.Gain_3d.z;// - lis3mdl.Acc_Offset.z*en_off_3d_off;
 	}
    else{			
-  lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x);//, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
-	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y);//, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
-	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z);//, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);
+  lis3mdl_tmp[A_X] = (lis3mdl.Acc_I16.x - lis3mdl.Acc_Offset.x);
+	lis3mdl_tmp[A_Y] = (lis3mdl.Acc_I16.y - lis3mdl.Acc_Offset.y);
+	lis3mdl_tmp[A_Z] = (lis3mdl.Acc_I16.z - lis3mdl.Acc_Offset.z);
 	 }
-	lis3mdl_tmp[G_X] = (Gyro_tmp[0] - lis3mdl.Gyro_Offset.x );//, InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-	lis3mdl_tmp[G_Y] = (Gyro_tmp[1] - lis3mdl.Gyro_Offset.y );//, InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-	lis3mdl_tmp[G_Z] = (Gyro_tmp[2] - lis3mdl.Gyro_Offset.z );//, InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR, IIR_ORDER+1, a_IIR, IIR_ORDER+1);;//
-#endif	
-	
+	lis3mdl_tmp[G_X] = (Gyro_tmp[0] - lis3mdl.Gyro_Offset.x );
+	lis3mdl_tmp[G_Y] = (Gyro_tmp[1] - lis3mdl.Gyro_Offset.y );
+	lis3mdl_tmp[G_Z] = (Gyro_tmp[2] - lis3mdl.Gyro_Offset.z );
+
 
 	/* 更新滤波滑动窗口数组 */
 	FILT_BUF[A_X][filter_cnt] = lis3mdl_tmp[A_X];
@@ -582,23 +641,33 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Gyro_deg.x = lis3mdl.Gyro.x *TO_ANGLE;
 	lis3mdl.Gyro_deg.y = lis3mdl.Gyro.y *TO_ANGLE;
 	lis3mdl.Gyro_deg.z = lis3mdl.Gyro.z *TO_ANGLE;
-	
-	
-	lis3mdl.Acc_t.x=lis3mdl.Acc.y;
+#define EN_LF_ACC 1
+#if EN_LF_ACC
+	lis3mdl.Acc_t.x = IIR_I_Filter(lis3mdl.Acc.y, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER_ACC+1, a_IIR, IIR_ORDER_ACC+1);
+	lis3mdl.Acc_t.y = IIR_I_Filter(-lis3mdl.Acc.x, InPut_IIR[1], OutPut_IIR[1], b_IIR, IIR_ORDER_ACC+1, a_IIR, IIR_ORDER_ACC+1);
+	lis3mdl.Acc_t.z = IIR_I_Filter(lis3mdl.Acc.z, InPut_IIR[2], OutPut_IIR[2], b_IIR, IIR_ORDER_ACC+1, a_IIR, IIR_ORDER_ACC+1);
+
+#else
+  lis3mdl.Acc_t.x=lis3mdl.Acc.y;
 	lis3mdl.Acc_t.y=-lis3mdl.Acc.x;
   lis3mdl.Acc_t.z=lis3mdl.Acc.z;
-	
+#endif		
+
 	lis3mdl.Gyro_t.x=lis3mdl.Gyro.y;
 	lis3mdl.Gyro_t.y=-lis3mdl.Gyro.x;
   lis3mdl.Gyro_t.z=lis3mdl.Gyro.z;
-		
+	
 	lis3mdl.Gyro_deg_t.x = lis3mdl.Gyro_t.x *TO_ANGLE;
 	lis3mdl.Gyro_deg_t.y = lis3mdl.Gyro_t.y *TO_ANGLE;
 	lis3mdl.Gyro_deg_t.z = lis3mdl.Gyro_t.z *TO_ANGLE;
 
-  lis3mdl.Mag_Val.x = firstOrderFilter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x),&firstOrderFilters[HML_LOWPASS_X],T);//*lis3mdl.Mag_Gain.x ;
-	lis3mdl.Mag_Val.y = firstOrderFilter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y),&firstOrderFilters[HML_LOWPASS_Y],T);//*lis3mdl.Mag_Gain.y ;
-	lis3mdl.Mag_Val.z = firstOrderFilter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z),&firstOrderFilters[HML_LOWPASS_Z],T);//*lis3mdl.Mag_Gain.z ;
+//  lis3mdl.Mag_Val.x = firstOrderFilter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x),&firstOrderFilters[HML_LOWPASS_X],T);//*lis3mdl.Mag_Gain.x ;
+//	lis3mdl.Mag_Val.y = firstOrderFilter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y),&firstOrderFilters[HML_LOWPASS_Y],T);//*lis3mdl.Mag_Gain.y ;
+//	lis3mdl.Mag_Val.z = firstOrderFilter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z),&firstOrderFilters[HML_LOWPASS_Z],T);//*lis3mdl.Mag_Gain.z ;
+	lis3mdl.Mag_Val.x = IIR_I_Filter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x)*lis3mdl.Mag_Gain.x , InPut_IIR_mag[0], OutPut_IIR_mag[0], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
+	lis3mdl.Mag_Val.y = IIR_I_Filter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y)*lis3mdl.Mag_Gain.y , InPut_IIR_mag[1], OutPut_IIR_mag[1], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
+	lis3mdl.Mag_Val.z = IIR_I_Filter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z)*lis3mdl.Mag_Gain.z , InPut_IIR_mag[2], OutPut_IIR_mag[2], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
+	
 	
 	lis3mdl.Mag_Val_t.x=lis3mdl.Mag_Val.y;
 	lis3mdl.Mag_Val_t.y=-lis3mdl.Mag_Val.x;
@@ -611,6 +680,12 @@ float AccBuffer[3],MagBuffer[3];
 		else 
 			module.hml=1;
 	}
+		static float yaw_reg;
+		if(ABS(To_180_degrees(Yaw-yaw_reg)/T-lis3mdl.Gyro_deg_t.z)>120)
+    module.hml=0;
+		yaw_reg=Yaw;
+	
+	
 	lis3mdl.yaw=Data_conversion(AccBuffer,MagBuffer);
 	static u8 state[3];
 	switch (state[0]){

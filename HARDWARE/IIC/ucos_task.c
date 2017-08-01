@@ -37,6 +37,7 @@ u8 GOL_LINK_BUSY[2]={0,0};
 
 //========================外环  任务函数============================
 OS_STK INNER_TASK_STK[INNER_STK_SIZE];
+u16 cnt_time[2];
 #include "LSM303.h"
 void inner_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2,cnt3,cnt4,cnt5;			
@@ -51,23 +52,27 @@ void inner_task(void *pdata)
 	inner_loop_time_time=0.005;
 	}
 	else{
+	if(inner_loop_time_time<0.006)	
+		cnt_time[0]++;
+	else 
+		cnt_time[1]++;
 							//获取内环准确的执行周期
 	if(inner_loop_time_time<0.000002)inner_loop_time_time=0.005;
-	#if IMU_UPDATE	
-	if(cnt5++>0)	
-	#endif 
-	{cnt5=0;
-		if(mpu6050.good)
-		MPU6050_Read(); 															//读取mpu6轴传感器
-  if(cnt++>=3){cnt=0;
-		if(mpu6050.good)
-	  ANO_AK8975_Read();//75hz	
-	}			//获取电子罗盘数据	
-  if(cnt1++>=2){cnt1=0;
-		if(mpu6050.good)
-	MS5611_ThreadNew();//100hz
-	}
-  }
+//	#if IMU_UPDATE	
+//	if(cnt5++>0)	
+//	#endif 
+//	{cnt5=0;
+//		if(mpu6050.good)
+//		MPU6050_Read(); 															//读取mpu6轴传感器
+//  if(cnt++>=3){cnt=0;
+//		if(mpu6050.good)
+//	  ANO_AK8975_Read();//75hz	
+//	}			//获取电子罗盘数据	
+//  if(cnt1++>=2){cnt1=0;
+//		if(mpu6050.good)
+//	MS5611_ThreadNew();//100hz
+//	}
+//  }
 	
 	#if IMU_UPDATE	
 	LSM6_readAcc(0);
@@ -77,12 +82,43 @@ void inner_task(void *pdata)
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
 	if(cnt3++>=5){cnt3=0;
-	if(!mpu6050.good)
-	LP_readbmp(0);//25hz
+	//if(!mpu6050.good)
+	//LP_readbmp(0);//25hz
 	}
 	#endif
 	MPU6050_Data_Prepare( inner_loop_time_time );			//mpu6轴传感器数据处理
+	
+	#if UKF_IN_ONE_THREAD
+	if(!lis3mdl.Mag_CALIBRATED)		
+	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),inner_loop_time_time);
+	RollR=AQ_ROLL;
+	PitchR=AQ_PITCH;
+	YawR=AQ_YAW;
+
+	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
+	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
+	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
+	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
+	reference_vr[0]=reference_vr_imd_down[0];
+	reference_vr[1]=reference_vr_imd_down[1]; 
+	reference_vr[2]=reference_vr_imd_down[2];
+	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
+	Pitch_mid_down=Pitch=PitchR;
+	Roll_mid_down=Roll=RollR;
+	if(imu_feed_dog==1&&FC_CONNECT==1)
+	IWDG_Feed();//喂狗
+   
+	static u8 cnt_bmp;
+	if(cnt_bmp++>1){cnt_bmp=0;
+	//altUkfProcess(0);
+	}
+	#endif
+	
   }
+
 	delay_ms(5);
 	}
 }		
@@ -329,7 +365,7 @@ float flow_matlab_data[4];
 float baro_matlab_data[2];
 float flow_loop_time;
 
-
+float k_flow_devide_pi=0.486;
 void flow_task1(void *pdata)
 {float flow_height_fliter;		
  static float acc_neo_off[3];
@@ -382,11 +418,18 @@ void flow_task1(void *pdata)
 	  flow_ground_temp[3]=-pi_flow.sensor.spdx;
 	  #else 
 	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
+		if(module.pi_flow&&!module.flow&&!module.flow_iic){
+		flow_ground_temp[0]=pi_flow.sensor.spdy*k_flow_devide_pi;
+		flow_ground_temp[1]=-pi_flow.sensor.spdx*k_flow_devide_pi;
+		flow_ground_temp[2]=pi_flow.sensor.spdy*k_flow_devide_pi;
+		flow_ground_temp[3]=-pi_flow.sensor.spdx*k_flow_devide_pi;
+		}else{
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
 		flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
-	  flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
-    #endif
+		flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
+		}
+		#endif
 		static float a_br[3]={0};	
 		static float acc_temp[3]={0};
 		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
@@ -399,9 +442,22 @@ void flow_task1(void *pdata)
 	  acc_temp[2] =(reference_vr[2] *a_br[2] + reference_vr[0] *a_br[0] + reference_vr[1] *a_br[1]);
     if(fabs(acc_temp[0])<1.5&&fabs(acc_temp[1])<1.5){
 		static float acc_neo_temp[3]={0};
+		#if USE_UKF_FROM_AUTOQUAD
+		float accIn[3];
+    accIn[0] = IMU_ACCX;// + UKF_ACC_BIAS_X;
+    accIn[1] = IMU_ACCY;// + UKF_ACC_BIAS_Y;
+    accIn[2] = IMU_ACCZ;// + UKF_ACC_BIAS_Z;
+    float acc[3];
+    // rotate acc to world frame
+    navUkfRotateVectorByQuat(acc, accIn, &UKF_Q1);
+		acc_neo_temp[0]=-acc[0];
+		acc_neo_temp[1]=-acc[1];
+		acc_neo_temp[2]=-(acc[2]+9.87);	
+		#else
 	  acc_neo_temp[0]=-acc_temp[0]*9.87;
 		acc_neo_temp[1]=-acc_temp[1]*9.87;
 		acc_neo_temp[2]=(acc_temp[2]-1.0f)*9.87;		
+		#endif
 	  if(en_ble_debug||imu_board_test)
 			;
 		else if(!fly_ready){
@@ -414,9 +470,9 @@ void flow_task1(void *pdata)
     acc_neo_temp1[0]=Moving_Median(5,5,acc_neo_temp[0]-acc_neo_off[0]);
 		acc_neo_temp1[1]=Moving_Median(6,5,acc_neo_temp[1]-acc_neo_off[1]);
 		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
-		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
-		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
-		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+//		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
+//		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+//		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
 		
 //		acc_flt[0]=acc_neo_temp1[0];
 //		acc_flt[1]=acc_neo_temp1[1];
@@ -433,9 +489,10 @@ void flow_task1(void *pdata)
 		flow_matlab_data[2]=flow_ground_temp[2];//spd
 		flow_matlab_data[3]=flow_ground_temp[3];
 		
-
+    #if !USE_UKF_FROM_AUTOQUAD
 		FlowUkfProcess(0);//FK filter
-		
+		#endif
+	 
 		float temp_spd[2];
 		temp_spd[0]=Moving_Median(16,MID_CNT_SPD,FLOW_VEL_X);
 		temp_spd[1]=Moving_Median(17,MID_CNT_SPD,FLOW_VEL_Y);
@@ -446,16 +503,6 @@ void flow_task1(void *pdata)
 }	
 
 
-//=======================DEBUG串口 任务函数===========================
-OS_STK  UART_TASK_STK[UART_STK_SIZE];
-u8 en_imu_debug,force_imu_debug;
-void uart_task(void *pdata)
-{	static u8 cnt[4];					 		
- 	while(1)
-	{
-		delay_ms(5);  
-	}
-}	
 
 u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
@@ -477,7 +524,7 @@ void TIM3_IRQHandler(void)
 		Send_TO_FLOW_PI();		
   }		
 							//获取内环准确的执行周期
-	if(time_uart<0.000002)time_uart=0.0025;
+	if(time_uart<0.000002)time_uart=0.005;
 		#if EN_DMA_UART2 			
 			     if(DMA_GetFlagStatus(DMA1_Stream6,DMA_FLAG_TCIF6)!=RESET)//等待DMA2_Steam7传输完成
 								{ 
@@ -490,12 +537,12 @@ void TIM3_IRQHandler(void)
 					#else
 								 GOL_LINK_TASK();
 					#endif
-//		SPI_ReadWriteByte(0xaa); 		
-debug_pi_flow[0]=0;  
-en_ble_debug=1;								
+	
+	debug_pi_flow[0]=0;  
+	en_ble_debug=1;								
 if(debug_pi_flow[0])									
   en_ble_debug=1;
-	if(cnt++>4-1){cnt=0;	
+	if(cnt++>2-1){cnt=0;	
 								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
 								switch(UART_UP_LOAD_SEL)
@@ -553,7 +600,7 @@ if(debug_pi_flow[0])
 								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
 								0,flow_rad.integrated_x*1000,accumulated_flow_x*1000);break;	
 								case 13:
-								Send_BLE_DEBUG(0,0,X_kf_baro[1]*100,
+								Send_BLE_DEBUG(0,gpsx.pvt.PVT_Down_speed*100,X_kf_baro[1]*100,
 								(ultra_distance),m100.H*100,X_kf_baro[0]*100,
 								m100.H_Spd*1000,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100);break;
 								case 14:
@@ -561,7 +608,7 @@ if(debug_pi_flow[0])
 								X_ukf[4]*100,pi_flow.spdy*100,imu_nav.flow.speed.y*100,
 								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
 								case 15:
-								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,UKF_VELD*100,
+								Send_BLE_DEBUG(X_ukf[1]*100,X_ukf[4]*100,UKF_VELD_F*100,
 								Global_GPS_Sensor.NED_Vel[0]*100, Global_GPS_Sensor.NED_Vel[1]*100,gpsx.pvt.PVT_Down_speed*100,
 								UKF_POSE*100, UKF_POSD*100, gpsx.pvt.PVT_height*100);break;
 								case 16:
@@ -588,6 +635,8 @@ void error_task(void *pdata)
 			gps_good=0;
 		if(pi_flow.loss_cnt++>1/0.2)
 			pi_flow.insert=0;
+		if(pi_flow.sensor.loss_cnt++>1/0.2)
+			pi_flow.sensor.connect=0;
 	  if(fc_loss_cnt++>3/0.2)
 			FC_CONNECT=0;
 		
@@ -597,6 +646,8 @@ void error_task(void *pdata)
 			Laser_start();
 		else 
 			Laser_stop();
+		
+		
 		delay_ms(200); 
 	}
 }	

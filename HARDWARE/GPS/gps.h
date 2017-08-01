@@ -37,21 +37,27 @@ __packed typedef struct
 //NMEA 0183 协议解析后数据存放结构体
 
 
-
-
 __packed typedef struct  
 {
- u32 rx_cnt;
- float rx_dt;	
- u8 PVT_fixtype;//2-2D  3-3D
- u8 PVT_numsv;
- double PVT_longitude;
- double PVT_latitude;
- float PVT_height;//m
- u16 PVT_Hacc,PVT_Vacc,PVT_Sacc;//mm
- float PVT_Headacc;	//degree
- float headMot,headVeh;//degree
- float PVT_North_speed,PVT_East_speed,PVT_Down_speed,PVT_speed;//m/s	
+	u32 rx_cnt;
+	float rx_dt;	
+	u8 PVT_fixtype;//2-2D  3-3D
+	u8 PVT_numsv;
+	double PVT_longitude;
+	double PVT_latitude;
+	float PVT_height;//m
+	float PVT_North_speed,PVT_East_speed,PVT_Down_speed,PVT_speed;//m/s		
+	float headMot,headVeh;//degree
+	float PVT_Headacc;	//degree
+
+	u16 PVT_Hacc,PVT_Vacc,PVT_Sacc;//mm
+	u16 gDOP ;//- Geometric DOP
+	u16 pDOP ;//- Position DOP
+	u16 tDOP ;// Time DOP
+	u16 vDOP ;// Vertical DOP
+	u16 hDOP ;// Horizontal DOP
+	u16 nDOP ;// Northing DOP
+	u16 eDOP ;// Easting DOP
 }PVT;
 
 __packed typedef struct  

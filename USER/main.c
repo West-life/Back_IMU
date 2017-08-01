@@ -54,9 +54,9 @@ void cpuidGetId(void)
     mcuID[2] = *(__IO u32*)(0x1FFF7A18);
 }
 
-
+float ekf_loop_time1;
 int main(void)
-   { 
+{ 
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();
@@ -149,9 +149,9 @@ int main(void)
 	MYDMA_Enable(DMA2_Stream7,SEND_BUF_SIZE1+2);     //开始一次DMA传输！	 
 #endif	
 #if EN_TIM_INNER
-  TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms    
+  TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms    
 #endif	
-  TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
+  TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
 	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
 	#define TEST1 0
@@ -160,7 +160,7 @@ int main(void)
 	{
 	LEDRGB_STATE();	
 	IWDG_Feed();
-	float ekf_loop_time = Get_Cycle_T(GET_T_EKF);		
+  ekf_loop_time1 = Get_Cycle_T(GET_T_EKF);		
   static u8 cnt4,cnt3;
 	#if IMU_UPDATE	
 	LSM6_readAcc(0);
@@ -168,35 +168,53 @@ int main(void)
 	if(cnt4++>=3){cnt4=0;
 	LIS3MDL_read(0);//80hz
 	}
-	LIS_Data_Prepare(ekf_loop_time)	;
+	LIS_Data_Prepare(ekf_loop_time1)	;
 	if(cnt3++>=5){cnt3=0;
 	if(!mpu6050.good)
 	LP_readbmp(0);//25hz
 	}
 	#endif
-	MPU6050_Data_Prepare( ekf_loop_time );
+	MPU6050_Data_Prepare( ekf_loop_time1 );
 	float RollRm,PitchRm,YawRm;
 //	madgwick_update_new(
 //	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
 //	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*1.2,
 //	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
 //	&RollRm,&PitchRm,&YawRm,ekf_loop_time);	
-	RollR=RollRm=AQ_ROLL;
+//	RollR=RollRm=AQ_ROLL;
+//	PitchR=PitchRm=AQ_PITCH;
+//	YawR=YawRm=AQ_YAW;
+//	reference_vr[0]=reference_vr_imd_down[0];
+//	reference_vr[1]=reference_vr_imd_down[1]; 
+//	reference_vr[2]=reference_vr_imd_down[2];
+//	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
+//	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
+//	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
+//	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 	
+//	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
+//	Pitch_mid_down=Pitch=PitchR;
+//	Roll_mid_down=Roll=RollR;
+	
+	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time1);
+  RollR=RollRm=AQ_ROLL;
 	PitchR=PitchRm=AQ_PITCH;
 	YawR=YawRm=AQ_YAW;
-	reference_vr[0]=reference_vr_imd_down[0];
-	reference_vr[1]=reference_vr_imd_down[1]; 
-	reference_vr[2]=reference_vr_imd_down[2];
+
 	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
 	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
 	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
-	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 	
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
+	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
+	reference_vr[0]=reference_vr_imd_down[0];
+	reference_vr[1]=reference_vr_imd_down[1]; 
+	reference_vr[2]=reference_vr_imd_down[2];
 	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
 	Pitch_mid_down=Pitch=PitchR;
 	Roll_mid_down=Roll=RollR;
 	
-	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
-  delay_ms(10);
+	//delay_ms(10);
 	}
 	#endif
 	OSInit();  	 				
@@ -229,11 +247,14 @@ void start_task(void *pdata)
 	#if !EN_TIM_INNER
 	OSTaskCreate(inner_task,(void *)0,(OS_STK*)&INNER_TASK_STK[INNER_STK_SIZE-1],INNER_TASK_PRIO);
 	#endif
+	#if !UKF_IN_ONE_THREAD
 	OSTaskCreate(ekf_task,(void *)0,(OS_STK*)&EKF_TASK_STK[EKF_STK_SIZE-1],EKF_TASK_PRIO);
+	#endif
 	OSTaskCreate(flow_task1,(void *)0,(OS_STK*)&FLOW_TASK_STK[FLOW_STK_SIZE-1],FLOW_TASK_PRIO);
+	//#if !UKF_IN_ONE_THREAD
 	OSTaskCreate(baro_task,(void *)0,(OS_STK*)&BARO_TASK_STK[BARO_STK_SIZE-1],BARO_TASK_PRIO);
+	//#endif
 	OSTaskCreate(sonar_task,(void *)0,(OS_STK*)&SONAR_TASK_STK[SONAR_STK_SIZE-1],SONAR_TASK_PRIO);	
-	//OSTaskCreate(uart_task,(void *)0,(OS_STK*)&UART_TASK_STK[UART_STK_SIZE-1],UART_TASK_PRIO);
 	OSTaskCreate(error_task,(void *)0,(OS_STK*)&ERROR_TASK_STK[ERROR_STK_SIZE-1],ERROR_TASK_PRIO);
 	//--
  	OSTaskSuspend(START_TASK_PRIO);	//挂起起始任务.

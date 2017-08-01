@@ -658,6 +658,11 @@
               <FilePath>..\HARDWARE\IIC\time.c</FilePath>
             </File>
             <File>
+              <FileName>dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\dma.c</FilePath>
+            </File>
+            <File>
               <FileName>watch_dog.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\watch_dog.c</FilePath>
@@ -671,16 +676,6 @@
               <FileName>gps.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\GPS\gps.c</FilePath>
-            </File>
-            <File>
-              <FileName>ublox.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ublox.c</FilePath>
-            </File>
-            <File>
-              <FileName>dma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\dma.c</FilePath>
             </File>
             <File>
               <FileName>usart_fc.c</FileName>
@@ -708,14 +703,14 @@
               <FilePath>..\HARDWARE\IIC\mpu6050.c</FilePath>
             </File>
             <File>
-              <FileName>hml_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
-            </File>
-            <File>
               <FileName>ms5611_2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\ms5611_2.c</FilePath>
+            </File>
+            <File>
+              <FileName>fliter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
             </File>
             <File>
               <FileName>ultrasonic.c</FileName>
@@ -726,6 +721,11 @@
               <FileName>laser.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\laser.c</FilePath>
+            </File>
+            <File>
+              <FileName>hml_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
             </File>
             <File>
               <FileName>cycle_cal_oldx.lib</FileName>
@@ -742,11 +742,6 @@
         <Group>
           <GroupName>MATH&amp;FUSION</GroupName>
           <Files>
-            <File>
-              <FileName>fliter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
-            </File>
             <File>
               <FileName>FastMath.c</FileName>
               <FileType>1</FileType>
@@ -768,6 +763,11 @@
           <GroupName>EKF&amp;IMU</GroupName>
           <Files>
             <File>
+              <FileName>nav_ukf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
+            </File>
+            <File>
               <FileName>imu.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\imu.c</FilePath>
@@ -776,11 +776,6 @@
               <FileName>imu_m.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\imu_m.c</FilePath>
-            </File>
-            <File>
-              <FileName>nav_ukf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
             </File>
           </Files>
         </Group>

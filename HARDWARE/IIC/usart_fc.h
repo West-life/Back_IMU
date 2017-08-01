@@ -305,7 +305,7 @@ void data_per_uart4(u8 sel);
 #define SEND_IMU_DEBUG 5
 #define SEND_IMU_QR 6
 #define SEND_IMU_MEMS 7
-
+#define SEND_ALL 9
 extern float sonar_fc,baroAlt_fc;
 extern float k_flow_devide;
 extern float flow_module_offset_y,flow_module_offset_x,flow_module_set_yaw;//光流安装位移 单位米
@@ -345,8 +345,10 @@ float x,y,z,pit,rol,yaw;
 float spdx,spdy,spdz;
 u8 check,use_spd,connect;
 float yaw_off;
-u8 insert;
+u8 insert,update,qual;
+u32 last_update;
 u16 loss_cnt;
+float dt;
 };
 extern struct _QR qr;
 
@@ -356,7 +358,8 @@ float x,y,z,z_o,pit,rol,yaw;
 float spdx,spdy,spdz;
 float yaw_off;
 u16 loss_cnt;
-u8 check,use_spd,connect,insert;
+u8 check,use_spd,connect,insert,update;
+uint32_t last_update;	
 struct _QR sensor;
 float acc[3];
 float gyro[3];

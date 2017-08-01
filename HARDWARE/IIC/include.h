@@ -35,7 +35,7 @@
 #define NEW_IMU 1  //1使用LSD IMU
 #define FLOW_USE_FLY_LAB 0 //
 #define USE_UKF_FROM_AUTOQUAD 1
-
+#define UKF_IN_ONE_THREAD 1
 #define USE_M100_IMU 0  //使用DJI SDK数据
 #define SONAR_USE_FLOW 0 //使用光流  的 超声波
 #define USE_US100           //使用us100型号超声波 
@@ -106,7 +106,7 @@ extern float dj_angle_set,dj_angle_offset[3],Angle_Yun[2];
 #define PLANE_IS_BIG  0  //0->穿越机
 #define USE_CYCLE_HML_CAL  1//1->使用椭球拟合
 #define DEBUG_WITHOUT_SB 0
-#define GET_TIME_NUM 	(20)		//设置获取时间的数组数量
+#define GET_TIME_NUM 	(30)		//设置获取时间的数组数量
 #define USE_TOE_IN_UNLOCK 0 // 0：默认解锁方式，1：外八解锁方式
 //============== DMA使能=========================
 #define EN_DMA_UART1 0  //UPLOAD

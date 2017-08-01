@@ -21,6 +21,22 @@
 #include "ukf_task.h"
 #include "ekf_ins.h"
 #include "time.h"
+
+float IMU_MAG_DECL	=0.0;//
+float IMU_MAG_INCL	=-55.0;//65
+//pos
+float UKF_GPS_POS_N_TEMP=1;
+float UKF_GPS_POS_N_TEMPD=1;
+//spd
+float UKF_GPS_VEL_N_TEMP=0.00035*1;
+float UKF_GPS_VEL_N_TEMP_FLOW=0.00035*4;
+float UKF_GPS_VD_N_TEMP=1;
+float UKF_GPS_VD_N_TEMP_FLOW=1;
+//mag
+float UKF_MAG_N_TEMP=UKF_MAG_N/3;
+
+#define TIME_UP_FL 1
+u8 en_dop_gps=1;
 navUkfStruct_t navUkfData;
 u32 dImuData_lastUpdate;
 
@@ -226,13 +242,46 @@ static void navUkfRotateQuat(float *qOut, float *qIn, float *rate) {
     qOut[3] = -r[2]*q[0] - r[1]*q[1] + r[0]*q[2] +      q[3];
 }
 
+
+
+#define IIR_ORDER_ACC_UKF 10
+static double b_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={
+0.00049945407823310042,
+0.0049945407823310042 ,
+0.022475433520489523  ,
+0.059934489387972065  ,
+0.10488535642895111  , 
+0.12586242771474132  , 
+0.10488535642895111  , 	
+0.059934489387972065  ,	
+0.022475433520489523  ,
+0.0049945407823310042 ,
+0.00049945407823310042	
+};  //ÏµÊýb
+static double a_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={ 
+ 1     ,
+-1.9924014816014133,   
+3.0194828633553867  ,      
+-2.8185224264945168  ,  
+2.0387206370625282   ,
+-1.0545446210956813   ,
+ 0.41444626875039958  ,
+-0.11571862523682841  ,
+ 0.022498509272218331 ,
+-0.0026689123535761092	,
+ 0.0001487644521777628
+};
+static double InPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
+static double OutPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
+
+float time_update;
 void navUkfTimeUpdate(float *in, float *noise, float *out, float *u, float dt, int n) {
     float tmp[3], acc[3];
     float rate[3];
     float mat3x3[3*3];
     float q[4];
     int i;
-
+time_update = Get_Cycle_T(TIME_UPDATE);			
     // assume out == in
     out = in;
 
@@ -260,11 +309,25 @@ void navUkfTimeUpdate(float *in, float *noise, float *out, float *u, float dt, i
 	// rotate acc to world frame
 	navUkfRotateVecByMatrix(acc, tmp, mat3x3);
 	acc[2] += 9.8;
-
-	// vel
-	out[UKF_STATE_VELN*n + i] = in[UKF_STATE_VELN*n + i] + acc[0] * dt + noise[UKF_V_NOISE_VELN*n + i];
-	out[UKF_STATE_VELE*n + i] = in[UKF_STATE_VELE*n + i] + acc[1] * dt + noise[UKF_V_NOISE_VELE*n + i];
-	out[UKF_STATE_VELD*n + i] = in[UKF_STATE_VELD*n + i] + acc[2] * dt + noise[UKF_V_NOISE_VELD*n + i];
+  
+	float acc_temp[3];
+	
+//	acc_temp[0] = IIR_I_Filter(acc[0], InPut_IIR_acc_ukf[0], OutPut_IIR_acc_ukf[0], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
+//	acc_temp[1] = IIR_I_Filter(acc[1], InPut_IIR_acc_ukf[1], OutPut_IIR_acc_ukf[1], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
+//	acc_temp[2] = IIR_I_Filter(acc[2], InPut_IIR_acc_ukf[2], OutPut_IIR_acc_ukf[2], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
+#if TIME_UP_FL  
+acc_temp[0] =	firstOrderFilter(acc[0],&firstOrderFilters[ACC_LOWPASS_X],dt);
+acc_temp[1] =	firstOrderFilter(acc[1],&firstOrderFilters[ACC_LOWPASS_Y],dt);
+acc_temp[2] =	firstOrderFilter(acc[2],&firstOrderFilters[ACC_LOWPASS_Z],dt);
+#else
+acc_temp[0]=acc[0];
+acc_temp[1]=acc[1];
+acc_temp[2]=acc[2];
+#endif
+// vel
+	out[UKF_STATE_VELN*n + i] = in[UKF_STATE_VELN*n + i] + acc_temp[0] * dt + noise[UKF_V_NOISE_VELN*n + i];
+	out[UKF_STATE_VELE*n + i] = in[UKF_STATE_VELE*n + i] + acc_temp[1] * dt + noise[UKF_V_NOISE_VELE*n + i];
+	out[UKF_STATE_VELD*n + i] = in[UKF_STATE_VELD*n + i] + acc_temp[2] * dt + noise[UKF_V_NOISE_VELD*n + i];
 
 	// acc bias
 	out[UKF_STATE_ACC_BIAS_X*n + i] = in[UKF_STATE_ACC_BIAS_X*n + i] + noise[UKF_V_NOISE_ACC_BIAS_X*n + i] * dt;
@@ -301,7 +364,19 @@ void navUkfAccUpdate(float *u, float *x, float *noise, float *y) {
     y[2] += noise[2];
 }
 
+
 void navUkfMagUpdate(float *u, float *x, float *noise, float *y) {
+  float mag[3];	
+	    // calculate mag vector based on inclination
+    mag[0] = cosf(IMU_MAG_INCL * DEG_TO_RAD);
+    mag[1] = 0.0f;
+    mag[2] = -sinf(IMU_MAG_INCL * DEG_TO_RAD);
+
+    // rotate local mag vector to align with true north
+    navUkfData.v0m[0] = mag[0] * cosf(IMU_MAG_DECL * DEG_TO_RAD) - mag[1] * sinf(IMU_MAG_DECL  * DEG_TO_RAD);
+    navUkfData.v0m[1] = mag[1] * cosf(IMU_MAG_DECL * DEG_TO_RAD) + mag[0] * sinf(IMU_MAG_DECL  * DEG_TO_RAD);
+    navUkfData.v0m[2] = mag[2];
+
     navUkfRotateVectorByRevQuat(y, navUkfData.v0m, &x[UKF_STATE_Q1]);
     y[0] += noise[0];
     y[1] += noise[1];
@@ -437,7 +512,7 @@ void simDoAccUpdate(float accX, float accY, float accZ) {
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfAccUpdate);
 }
-float UKF_MAG_N_TEMP=UKF_MAG_N/2;
+
 void simDoMagUpdate(float magX, float magY, float magZ) {
     float noise[3];        // measurement variance
     float y[3];            // measurement(s)
@@ -480,8 +555,8 @@ void navUkfZeroPos(void) {
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfPosUpdate);
 }
-float UKF_GPS_POS_N_TEMP=1;
-void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, float hAcc, float vAcc ,float T,float posN,float posE,float posZ) {
+
+void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, float hAcc, float vAcc ,float T,float posN,float posE,float posZ,u8 sel) {
     float y[3];
     float noise[3];
     float posDelta[3];
@@ -492,10 +567,9 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
     }
 		
    if(init){
-		//navUkfCalcGlobalDistance(lat, lon, &y[0], &y[1]);
 	   y[0]=posN;
 		 y[1]=posE;
-		 y[2] = alt;
+		 y[2]=alt;
 
 	// determine how far back this GPS position update came from
 	histIndex = (micros() - (gpsMicros + UKF_POS_DELAY)) / (int)(1e6f * T);
@@ -515,9 +589,9 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
 	UKF_POSE = navUkfData.posE[histIndex];
 	UKF_POSD = navUkfData.posD[histIndex];
 
-	noise[0] = UKF_GPS_POS_N*UKF_GPS_POS_N_TEMP ;//+ hAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.nDOP*gpsData.nDOP) * UKF_GPS_POS_M_N;
-	noise[1] = UKF_GPS_POS_N*UKF_GPS_POS_N_TEMP ;//+ hAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.eDOP*gpsData.eDOP) * UKF_GPS_POS_M_N;
-	noise[2] = UKF_GPS_ALT_N ;//+ vAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.vDOP*gpsData.vDOP) * UKF_GPS_ALT_M_N;
+	noise[0] = (UKF_GPS_POS_N + en_dop_gps*hAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_POS_M_N) *UKF_GPS_POS_N_TEMP;
+	noise[1] = (UKF_GPS_POS_N + en_dop_gps*hAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.eDOP*0.01*gpsx.pvt.eDOP*0.01) * UKF_GPS_POS_M_N) *UKF_GPS_POS_N_TEMP;
+	noise[2] = (UKF_GPS_ALT_N + en_dop_gps*vAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_ALT_M_N)*UKF_GPS_POS_N_TEMPD;
 
 	srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfPosUpdate);
 
@@ -550,9 +624,8 @@ void navUkfZeroVel(void) {
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfVelUpdate);
 }
-float UKF_GPS_VEL_N_TEMP=0.00035;
-float UKF_GPS_VD_N_TEMP=1;
-void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, float sAcc,float T) {
+
+void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, float sAcc,float T,u8 sel) {
     float y[3];
     float noise[3];
     float velDelta[3];
@@ -563,6 +636,9 @@ void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, 
     y[2] = velD;
 
     // determine how far back this GPS velocity update came from
+	if(!sel)
+		histIndex = (micros() - (gpsMicros + UKF_VEL_DELAY_FLOW)) / (int)(1e6f * T);
+	else
     histIndex = (micros() - (gpsMicros + UKF_VEL_DELAY)) / (int)(1e6f * T);
     histIndex = navUkfData.navHistIndex - histIndex;
     if (histIndex < 0)
@@ -579,10 +655,15 @@ void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, 
     UKF_VELN = navUkfData.velN[histIndex];
     UKF_VELE = navUkfData.velE[histIndex];
     UKF_VELD = navUkfData.velD[histIndex];
-
-    noise[0] = UKF_GPS_VEL_N*UKF_GPS_VEL_N_TEMP ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.nDOP*gpsData.nDOP) * UKF_GPS_VEL_M_N;
-    noise[1] = UKF_GPS_VEL_N*UKF_GPS_VEL_N_TEMP ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.eDOP*gpsData.eDOP) * UKF_GPS_VEL_M_N;
-    noise[2] = UKF_GPS_VD_N*UKF_GPS_VD_N_TEMP  ;//+ sAcc * __sqrtf(gpsData.tDOP*gpsData.tDOP + gpsData.vDOP*gpsData.vDOP) * UKF_GPS_VD_M_N;
+		
+		float UKF_GPS_VEL_N_TEMP1,UKF_GPS_VD_N_TEMP1;	 
+		if(!sel)
+		{UKF_GPS_VEL_N_TEMP1=UKF_GPS_VEL_N_TEMP_FLOW;UKF_GPS_VD_N_TEMP1=UKF_GPS_VD_N_TEMP_FLOW;}
+		else
+		{UKF_GPS_VEL_N_TEMP1=UKF_GPS_VEL_N_TEMP;UKF_GPS_VD_N_TEMP1=UKF_GPS_VD_N_TEMP;}
+    noise[0] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
+    noise[1] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.eDOP*0.01*gpsx.pvt.eDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
+    noise[2] = (UKF_GPS_VD_N  + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_VD_M_N)*UKF_GPS_VD_N_TEMP1;
 
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfVelUpdate);
 
@@ -684,28 +765,6 @@ void navUkfFlowUpdate(void) {
 //    oldPitch = AQ_PITCH;
 }
 
-void navUkfOpticalFlow(int16_t x, int16_t y, uint8_t quality, float ground) {
-    // since this is called from a low priority thread,
-    // this flag just lets high priority threads know we
-    // are in the middle of things here.
-    navUkfData.flowLock = 1;
-
-    // valid sonar reading?
-    if (ground > 0.4f && ground < 4.50f) {
-	navUkfData.flowSumAlt += ground;
-	navUkfData.flowAltCount++;
-    }
-    // valid flow?
-    if (quality > 0) {
-	navUkfData.flowSumX += (x * -0.1f);
-	navUkfData.flowSumY += (y * -0.1f);
-	navUkfData.flowSumQuality += quality;
-	navUkfData.flowCount++;
-    }
-
-    navUkfData.flowLock = 0;
-}
-
 void navUkfResetBias(void) {
     // acc bias
     UKF_ACC_BIAS_X = 0.0f;
@@ -758,18 +817,9 @@ void navUkfInitState(void) {
     UKF_Q4 =  0.0f;
 
     UKF_PRES_ALT = AQ_PRESSURE;
-
-    // wait for lack of movement
-   // imuQuasiStatic(UKF_GYO_AVG_NUM);
-
-    // estimate initial orientation
     i = 0;
     do {
 	float rotError[3];
-
-	//lastUpdate = IMU_LASTUPD;
-	//while (lastUpdate == IMU_LASTUPD)
-	//    yield(1);
 
 	mag[0] = IMU_MAGX;
 	mag[1] = IMU_MAGY;
@@ -808,8 +858,7 @@ void navUkfInitState(void) {
 	i++;
     } while (i <= UKF_GYO_AVG_NUM*5);
 }
-float IMU_MAG_DECL	=0.0;
-float IMU_MAG_INCL	=-55.0;
+
 void navUkfInit(void) {
     float Q[SIM_S];		// state variance
     float V[SIM_V];		// process variance
@@ -897,7 +946,7 @@ if(!init){init=1;
 	// soft start GPS accuracy
 	runData.accMask *= 0.999f;
 
-	navUkfInertialUpdate(AQ_OUTER_TIMESTEP);
+	navUkfInertialUpdate(AQ_OUTER_TIMESTEP);//200 hz 5ms
 
 	// record history for acc & mag & pressure readings for smoothing purposes
 	// acc
@@ -949,17 +998,17 @@ if(!init){init=1;
 //	    navUkfFlowUpdate();
 //	}
 	// only accept GPS updates if there is no optical flow
-	else if (gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update&&((gps_init&&gps_data_vaild)||force_test)) {
+	else if ((gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update&&((gps_init&&gps_data_vaild)))||force_test) {
 		  gps_update=0;
 		  float dt = Get_Cycle_T(GET_T_UKF_GPS);
 		
 		if ( gpsx.pvt.PVT_Hacc*0.001< NAV_MIN_GPS_ACC &&1) 
-	  navUkfGpsPosUpdate(gpsData_lastPosUpdate, gpsx.pvt.PVT_latitude, gpsx.pvt.PVT_longitude, gpsx.pvt.PVT_height, gpsx.pvt.PVT_Hacc+ runData.accMask,gpsx.pvt.PVT_Vacc + runData.accMask,dt,PosN,PosE,PosZ);
+	  navUkfGpsPosUpdate(gpsData_lastPosUpdate, gpsx.pvt.PVT_latitude, gpsx.pvt.PVT_longitude, gpsx.pvt.PVT_height, gpsx.pvt.PVT_Hacc+ runData.accMask,gpsx.pvt.PVT_Vacc + runData.accMask,dt,PosN,PosE,PosZ,1);
 		else			
     navUkfZeroPos();		
 	   //   
     if ( gpsx.pvt.PVT_Sacc*0.001< NAV_MIN_GPS_ACC/2 &&1) 
-		navUkfGpsVelUpdate(gpsData_lastVelUpdate, gpsx.pvt.PVT_North_speed, gpsx.pvt.PVT_East_speed, -gpsx.pvt.PVT_Down_speed, gpsx.pvt.PVT_Sacc + runData.accMask,dt);
+		navUkfGpsVelUpdate(gpsData_lastVelUpdate, gpsx.pvt.PVT_North_speed, gpsx.pvt.PVT_East_speed, -gpsx.pvt.PVT_Down_speed, gpsx.pvt.PVT_Sacc + runData.accMask,dt,1);
     else
 		navUkfZeroVel();
 		// refine static sea level pressure based on better GPS altitude fixes
@@ -967,6 +1016,24 @@ if(!init){init=1;
                 navPressureAdjust(gpsx.pvt.PVT_height);
 		  runData.bestHacc =gpsx.pvt.PVT_Hacc;}
 
+	}
+	else if((module.pi_flow&&pi_flow.insert)&&pi_flow.sensor.update&&
+		!(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
+	{
+	 float dt = Get_Cycle_T(GET_T_UKF_FLOW);	
+	 float velNorth,velEast;	
+	 pi_flow.sensor.update=0;	
+	 Global_GPS_Sensor.NED_Vel[0]=velEast=-(flow_matlab_data[3]*cos(AQ_YAW*0.0173)-flow_matlab_data[2]*sin(AQ_YAW*0.0173));
+   Global_GPS_Sensor.NED_Vel[1]=velNorth=(flow_matlab_data[3]*sin(AQ_YAW*0.0173)+flow_matlab_data[2]*cos(AQ_YAW*0.0173));
+	 
+	 
+		
+		
+		if ((pi_flow.sensor.qual>188&&ALT_POS_SONAR3<3)||ALT_POS_SONAR3<0.3) 
+		navUkfGpsVelUpdate(pi_flow.sensor.last_update, velNorth, velEast, -ALT_VEL, gpsx.pvt.PVT_Sacc + runData.accMask,dt,0);
+    else
+		navUkfZeroVel();
+		
 	}
 	// observe zero position
 	else if (!((loops+4) % 20) && (gpsx.pvt.PVT_Hacc*0.001 >= NAV_MIN_GPS_ACC) ) {
@@ -1008,22 +1075,6 @@ if(!init){init=1;
             runData.altVel = &UKF_VELD;
         }
 
-//	CoSetFlag(runData.runFlag);	// new state data
-
-//	navNavigate();
-//#ifndef HAS_AIMU
-//	analogDecode();
-//#endif
-//	if (!(loops % (int)(1.0f / AQ_OUTER_TIMESTEP)))
-//	    loggerDoHeader();
-//	loggerDo();
-//	gimbalUpdate();
-
-//#ifdef CAN_CALIB
-//	canTxIMUData(loops);
-//#endif
-//        calibrate();
-
 	loops++;
     
 }
@@ -1034,11 +1085,6 @@ void runInit(void) {
     int i;
 
     memset((void *)&runData, 0, sizeof(runData));
-
-//    runData.runFlag = CoCreateFlag(1, 0);	    // auto reset
-//    runTaskStack = aqStackInit(RUN_TASK_SIZE, "RUN");
-
-//    runData.runTask = CoCreateTask(runTaskCode, (void *)0, RUN_PRIORITY, &runTaskStack[RUN_TASK_SIZE-1], RUN_TASK_SIZE);
 
     acc[0] = IMU_ACCX;
     acc[1] = IMU_ACCY;

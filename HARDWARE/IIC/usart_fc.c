@@ -18,6 +18,7 @@
 #include "gps.h"
 #include "ublox.h"
 #include "flow.h"
+#include "nav_ukf.h"
 void Usart2_Init(u32 br_num)//--GOL-link
 {
 	USART_InitTypeDef USART_InitStructure;
@@ -340,10 +341,10 @@ void Send_UKF1(void)
 	data_to_send[_cnt++]=BYTE2(_temp32);
 	data_to_send[_cnt++]=BYTE1(_temp32);
 	data_to_send[_cnt++]=BYTE0(_temp32);
-  _temp = (vs16)( ALT_VEL_BMP_UNION*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
+  _temp = (vs16)( UKF_POSD*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
-	_temp32 = (vs32) (ALT_POS_BMP_EKF*1000);//navUkfData.posE[0]*1000;
+	_temp32 = (vs32) (UKF_VELD*1000);//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE3(_temp32);
 	data_to_send[_cnt++]=BYTE2(_temp32);
 	data_to_send[_cnt++]=BYTE1(_temp32);
@@ -1034,10 +1035,10 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
-  _temp =  (vs16)  (ALT_VEL_BMP_UNION*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
+  _temp =  (vs16)  (UKF_VELD_F*1000);//  (ALT_VEL_BMP_UNION*1000);//(ALT_VEL_BMP_UNION*1000);//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp32 = (vs32) (ALT_POS_BMP_EKF*1000);//navUkfData.posE[0]*1000;
+	_temp32 = (vs32) (UKF_POSD*1000);//(ALT_POS_BMP_EKF*1000);//navUkfData.posE[0]*1000;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
@@ -1147,6 +1148,126 @@ switch(sel){
 		sum += SendBuff2[i];
 	SendBuff2[nrf_uart_cnt++] = sum;
 	break;//---------
+	
+	case SEND_ALL:
+	cnt_reg=nrf_uart_cnt;
+	SendBuff2[nrf_uart_cnt++]=0xAA;
+	SendBuff2[nrf_uart_cnt++]=0xAF;
+	SendBuff2[nrf_uart_cnt++]=0x88;//功能字
+	SendBuff2[nrf_uart_cnt++]=0;//数据量
+ 
+	_temp = (vs16)(Pitch*10);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+ 	_temp = (vs16)(Roll*10);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(Yaw*10);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	//-------------------
+	if(pi_flow.insert&&module.sonar==0)
+	_temp = (vs16)(	pi_flow.spdz*1000);
+	else
+	_temp = (vs16)(ALT_VEL_SONAR*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	#if SONAR_USE_FLOW
+	sys.sonar=1;
+	#endif
+	#if SENSOR_FORM_PI_FLOW_SONAR_NOT
+	if(sys.sonar)
+	_temp = (vs16)(ALT_POS_SONAR3*1000);
+	else
+	_temp= 9000;
+	#else
+	if(pi_flow.insert&&module.sonar==0)
+	_temp = (vs16)(pi_flow.z_o*1000);	
+	else if(sys.sonar)
+	_temp = (vs16)(ALT_POS_SONAR3*1000);
+	else
+	_temp= 9000;
+	#endif
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+  _temp =  (vs16)  (UKF_VELD_F*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32) (UKF_POSD*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+	//-------------oldx_ukf flow qr fushion
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
+	_temp = (vs16)(	pi_flow.x*1000);
+	else
+	_temp = (vs16)( X_ukf_Pos[0]*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
+	_temp = (vs16)(	pi_flow.y*1000);
+	else
+	_temp = (vs16) (X_ukf_Pos[1]*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	//spd-----------------------------------------
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
+	_temp = (vs16)(	pi_flow.spdx*1000);
+	else
+	_temp = (vs16)( X_ukf[1]*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
+	_temp = (vs16)(	pi_flow.spdy*1000);
+	else
+	_temp = (vs16) (X_ukf[4]*1000);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+
+	//--------------------	
+	_temp = (vs32)(local_Lon);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((local_Lon-(int)(local_Lon))*1000000000);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+	
+	_temp = (vs32)(local_Lat);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((local_Lat-(int)(local_Lat))*1000000000);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+
+  _temp32 = (vs32)(r1);
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+	_temp32 = (vs32)(r2);
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+  
+	 //origin
+	_temp = (gpsx.pvt.PVT_fixtype);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (gpsx.pvt.PVT_numsv);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+
+
+	
+	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
+	for( i=cnt_reg;i< nrf_uart_cnt;i++)
+		sum += SendBuff2[i];
+	SendBuff2[nrf_uart_cnt++] = sum;
+  break;	
 	default:break;
 }
 }
@@ -1155,31 +1276,32 @@ void GOL_LINK_TASK_DMA(void)//5ms
 {
 static u8 cnt[10];
 static u8 flag[10];
-	
+data_per_uart4(SEND_ALL);	
+/*	
 //传感器值
-data_per_uart4(SEND_IMU_MEMS);
-	
-if(cnt[1]++>=2-1){//5ms
-//姿态解算
-	cnt[1]=0;
+//data_per_uart4(SEND_IMU_MEMS);
+data_per_uart4(SEND_IMU_FLOW);		
+//if(cnt[1]++>1){//5ms
+////姿态解算
+//	cnt[1]=0;
+//data_per_uart4(SEND_IMU_FLOW);	
+//goto end_gol_link1;
+//}
+
+if(cnt[2]++>1)//10ms
+{cnt[2]=0;
 data_per_uart4(SEND_IMU_ATT);
 goto end_gol_link1;
 }
 
-if(cnt[2]++>=2-1)//10ms
-{cnt[2]=0;
-data_per_uart4(SEND_IMU_FLOW);
-goto end_gol_link1;
-}
-
-if(cnt[3]++>=5-1)//100ms
+if(cnt[3]++>2)//100ms
 {cnt[3]=0;
 data_per_uart4(SEND_IMU_GPS);
  goto end_gol_link1;
 }
 
 
-if(cnt[4]++>=10-1)//50ms
+if(cnt[4]++>2)//50ms
 {cnt[4]=0;
 //Send_Laser();
 //goto end_gol_link1;
@@ -1195,7 +1317,7 @@ if(cnt[5]++>30)
 
 
 
-end_gol_link1:;
+end_gol_link1:;*/
 }
 
 void clear_nrf_uart(void)
@@ -1646,9 +1768,9 @@ while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 USART_SendData(USART1, TX_BUF[i]); 
 }
 }
-
+float k_gps_dow_spd=2;
 uint32_t gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
-u8 Gps_data_get(u8 in)
+u8 Gps_data_get_PVT(u8 in)
 {
 	static u8 buf[100],state;	
 	static u16 cnt;
@@ -1729,7 +1851,7 @@ u8 Gps_data_get(u8 in)
 					 
 					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
 					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
-					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.*-1;
+					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.*-k_gps_dow_spd;
 					 gpsx.pvt.PVT_speed=(float)(int)((((u32)buf[63+6])<<24)|((u32)buf[62+6])<<16|((u32)buf[61+6])<<8|((u32)buf[60+6]))/1000.;	
 
 					 gpsx.pvt.headMot=(int)((((u32)buf[67+6])<<24)|((u32)buf[66+6])<<16|((u32)buf[65+6])<<8|((u32)buf[64+6]))*1e-5;
@@ -1742,7 +1864,76 @@ u8 Gps_data_get(u8 in)
 }
 
 
-
+u8 Gps_data_get_DOP(u8 in)
+{
+	static u8 buf[18+8],state;	
+	static u16 cnt;
+	u16 j;
+	u8 i=0,sum_a=0,sum_b=0;
+	switch(state)
+	{
+		case 0:
+			if(in==0xB5)
+			{
+			 for(j=0;j<18+8;j++)
+			 buf[j]=0;
+			cnt=0;buf[cnt++]=in;state++;}
+		break;
+	  case 1:
+			if(in==0x62)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+	  case 2:
+			if(in==0x01)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 3:
+			if(in==0x04)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 4:
+			if(in==18)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 5:
+			if(in==0x00)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 6:
+     if(cnt<18+8)
+			 buf[cnt++]=in;
+		 else 
+			 {  
+					for(i=2;i<18+8-2;i++)
+					{
+					sum_a+=buf[i];
+					sum_b+=sum_a;
+					}
+			   if(sum_a==buf[18+8-2]&&sum_b==buf[18+8-1])//0.1~0.2delay
+					{
+					gpsx.pvt.gDOP=(((u32)buf[5+6])<<8|((u32)buf[4+6]));		
+					gpsx.pvt.pDOP=(((u32)buf[7+6])<<8|((u32)buf[6+6]));	
+					gpsx.pvt.tDOP=(((u32)buf[9+6])<<8|((u32)buf[8+6]));	
+					gpsx.pvt.vDOP=(((u32)buf[11+6])<<8|((u32)buf[10+6]));	
+					gpsx.pvt.hDOP=(((u32)buf[13+6])<<8|((u32)buf[12+6]));	
+					gpsx.pvt.nDOP=(((u32)buf[15+6])<<8|((u32)buf[14+6]));	
+					gpsx.pvt.eDOP=(((u32)buf[17+6])<<8|((u32)buf[16+6]));							
+				  }
+					state=0;
+			 }
+    break;		
+	}
+}
 
 
 ///--
@@ -1828,14 +2019,14 @@ void USART1_IRQHandler(void)//-------------------GPS
 		com_data = USART1->DR;
 		#if !USE_M100_IMU
 		IMU_DJ_ANGLE(com_data);
-		//ubloxCharIn(com_data);
-		Gps_data_get(com_data);
+		Gps_data_get_PVT(com_data);
+		Gps_data_get_DOP(com_data);
 		#endif
+		
 		if(cnt++>50)
 			cnt=0;
 		else
 		USART3_RX_BUF[cnt]=com_data;
-
 		
 		if(RxState11==0&&com_data==0xAA)
 		{
@@ -2040,6 +2231,7 @@ void Data_Receive_Anl4(u8 *data_buf,u8 num)
 		module.pi_flow=1;
 		pi_flow.loss_cnt=0;
 		pi_flow.insert=1;
+	
 		pi_flow.x=(float)((vs16)(*(data_buf+4)<<8)|*(data_buf+5))/100.;
 		pi_flow.y=(float)((vs16)(*(data_buf+6)<<8)|*(data_buf+7))/100.;
 		pi_flow.z=(float)((vs16)(*(data_buf+8)<<8)|*(data_buf+9))/1000.;
@@ -2065,12 +2257,19 @@ void Data_Receive_Anl4(u8 *data_buf,u8 num)
 	}
 	else  if(*(data_buf+2)==0x77)//PI_FLOW FUSION OUT
   { 
+		pi_flow.sensor.update=1;
+		//pi_flow.sensor.dt=Get_Cycle_T(TEST);	
+		pi_flow.sensor.last_update = micros() - FLOW_PI_LATENCY;	
 		pi_flow.sensor.spdx=(float)((vs16)(*(data_buf+4)<<8)|*(data_buf+5))/1000.;
 		pi_flow.sensor.spdy=(float)((vs16)(*(data_buf+6)<<8)|*(data_buf+7))/1000.;
+		pi_flow.sensor.qual=*(data_buf+8);
 	
 	}	
 		else  if(*(data_buf+2)==0x88)//PI_FLOW FUSION OUT
   { 
+		pi_flow.sensor.loss_cnt=0;
+		pi_flow.sensor.connect=*(data_buf+4);
+		pi_flow.sensor.check=*(data_buf+5);
 		pi_flow.sensor.x=((vs16)(*(data_buf+6)<<8)|*(data_buf+7));
 		pi_flow.sensor.y=((vs16)(*(data_buf+8)<<8)|*(data_buf+9));
 		pi_flow.sensor.z=((vs16)(*(data_buf+10)<<8)|*(data_buf+11));

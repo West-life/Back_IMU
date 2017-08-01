@@ -31,7 +31,7 @@
 
 #define IMU_RATEX  imu_fushion.Gyro_deg.x*DEG_TO_RAD
 #define IMU_RATEY  imu_fushion.Gyro_deg.y*DEG_TO_RAD
-#define IMU_RATEZ  imu_fushion.Gyro_deg.z*DEG_TO_RAD*1.2
+#define IMU_RATEZ  imu_fushion.Gyro_deg.z*DEG_TO_RAD*1.225
 
 #define IMU_MAGX   imu_fushion.Mag_Val.x/855.0
 #define IMU_MAGY   imu_fushion.Mag_Val.y/855.0
@@ -87,7 +87,11 @@ extern u32 dImuData_lastUpdate;
 #define UKF_VELN		navUkfData.x[UKF_STATE_VELN]
 #define UKF_VELE		navUkfData.x[UKF_STATE_VELE]
 #define UKF_VELD		navUkfData.x[UKF_STATE_VELD]
-#define UKF_VELD_F  -UKF_VELD
+
+#define UKF_VELN_F		Moving_Median(8,5,UKF_VELN)
+#define UKF_VELE_F		Moving_Median(9,5,UKF_VELE)
+#define UKF_VELD_F		Moving_Median(10,5,-UKF_VELD)
+
 #define UKF_POSN		navUkfData.x[UKF_STATE_POSN]
 #define UKF_POSE		navUkfData.x[UKF_STATE_POSE]
 #define UKF_POSD		navUkfData.x[UKF_STATE_POSD]
@@ -142,10 +146,12 @@ extern u32 dImuData_lastUpdate;
 #define UKF_ACC_N               +6.3287e-05     // +0.000063286884       0.000000342761 -0.000000022717
 #define UKF_DIST_N              +9.7373e-03     // +0.009737270392       0.000000356147 +0.000009059372
 #define UKF_MAG_N               +5.2355e-01     // +0.523549973965       0.000000500000 +0.000000000000
-#define UKF_POS_DELAY           -1.0182e+05     //+2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
-#define UKF_VEL_DELAY           -1.0182e+05     // -101820.000000000000  0.000000500000 +0.00000000000000000
-
-
+//#define UKF_POS_DELAY           -1.0182e+05     //+2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
+//#define UKF_VEL_DELAY           -1.0182e+05     // -101820.000000000000  0.000000500000 +0.00000000000000000
+//#define UKF_VEL_DELAY_FLOW      UKF_VEL_DELAY
+#define UKF_POS_DELAY           +2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
+#define UKF_VEL_DELAY           UKF_POS_DELAY     // -101820.000000000000  0.000000500000 +0.00000000000000000
+#define UKF_VEL_DELAY_FLOW      UKF_VEL_DELAY
 
 typedef struct {
     srcdkf_t *kf;
@@ -185,8 +191,8 @@ extern void navUkfInertialUpdate(float T);
 extern void simDoPresUpdate(float pres);
 extern void simDoAccUpdate(float accX, float accY, float accZ);
 extern void simDoMagUpdate(float magX, float magY, float magZ);
-extern void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, float hAcc, float vAcc,float T,float posN,float posE,float posZ);
-extern void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, float sAcc,float T);
+extern void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, float hAcc, float vAcc,float T,float posN,float posE,float posZ,u8 sel);
+extern void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, float sAcc,float T,u8 sel);
 extern void navUkfFlowUpdate(void);
 extern void navUkfOpticalFlow(int16_t x, int16_t y, uint8_t quality, float ground);
 extern void navUkfSetGlobalPositionTarget(double lat, double lon);
