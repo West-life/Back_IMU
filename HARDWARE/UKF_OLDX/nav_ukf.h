@@ -107,11 +107,12 @@ extern u32 dImuData_lastUpdate;
 #define UKF_Q4			navUkfData.x[UKF_STATE_Q4]
 #define UKF_PRES_ALT		navUkfData.x[UKF_STATE_PRES_ALT]
 
-//#ifdef USE_PRES_ALT
-//#define UKF_ALTITUDE	UKF_PRES_ALT
-//#else
+#define USE_PRES_ALT		 	// uncomment to use pressure altitude instead of GPS
+#ifdef USE_PRES_ALT
+#define UKF_ALTITUDE	UKF_PRES_ALT
+#else
 #define UKF_ALTITUDE	UKF_POSD
-//#endif
+#endif
 
 #define UKF_HIST		40
 #define UKF_P0			101325.0f			    // standard static pressure at sea level
@@ -146,12 +147,14 @@ extern u32 dImuData_lastUpdate;
 #define UKF_ACC_N               +6.3287e-05     // +0.000063286884       0.000000342761 -0.000000022717
 #define UKF_DIST_N              +9.7373e-03     // +0.009737270392       0.000000356147 +0.000009059372
 #define UKF_MAG_N               +5.2355e-01     // +0.523549973965       0.000000500000 +0.000000000000
-//#define UKF_POS_DELAY           -1.0182e+05     //+2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
-//#define UKF_VEL_DELAY           -1.0182e+05     // -101820.000000000000  0.000000500000 +0.00000000000000000
-//#define UKF_VEL_DELAY_FLOW      UKF_VEL_DELAY
-#define UKF_POS_DELAY           +2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
-#define UKF_VEL_DELAY           UKF_POS_DELAY     // -101820.000000000000  0.000000500000 +0.00000000000000000
+
+#define UKF_POS_DELAY           -1.0182e+05     //+2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
+#define UKF_VEL_DELAY           -1.0182e+05     // -101820.000000000000  0.000000500000 +0.00000000000000000
 #define UKF_VEL_DELAY_FLOW      UKF_VEL_DELAY
+
+//#define UKF_POS_DELAY           +2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
+//#define UKF_VEL_DELAY           UKF_POS_DELAY     // -101820.000000000000  0.000000500000 +0.00000000000000000
+//#define UKF_VEL_DELAY_FLOW      UKF_VEL_DELAY
 
 typedef struct {
     srcdkf_t *kf;

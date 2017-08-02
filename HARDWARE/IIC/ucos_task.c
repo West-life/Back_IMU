@@ -118,8 +118,11 @@ void inner_task(void *pdata)
 	#endif
 	
   }
-
+  #if UKF_IN_ONE_THREAD
 	delay_ms(5);
+	#else
+	delay_ms(5);
+	#endif
 	}
 }		
 
@@ -444,9 +447,9 @@ void flow_task1(void *pdata)
 		static float acc_neo_temp[3]={0};
 		#if USE_UKF_FROM_AUTOQUAD
 		float accIn[3];
-    accIn[0] = IMU_ACCX;// + UKF_ACC_BIAS_X;
-    accIn[1] = IMU_ACCY;// + UKF_ACC_BIAS_Y;
-    accIn[2] = IMU_ACCZ;// + UKF_ACC_BIAS_Z;
+    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X;
+    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y;
+    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z;
     float acc[3];
     // rotate acc to world frame
     navUkfRotateVectorByQuat(acc, accIn, &UKF_Q1);
@@ -470,9 +473,9 @@ void flow_task1(void *pdata)
     acc_neo_temp1[0]=Moving_Median(5,5,acc_neo_temp[0]-acc_neo_off[0]);
 		acc_neo_temp1[1]=Moving_Median(6,5,acc_neo_temp[1]-acc_neo_off[1]);
 		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
-//		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
-//		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
-//		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
+		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
 		
 //		acc_flt[0]=acc_neo_temp1[0];
 //		acc_flt[1]=acc_neo_temp1[1];
@@ -504,7 +507,7 @@ void flow_task1(void *pdata)
 
 
 
-u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=16;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -613,8 +616,8 @@ if(debug_pi_flow[0])
 								UKF_POSE*100, UKF_POSD*100, gpsx.pvt.PVT_height*100);break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
-								flow_rad.integrated_xgyro,flow_rad.integrated_ygyro,flow_rad.integrated_zgyro,
-								0,0,0);break;
+								UKF_PRES_ALT*100,UKF_VELD_F*100,UKF_POSD*100,
+								ALT_POS*100,-ALT_VEL*100,AQ_PRESSURE*100);break;
 								}				
 								GOL_LINK_BUSY[1]=0;		
 								} 

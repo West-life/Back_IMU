@@ -232,8 +232,8 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ð¡·¶Î§ÄÚÕýÈ·¡
 ///////////////////////////////////////larger tau, smoother filter
 
 #define ACC_HIGHPASS_TAU         4//0.005f;
-#define ACC_LOWPASS_TAU         0.025f
-#define ACC_LOWPASS_SAMPLE_TIME 0.02f
+#define ACC_LOWPASS_TAU         0.02f
+#define ACC_LOWPASS_SAMPLE_TIME 0.01f
 #define ACC_LOWPASS_A          (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
 #define ACC_LOWPASS_GX1       (1.0f / (1.0f + ACC_LOWPASS_A))
 #define ACC_LOWPASS_GX2       (1.0f / (1.0f + ACC_LOWPASS_A))
@@ -241,32 +241,32 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ð¡·¶Î§ÄÚÕýÈ·¡
 
 #define ACC_UKF_LOWPASS_TAU        0.05f
 #define ACC_UKF_LOWPASS_SAMPLE_TIME 0.01f
-#define ACC_UKF_LOWPASS_A          (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
-#define ACC_UKF_LOWPASS_GX1        (1.0f / (1.0f + ACC_LOWPASS_A))
-#define ACC_UKF_LOWPASS_GX2        (1.0f / (1.0f + ACC_LOWPASS_A))
-#define  ACC_UKF_LOWPASS_GX3       ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
+#define ACC_UKF_LOWPASS_A          (2.0f * ACC_UKF_LOWPASS_TAU / ACC_UKF_LOWPASS_SAMPLE_TIME )
+#define ACC_UKF_LOWPASS_GX1        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
+#define ACC_UKF_LOWPASS_GX2        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
+#define ACC_UKF_LOWPASS_GX3       ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A))
 
 
-#define HML_LOWPASS_TAU        = 0.025f;
-#define HML_LOWPASS_SAMPLE_TIME =0.02f;
-#define HML_LOWPASS_A          (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
-#define HML_LOWPASS_GX1       (1.0f / (1.0f + ACC_LOWPASS_A))
-#define HML_LOWPASS_GX2        (1.0f / (1.0f + ACC_LOWPASS_A))
-#define HML_LOWPASS_GX3     (1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
+#define HML_LOWPASS_TAU        0.025f
+#define HML_LOWPASS_SAMPLE_TIME 0.02f
+#define	HML_LOWPASS_A           2.0f * 0.05 * 500.0f
+#define	HML_LOWPASS_GX1        (1.0f / (1.0f + HML_LOWPASS_A))
+#define	HML_LOWPASS_GX2        (1.0f / (1.0f + HML_LOWPASS_A))
+#define	HML_LOWPASS_GX3        ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A))
 
 firstOrderFilterData_t firstOrderFilters[NUMBER_OF_FIRST_ORDER_FILTERS];
 
 void initFirstOrderFilter(float T)
-{ /*
-  ACC_LOWPASS_SAMPLE_TIME=T;
-	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
-	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
-	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
-	ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
-//	ACC_LOWPASS_A       =    (2.0f * ACC_HIGHPASS_TAU / ACC_LOWPASS_SAMPLE_TIME);
-//  ACC_LOWPASS_GX1     =    ( ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
-//  ACC_LOWPASS_GX2     =   (-ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
-//  ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+{ 
+//  ACC_LOWPASS_SAMPLE_TIME=T;
+//	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
+//	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+////	ACC_LOWPASS_A       =    (2.0f * ACC_HIGHPASS_TAU / ACC_LOWPASS_SAMPLE_TIME);
+////  ACC_LOWPASS_GX1     =    ( ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
+////  ACC_LOWPASS_GX2     =   (-ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
+////  ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
 
 
   firstOrderFilters[ACC_LOWPASS_X].gx1 = ACC_LOWPASS_GX1;
@@ -279,11 +279,11 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[ACC_LOWPASS_Z].gx2 = ACC_LOWPASS_GX2;
 	firstOrderFilters[ACC_LOWPASS_Z].gx3 = ACC_LOWPASS_GX3;
 	
-  ACC_UKF_LOWPASS_SAMPLE_TIME=T;
-	ACC_UKF_LOWPASS_A       =    (2.0f * ACC_UKF_LOWPASS_TAU / ACC_UKF_LOWPASS_SAMPLE_TIME );
-	ACC_UKF_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
-	ACC_UKF_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
-	ACC_UKF_LOWPASS_GX3     =    ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A));
+//  ACC_UKF_LOWPASS_SAMPLE_TIME=T;
+//	ACC_UKF_LOWPASS_A       =    (2.0f * ACC_UKF_LOWPASS_TAU / ACC_UKF_LOWPASS_SAMPLE_TIME );
+//	ACC_UKF_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
+//	ACC_UKF_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
+//	ACC_UKF_LOWPASS_GX3     =    ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A));
   firstOrderFilters[ACC_UKF_LOWPASS_X].gx1 = ACC_UKF_LOWPASS_GX1;
 	firstOrderFilters[ACC_UKF_LOWPASS_X].gx2 = ACC_UKF_LOWPASS_GX2;
 	firstOrderFilters[ACC_UKF_LOWPASS_X].gx3 = ACC_UKF_LOWPASS_GX3;
@@ -295,10 +295,10 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx3 = ACC_UKF_LOWPASS_GX3;
 	
 
-	HML_LOWPASS_A       =     2.0f * 0.05 * 500.0f;//(2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
-	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
-	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));
-	HML_LOWPASS_GX3     =    ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A));
+//	HML_LOWPASS_A       =     2.0f * 0.05 * 500.0f;//(2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
+//	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
+//	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));
+//	HML_LOWPASS_GX3     =    ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A));
   firstOrderFilters[HML_LOWPASS_X].gx1 = HML_LOWPASS_GX1;
 	firstOrderFilters[HML_LOWPASS_X].gx2 = HML_LOWPASS_GX2;
 	firstOrderFilters[HML_LOWPASS_X].gx3 = HML_LOWPASS_GX3;
@@ -307,7 +307,7 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[HML_LOWPASS_Y].gx3 = HML_LOWPASS_GX3;
 	firstOrderFilters[HML_LOWPASS_Z].gx1 = HML_LOWPASS_GX1;
 	firstOrderFilters[HML_LOWPASS_Z].gx2 = HML_LOWPASS_GX2;
-	firstOrderFilters[HML_LOWPASS_Z].gx3 = HML_LOWPASS_GX3;*/
+	firstOrderFilters[HML_LOWPASS_Z].gx3 = HML_LOWPASS_GX3;
 }
 
 

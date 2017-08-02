@@ -35,7 +35,7 @@
 #define NEW_IMU 1  //1使用LSD IMU
 #define FLOW_USE_FLY_LAB 0 //
 #define USE_UKF_FROM_AUTOQUAD 1
-#define UKF_IN_ONE_THREAD 1
+#define UKF_IN_ONE_THREAD 1  //<<------------------
 #define USE_M100_IMU 0  //使用DJI SDK数据
 #define SONAR_USE_FLOW 0 //使用光流  的 超声波
 #define USE_US100           //使用us100型号超声波 

@@ -186,7 +186,7 @@ if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 {gpsx.pvt.PVT_numsv=3;gpsx.pvt.PVT_fixtype=3;}
 #endif			 
 			 
- if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=3){
+ if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=3){
  gps_init=1;
  local_Lat=gpsx.pvt.PVT_latitude;
  local_Lon=gpsx.pvt.PVT_longitude;
@@ -217,7 +217,7 @@ if(kf_data_sel_temp==1){
 	 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #else
-	 if(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
+	 if(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #endif
 
@@ -246,7 +246,7 @@ if(kf_data_sel_temp==1){
 	 #endif
 	 Global_GPS_Sensor.NED_Vel[2]=gpsx.pvt.PVT_Down_speed;
    if((module.pi_flow&&pi_flow.insert)&&
-		!(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
+		!(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
    ;
 	 else{
    Global_GPS_Sensor.NED_Pos[1]=Posy=posNorth*K_pos_gps;//1-> west north

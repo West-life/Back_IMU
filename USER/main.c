@@ -158,23 +158,32 @@ int main(void)
 	#if TEST1
 	while(1)
 	{
+	static u8 cnt1;
+if(cnt1++>5){cnt1=0;		
 	LEDRGB_STATE();	
+	}
 	IWDG_Feed();
   ekf_loop_time1 = Get_Cycle_T(GET_T_EKF);		
   static u8 cnt4,cnt3;
-	#if IMU_UPDATE	
+	
 	LSM6_readAcc(0);
 	LSM6_readGyro(0);
 	if(cnt4++>=3){cnt4=0;
 	LIS3MDL_read(0);//80hz
 	}
 	LIS_Data_Prepare(ekf_loop_time1)	;
-	if(cnt3++>=5){cnt3=0;
-	if(!mpu6050.good)
-	LP_readbmp(0);//25hz
-	}
-	#endif
 	MPU6050_Data_Prepare( ekf_loop_time1 );
+	
+		
+	static u8 cnt_sonar;
+	if (cnt_sonar++>10){cnt_sonar=0;
+		if(fly_ready||en_ble_debug)
+		Ultra_Duty(); 
+		else if(cnt_ground++>1/0.1){cnt_ground=0;
+		Ultra_Duty(); 
+		}
+	}
+	
 	float RollRm,PitchRm,YawRm;
 //	madgwick_update_new(
 //	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
@@ -251,9 +260,9 @@ void start_task(void *pdata)
 	OSTaskCreate(ekf_task,(void *)0,(OS_STK*)&EKF_TASK_STK[EKF_STK_SIZE-1],EKF_TASK_PRIO);
 	#endif
 	OSTaskCreate(flow_task1,(void *)0,(OS_STK*)&FLOW_TASK_STK[FLOW_STK_SIZE-1],FLOW_TASK_PRIO);
-	//#if !UKF_IN_ONE_THREAD
+	#if !UKF_IN_ONE_THREAD
 	OSTaskCreate(baro_task,(void *)0,(OS_STK*)&BARO_TASK_STK[BARO_STK_SIZE-1],BARO_TASK_PRIO);
-	//#endif
+	#endif
 	OSTaskCreate(sonar_task,(void *)0,(OS_STK*)&SONAR_TASK_STK[SONAR_STK_SIZE-1],SONAR_TASK_PRIO);	
 	OSTaskCreate(error_task,(void *)0,(OS_STK*)&ERROR_TASK_STK[ERROR_STK_SIZE-1],ERROR_TASK_PRIO);
 	//--
