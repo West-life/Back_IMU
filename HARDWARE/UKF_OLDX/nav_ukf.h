@@ -23,6 +23,11 @@
 #include "alt_kf.h"
 #include "LIS3MDL.h"
 #include "usart_fc.h"
+
+#define Q_FROM_AHRS 0
+
+#define GPS_FROM_UBM 0 //UBM proctol
+#define AQ_MAG_ENABLED 1
 #define AQ_PRESSURE (float)baroAlt_fc/1000.
 
 #define IMU_ACCX  imu_fushion.Acc.x/4096.*9.8
@@ -33,10 +38,10 @@
 #define IMU_RATEY  imu_fushion.Gyro_deg.y*DEG_TO_RAD
 #define IMU_RATEZ  imu_fushion.Gyro_deg.z*DEG_TO_RAD*1.225
 
-#define IMU_MAGX   imu_fushion.Mag_Val.x/855.0
-#define IMU_MAGY   imu_fushion.Mag_Val.y/855.0
-#define IMU_MAGZ   imu_fushion.Mag_Val.z/855.0
-#define AQ_MAG_ENABLED 1
+#define IMU_MAGX   imu_fushion.Mag_Val.x//855.0
+#define IMU_MAGY   imu_fushion.Mag_Val.y//855.0
+#define IMU_MAGZ   imu_fushion.Mag_Val.z//855.0
+
 
 extern u32 dImuData_lastUpdate;
 #define IMU_LASTUPD		dImuData_lastUpdate
@@ -114,7 +119,7 @@ extern u32 dImuData_lastUpdate;
 #define UKF_ALTITUDE	UKF_POSD
 #endif
 
-#define UKF_HIST		40
+#define UKF_HIST		80
 #define UKF_P0			101325.0f			    // standard static pressure at sea level
 
 #define UKF_FLOW_ROT		-90.0f				    // optical flow mounting rotation in degrees
@@ -147,9 +152,9 @@ extern u32 dImuData_lastUpdate;
 #define UKF_ACC_N               +6.3287e-05     // +0.000063286884       0.000000342761 -0.000000022717
 #define UKF_DIST_N              +9.7373e-03     // +0.009737270392       0.000000356147 +0.000009059372
 #define UKF_MAG_N               +5.2355e-01     // +0.523549973965       0.000000500000 +0.000000000000
-
-#define UKF_POS_DELAY           -1.0182e+05     //+2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
-#define UKF_VEL_DELAY           -1.0182e+05     // -101820.000000000000  0.000000500000 +0.00000000000000000
+//#define UKF_POS_DELAY_UBM       +2.1923e+03 
+ //+2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
+//#define UKF_VEL_DELAY           -1.0182e+05     // -101820.000000000000  0.000000500000 +0.00000000000000000
 #define UKF_VEL_DELAY_FLOW      UKF_VEL_DELAY
 
 //#define UKF_POS_DELAY           +2.1923e+03     // +2192.300048828125    0.000000500000 +0.000000000000125
@@ -211,8 +216,6 @@ extern void navUkfZeroVel(void);
 extern void navUkfRotateVectorByQuat(float *vr, float *v, float *q);
 extern float navUkfPresToAlt(float pressure);
 
-#define RUN_TASK_SIZE		250
-#define RUN_PRIORITY		30
 
 #define RUN_SENSOR_HIST		10				// number of timesteps to average observation sensors' data
 

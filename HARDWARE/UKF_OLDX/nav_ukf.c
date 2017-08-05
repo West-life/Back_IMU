@@ -22,23 +22,43 @@
 #include "ekf_ins.h"
 #include "time.h"
 
+#define TIME_UP_FL 1
+#define RATE_SET 10
+
+float UKF_VEL_DELAY   =        -1.0182e+05;
+float UKF_POS_DELAY_UBM   =    -1.0182e+05;
+float UKF_POS_DELAY       =    -1.0182e+05;   
+
+float k_acc_ukf1=1;
+float k_m_ukf=0.666;
+
 float IMU_MAG_DECL	=0.0;//
 float IMU_MAG_INCL	=-65.0;//65
 //pos
 float UKF_GPS_POS_N_TEMP=1;
 float UKF_GPS_POS_N_TEMPD=1;
+float NOISE_PRESS=0.02;
 //spd
-float UKF_GPS_VEL_N_TEMP=0.00035;
-float UKF_GPS_VEL_N_TEMP_FLOW=0.00035*4;
+#if GPS_FROM_UBM
+float UKF_GPS_VEL_N_TEMP=0.000286;
 float UKF_GPS_VD_N_TEMP=1;
-float UKF_GPS_VD_N_TEMP_FLOW=1;
-//mag
-float UKF_MAG_N_TEMP=UKF_MAG_N/2;
 
-#define TIME_UP_FL 1
-#define RATE_SET 10
+float UKF_GPS_VEL_N_TEMP_FLOW=0.00035*4;
+float UKF_GPS_VD_N_TEMP_FLOW=1; 
+#else
+float UKF_GPS_VEL_N_TEMP=0.0003;
+float UKF_GPS_VD_N_TEMP=0.0035;
+
+float UKF_GPS_VEL_N_TEMP_FLOW=0.00035*4;
+float UKF_GPS_VD_N_TEMP_FLOW=1;
+#endif
+//mag
+float UKF_MAG_N_TEMP=UKF_MAG_N;
+
 
 u8 en_dop_gps=1;
+u8 en_z_bais=1;
+
 navUkfStruct_t navUkfData;
 u32 dImuData_lastUpdate;
 
@@ -297,30 +317,71 @@ time_update = Get_Cycle_T(TIME_UPDATE);
 	out[UKF_STATE_PRES_ALT*n + i] = in[UKF_STATE_PRES_ALT*n + i] - in[UKF_STATE_VELD*n + i] * dt;
 
 	// create rot matrix from current quat
+
 	q[0] = in[UKF_STATE_Q1*n + i];
 	q[1] = in[UKF_STATE_Q2*n + i];
 	q[2] = in[UKF_STATE_Q3*n + i];
 	q[3] = in[UKF_STATE_Q4*n + i];
+//	#if Q_FROM_AHRS	
+//  q[0]=-q_nav[1];
+//	q[1]=q_nav[0];
+//	q[2]=-q_nav[3];
+//	q[3]=q_nav[2];
+//  #endif			
 	navUkfQuatToMatrix(mat3x3, q, 1);
 
 	// acc
 	tmp[0] = u[0] + in[UKF_STATE_ACC_BIAS_X*n + i];
 	tmp[1] = u[1] + in[UKF_STATE_ACC_BIAS_Y*n + i];
-	tmp[2] = u[2] + in[UKF_STATE_ACC_BIAS_Z*n + i];
+	tmp[2] = u[2] + in[UKF_STATE_ACC_BIAS_Z*n + i]*en_z_bais;
 
 	// rotate acc to world frame
 	navUkfRotateVecByMatrix(acc, tmp, mat3x3);
 	acc[2] += 9.8;
   
-	float acc_temp[3];
+	
+	
+	static float a_br[3]={0};	
+	static float acc_temp1[3]={0};
+	a_br[0] =tmp[0];//(float) imu_fushion.Acc.x/4096.*9.8+ in[UKF_STATE_ACC_BIAS_X*n + i]*0;//16438.;
+	a_br[1] =tmp[1];//(float) imu_fushion.Acc.y/4096.*9.8+ in[UKF_STATE_ACC_BIAS_Y*n + i]*0;//16438.;
+	a_br[2] =tmp[2];//(float) imu_fushion.Acc.z/4096.*9.8+ in[UKF_STATE_ACC_BIAS_Z*n + i]*en_z_bais;//16438.;
+	// acc
+	acc_temp1[0] = a_br[1]*reference_vr[2]  - a_br[2]*reference_vr[1] ;
+	acc_temp1[1] = a_br[2]*reference_vr[0]  - a_br[0]*reference_vr[2] ;
+	acc_temp1[2] =(reference_vr[2] *a_br[2] + reference_vr[0] *a_br[0] + reference_vr[1] *a_br[1]);
+
+	acc_neo[0]=acc_temp1[1];
+	acc_neo[1]=acc_temp1[0];
+	acc_neo[2]=acc_temp1[2]-1.0f*9.87;		
+//	#if Q_FROM_AHRS	
+//  acc[0]=acc_neo[0];
+//  acc[1]=acc_neo[1];
+//  acc[2]=acc_neo[2];
+//  #endif
+	
+	static float acc_temp[3];
 	
 //	acc_temp[0] = IIR_I_Filter(acc[0], InPut_IIR_acc_ukf[0], OutPut_IIR_acc_ukf[0], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
 //	acc_temp[1] = IIR_I_Filter(acc[1], InPut_IIR_acc_ukf[1], OutPut_IIR_acc_ukf[1], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
 //	acc_temp[2] = IIR_I_Filter(acc[2], InPut_IIR_acc_ukf[2], OutPut_IIR_acc_ukf[2], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
 	#if TIME_UP_FL  
-	acc_temp[0] =	LIMIT(firstOrderFilter(acc[0],&firstOrderFilters[ACC_UKF_LOWPASS_X],dt),-3.3,3.3);
-	acc_temp[1] =	LIMIT(firstOrderFilter(acc[1],&firstOrderFilters[ACC_UKF_LOWPASS_Y],dt),-3.3,3.3);
-	acc_temp[2] =	LIMIT(firstOrderFilter(acc[2],&firstOrderFilters[ACC_UKF_LOWPASS_Z],dt),-3.3,3.3);
+	static u8 init,init_cnt;
+//	if(init_cnt++>20)init=1;
+//	if(init){
+	acc_temp[0] =	LIMIT(firstOrderFilter(acc[0]*k_acc_ukf1,&firstOrderFilters[ACC_UKF_LOWPASS_X],dt),-3.3,3.3);
+	acc_temp[1] =	LIMIT(firstOrderFilter(acc[1]*k_acc_ukf1,&firstOrderFilters[ACC_UKF_LOWPASS_Y],dt),-3.3,3.3);
+	acc_temp[2] =	LIMIT(firstOrderFilter(acc[2]*k_acc_ukf1,&firstOrderFilters[ACC_UKF_LOWPASS_Z],dt),-3.3,3.3);
+//		acc_temp[0]+= ( 1 / ( 1 + 1 / ( 1.2f *3.14f *0.04 ) ) ) *(acc[0]- acc_temp[0]) ;	
+//		acc_temp[1]+= ( 1 / ( 1 + 1 / ( 1.2f *3.14f *0.04 ) ) ) *(acc[1]- acc_temp[1]) ;	
+//		acc_temp[2]+= ( 1 / ( 1 + 1 / ( 1.2f *3.14f *0.04 ) ) ) *(acc[2]- acc_temp[2]) ;	
+//	}
+//	else
+//	{
+//	acc_temp[0]=acc[0];
+//	acc_temp[1]=acc[1];
+//	acc_temp[2]=acc[2];
+//	}		
 	#else
 	acc_temp[0]=acc[0];
 	acc_temp[1]=acc[1];
@@ -347,7 +408,12 @@ time_update = Get_Cycle_T(TIME_UPDATE);
 	out[UKF_STATE_Q2*n + i] = q[1];
 	out[UKF_STATE_Q3*n + i] = q[2];
 	out[UKF_STATE_Q4*n + i] = q[3];
-
+//#if Q_FROM_AHRS	
+//  out[UKF_STATE_Q1*n + i]+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(-q_nav[1]- out[UKF_STATE_Q1*n + i]) ;//-q_nav[1];
+//	out[UKF_STATE_Q2*n + i]+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(q_nav[0]- out[UKF_STATE_Q2*n + i]) ;//q_nav[0];
+//	out[UKF_STATE_Q3*n + i]+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(-q_nav[3]- out[UKF_STATE_Q3*n + i]) ;//-q_nav[3];
+//	out[UKF_STATE_Q4*n + i]+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(q_nav[2]- out[UKF_STATE_Q4*n + i]) ;//q_nav[2];
+//#endif	
 	// gbias
 	out[UKF_STATE_GYO_BIAS_X*n + i] = in[UKF_STATE_GYO_BIAS_X*n + i] + noise[UKF_V_NOISE_GYO_BIAS_X*n + i] * dt;
 	out[UKF_STATE_GYO_BIAS_Y*n + i] = in[UKF_STATE_GYO_BIAS_Y*n + i] + noise[UKF_V_NOISE_GYO_BIAS_Y*n + i] * dt;
@@ -446,6 +512,13 @@ void navUkfInertialUpdate(float T) {
 
     srcdkfTimeUpdate(navUkfData.kf, u, T);//acc 
 
+#if Q_FROM_AHRS	
+UKF_Q1+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(-q_nav[1]- UKF_Q1) ;//-q_nav[1];
+UKF_Q2+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(q_nav[0]- UKF_Q2) ;//q_nav[0];
+UKF_Q3+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(-q_nav[3]- UKF_Q3) ;//-q_nav[3];
+UKF_Q4+= ( 1 / ( 1 + 1 / ( k_m_ukf *3.14f *0.04 ) ) ) *(q_nav[2]- UKF_Q4) ;//q_nav[2];
+#endif	
+	
     // store history
     navUkfData.posN[navUkfData.navHistIndex] = UKF_POSN;
     navUkfData.posE[navUkfData.navHistIndex] = UKF_POSE;
@@ -497,7 +570,7 @@ void simDoAccUpdate(float accX, float accY, float accZ) {
     // remove bias
     accX += UKF_ACC_BIAS_X;
     accY += UKF_ACC_BIAS_Y;
-    accZ += UKF_ACC_BIAS_Z;
+    accZ += UKF_ACC_BIAS_Z*en_z_bais;
 
     // normalize vector
     norm =  __sqrtf(accX*accX + accY*accY + accZ*accZ);
@@ -525,8 +598,10 @@ void simDoMagUpdate(float magX, float magY, float magZ) {
 
     noise[0] = UKF_MAG_N_TEMP;
     if ((fly_ready))
-	noise[0] *= 0.001f;
-
+	  noise[0] *= 0.001f;
+    
+		if(fabs(AQ_PITCH)<6&&fabs(AQ_ROLL)<6)
+		noise[0]/=2;	
     noise[1] = noise[0];
     noise[2] = noise[0];
 
@@ -577,7 +652,11 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
 		 y[2]=alt;
 
 	// determine how far back this GPS position update came from
+	#if GPS_FROM_UBM
+	histIndex = (micros() - (gpsMicros + UKF_POS_DELAY_UBM)) / (int)(1e6f * T);	 
+	#else	 
 	histIndex = (micros() - (gpsMicros + UKF_POS_DELAY)) / (int)(1e6f * T);
+	#endif	 
 	histIndex = navUkfData.navHistIndex - histIndex;
 	if (histIndex < 0)
 	    histIndex += UKF_HIST;
@@ -593,11 +672,15 @@ void navUkfGpsPosUpdate(uint32_t gpsMicros, double lat, double lon, float alt, f
 	UKF_POSN = navUkfData.posN[histIndex];
 	UKF_POSE = navUkfData.posE[histIndex];
 	UKF_POSD = navUkfData.posD[histIndex];
-
+#if GPS_FROM_UBM
+	noise[0] = (UKF_GPS_POS_N + en_dop_gps*hAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_POS_M_N) *UKF_GPS_POS_N_TEMP;
+	noise[1] = (UKF_GPS_POS_N + en_dop_gps*hAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.eDOP*0.01*gpsx.pvt.eDOP*0.01) * UKF_GPS_POS_M_N) *UKF_GPS_POS_N_TEMP;
+	noise[2] = (UKF_GPS_ALT_N + en_dop_gps*vAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_ALT_M_N) *UKF_GPS_POS_N_TEMPD;
+#else	
 	noise[0] = (UKF_GPS_POS_N + en_dop_gps*hAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_POS_M_N) *UKF_GPS_POS_N_TEMP;
 	noise[1] = (UKF_GPS_POS_N + en_dop_gps*hAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.eDOP*0.01*gpsx.pvt.eDOP*0.01) * UKF_GPS_POS_M_N) *UKF_GPS_POS_N_TEMP;
-	noise[2] = (UKF_GPS_ALT_N + en_dop_gps*vAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_ALT_M_N)*UKF_GPS_POS_N_TEMPD;
-
+	noise[2] = (UKF_GPS_ALT_N + en_dop_gps*vAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_ALT_M_N) *UKF_GPS_POS_N_TEMPD;
+#endif
 	srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfPosUpdate);
 
 	// add the historic position delta back to the current state
@@ -666,10 +749,15 @@ void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, 
 		{UKF_GPS_VEL_N_TEMP1=UKF_GPS_VEL_N_TEMP_FLOW;UKF_GPS_VD_N_TEMP1=UKF_GPS_VD_N_TEMP_FLOW;}
 		else
 		{UKF_GPS_VEL_N_TEMP1=UKF_GPS_VEL_N_TEMP;UKF_GPS_VD_N_TEMP1=UKF_GPS_VD_N_TEMP;}
-    noise[0] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
+ #if GPS_FROM_UBM
+		noise[0] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
+		noise[1] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.eDOP*0.01*gpsx.pvt.eDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
+		noise[2] = (UKF_GPS_VD_N  + sel*en_dop_gps*sAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_VD_M_N) *UKF_GPS_VD_N_TEMP1;
+#else		
+		noise[0] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
     noise[1] = (UKF_GPS_VEL_N + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.eDOP*0.01*gpsx.pvt.eDOP*0.01) * UKF_GPS_VEL_M_N)*UKF_GPS_VEL_N_TEMP1;
-    noise[2] = (UKF_GPS_VD_N  + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_VD_M_N)*UKF_GPS_VD_N_TEMP1;
-
+    noise[2] = (UKF_GPS_VD_N  + sel*en_dop_gps*sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.vDOP*0.01*gpsx.pvt.vDOP*0.01) * UKF_GPS_VD_M_N) *UKF_GPS_VD_N_TEMP1;
+#endif
     srcdkfMeasurementUpdate(navUkfData.kf, 0, y, 3, 3, noise, navUkfVelUpdate);
 
     // add the historic position delta back to the current state
@@ -897,37 +985,60 @@ if(!init){init=1;
 	runData.sensorHistIndex = (runData.sensorHistIndex + 1) % RUN_SENSOR_HIST;
 
 	if (!((loops+1) % RATE_SET)) {
+		//#if !Q_FROM_AHRS
 	   simDoAccUpdate(runData.sumAcc[0]*(1.0f / (float)RUN_SENSOR_HIST), runData.sumAcc[1]*(1.0f / (float)RUN_SENSOR_HIST), runData.sumAcc[2]*(1.0f / (float)RUN_SENSOR_HIST));
+	  //#endif 
 	}
 	else if (!((loops+7) % RATE_SET)) {
 	   simDoPresUpdate(runData.sumPres*(1.0f / (float)RUN_SENSOR_HIST));
 	}
 //#ifndef USE_DIGITAL_IMU
 	else if (!((loops+13) % RATE_SET) && AQ_MAG_ENABLED) {
+		//#if !Q_FROM_AHRS
 	   simDoMagUpdate(runData.sumMag[0]*(1.0f / (float)RUN_SENSOR_HIST), runData.sumMag[1]*(1.0f / (float)RUN_SENSOR_HIST), runData.sumMag[2]*(1.0f / (float)RUN_SENSOR_HIST));
+	  //#endif
 	}
 //#endif
+	#if GPS_FROM_UBM//--------------------ubm
 	// only accept GPS updates if there is no optical flow
-	else if ((gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update&&((gps_init&&gps_data_vaild)))||force_test) {
+	else if (1&&gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.ubm.lat!=0&&gpsx.ubm.gpsPosFlag == 1  && gpsx.ubm.hAcc < NAV_MIN_GPS_ACC ) {
+	   float dt = Get_Cycle_T(GET_T_UKF_GPS);  
+   		navUkfGpsPosUpdate(gpsx.ubm.lastPosUpdate, gpsx.ubm.lat, gpsx.ubm.lon, gpsx.ubm.height, gpsx.ubm.hAcc + runData.accMask, gpsx.ubm.vAcc + runData.accMask,dt,PosN,PosE,PosZ,1);
+	    gpsx.ubm.gpsPosFlag=0;
+	    // refine static sea level pressure based on better GPS altitude fixes
+	    if (gpsx.ubm.hAcc < runData.bestHacc && gpsx.ubm.hAcc < NAV_MIN_GPS_ACC) {
+                navPressureAdjust(gpsx.ubm.height);
+		runData.bestHacc = gpsx.ubm.hAcc;
+	    }
+	}
+	else if (gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.ubm.lat!=0&&gpsx.ubm.gpsVelFlag == 1 &&  gpsx.ubm.sAcc < NAV_MIN_GPS_ACC/2) {
+	   
+  		navUkfGpsVelUpdate(gpsx.ubm.lastVelUpdate, gpsx.ubm.velN, gpsx.ubm.velE, gpsx.ubm.velD, gpsx.ubm.sAcc + runData.accMask,0,1);
+	    gpsx.ubm.gpsVelFlag=0;
+	}
+	#else//----------------pvt
+	// only accept GPS updates if there is no optical flow
+	else if ((gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update&&((gps_init&&gps_data_vaild)))||force_test) {
 		  gps_update=0;
 		  float dt = Get_Cycle_T(GET_T_UKF_GPS);
 		
 		if ( gpsx.pvt.PVT_Hacc*0.001< NAV_MIN_GPS_ACC &&1) 
 	  navUkfGpsPosUpdate(gpsData_lastPosUpdate, gpsx.pvt.PVT_latitude, gpsx.pvt.PVT_longitude, gpsx.pvt.PVT_height, gpsx.pvt.PVT_Hacc+ runData.accMask,gpsx.pvt.PVT_Vacc + runData.accMask,dt,PosN,PosE,PosZ,1);
-		else			
-    navUkfZeroPos();		
+		//else			
+    //navUkfZeroPos();		
 	   //   
     if ( gpsx.pvt.PVT_Sacc*0.001< NAV_MIN_GPS_ACC/2 &&1) 
 		navUkfGpsVelUpdate(gpsData_lastVelUpdate, gpsx.pvt.PVT_North_speed, gpsx.pvt.PVT_East_speed, -gpsx.pvt.PVT_Down_speed, gpsx.pvt.PVT_Sacc + runData.accMask,dt,1);
-    else
-		navUkfZeroVel();
+    //else
+		//navUkfZeroVel();
 		// refine static sea level pressure based on better GPS altitude fixes
 	    if (gpsx.pvt.PVT_Hacc < runData.bestHacc && gpsx.pvt.PVT_Hacc*0.001 < NAV_MIN_GPS_ACC) {
                 navPressureAdjust(gpsx.pvt.PVT_height);
 		  runData.bestHacc =gpsx.pvt.PVT_Hacc;}
 
 	}
-	else if((module.pi_flow&&pi_flow.insert)&&pi_flow.sensor.update&&
+	#endif
+	else if(0&&(module.pi_flow&&pi_flow.insert)&&pi_flow.sensor.update&&
 		!(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
 	{
 	 float dt = Get_Cycle_T(GET_T_UKF_FLOW);	
@@ -935,16 +1046,23 @@ if(!init){init=1;
 	 pi_flow.sensor.update=0;	
 	 Global_GPS_Sensor.NED_Vel[0]=velEast=-(flow_matlab_data[3]*cos(AQ_YAW*0.0173)-flow_matlab_data[2]*sin(AQ_YAW*0.0173));
    Global_GPS_Sensor.NED_Vel[1]=velNorth=(flow_matlab_data[3]*sin(AQ_YAW*0.0173)+flow_matlab_data[2]*cos(AQ_YAW*0.0173));
-	 
-	 
-		
-		
+	 	
 		if ((pi_flow.sensor.qual>188&&ALT_POS_SONAR3<3)||ALT_POS_SONAR3<0.3) 
 		navUkfGpsVelUpdate(pi_flow.sensor.last_update, velNorth, velEast, -ALT_VEL, gpsx.pvt.PVT_Sacc + runData.accMask,dt,0);
     else
 		navUkfZeroVel();
 		
 	}
+	#if GPS_FROM_UBM//--------------------ubm
+	// observe zero position
+	else if (!((loops+4) % RATE_SET) && (gpsx.ubm.hAcc*1.001 >= NAV_MIN_GPS_ACC) ) {
+	    navUkfZeroPos();
+	}
+	// observer zero velocity
+	else if (!((loops+10) % RATE_SET) && (gpsx.ubm.sAcc*1.001 >= NAV_MIN_GPS_ACC/2 ) ) {
+	    navUkfZeroVel();
+	}
+	#else	
 	// observe zero position
 	else if (!((loops+4) % RATE_SET) && (gpsx.pvt.PVT_Hacc*0.001 >= NAV_MIN_GPS_ACC) ) {
 	    navUkfZeroPos();
@@ -953,10 +1071,11 @@ if(!init){init=1;
 	else if (!((loops+10) % RATE_SET) && (gpsx.pvt.PVT_Sacc*0.001 >= NAV_MIN_GPS_ACC/2 ) ) {
 	    navUkfZeroVel();
 	}
+	#endif
 	// observe that the rates are exactly 0 if not flying or moving
 	else if (!(fly_ready)) {
 	    float stdX, stdY, stdZ;
-
+		#if !Q_FROM_AHRS	
 	    arm_std_f32(runData.accHist[0], RUN_SENSOR_HIST, &stdX);
 	    arm_std_f32(runData.accHist[1], RUN_SENSOR_HIST, &stdY);
 	    arm_std_f32(runData.accHist[2], RUN_SENSOR_HIST, &stdZ);
@@ -970,17 +1089,22 @@ if(!init){init=1;
 		    navUkfZeroRate(IMU_RATEZ, 2);
 		axis++;
 	    }
+	  #endif		
 	}
 
         navUkfFinish();
-			#if !UKF_IN_ONE_THREAD
+			#if UKF_IN_ONE_THREAD
 	    static u8 cnt;
-	    if(cnt++>1){cnt=0;
+	    if(cnt++>0){cnt=0;
 			altUkfProcess(AQ_PRESSURE);
 			}
 			#endif
         // determine which altitude estimate to use
+      #if GPS_FROM_UBM//--------------------ubm
+			  if (gpsx.ubm.hAcc*1.001 > 0.8f) {
+			#else
         if (gpsx.pvt.PVT_Hacc*0.001 > 0.8f) {
+			#endif		
             runData.altPos = &ALT_POS;//baro ukf
             runData.altVel = &ALT_VEL;
         }

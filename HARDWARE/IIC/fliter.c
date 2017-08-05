@@ -80,8 +80,8 @@ float my_deathzoom1(float x,float ref,float zoom)//my_deadzone
 
 
 
-#define MED_WIDTH_NUM 50
-#define MED_FIL_ITEM  30
+#define MED_WIDTH_NUM 20
+#define MED_FIL_ITEM  35
 
 float med_filter_tmp[MED_FIL_ITEM][MED_WIDTH_NUM ];
 float med_filter_out[MED_FIL_ITEM];
@@ -93,7 +93,8 @@ float Moving_Median(u8 item,u8 width_num,float in)
 	u8 i,j;
 	float t;
 	float tmp[MED_WIDTH_NUM];
-	
+	if(width_num==0)
+		return in;
 	if(item >= MED_FIL_ITEM || width_num >= MED_WIDTH_NUM )
 	{
 		return 0;
