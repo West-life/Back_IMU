@@ -700,31 +700,6 @@ u8 i;	u8 sum = 0;
 
 
 
-void Send_Laser(void)
-{u8 i;	u8 sum = 0;
-	u8 data_to_send[50];
-	u8 _cnt=0;
-	vs16 _temp;
-	data_to_send[_cnt++]=0xAA;
-	data_to_send[_cnt++]=0xAF;
-	data_to_send[_cnt++]=0x13;//功能字
-	data_to_send[_cnt++]=0;//数据量
-	_temp = (vs16)(Laser_avoid[0]);//ultra_distance;
-	data_to_send[_cnt++]=BYTE0(_temp);
- for(i=1;i<=20;i++){
-	_temp = (vs16)(Laser_avoid[i]);//ultra_distance;
-	data_to_send[_cnt++]=BYTE1(_temp);
-	data_to_send[_cnt++]=BYTE0(_temp);
- }
-
-	data_to_send[3] = _cnt-4;
-
-	for( i=0;i<_cnt;i++)
-		sum += data_to_send[i];
-	data_to_send[_cnt++] = sum;
-	
-	Send_Data_GOL_LINK(data_to_send, _cnt);
-}  
 
 void Send_GPS(void)
 {u8 i;	u8 sum = 0;
@@ -1849,9 +1824,9 @@ u8 Gps_data_get_PVT(u8 in)
 					 gpsx.pvt.PVT_Sacc=((((u32)buf[71+6])<<24)|((u32)buf[70+6])<<16|((u32)buf[69+6])<<8|((u32)buf[68+6]));		
 					 gpsx.pvt.PVT_Headacc=((((u32)buf[75+6])<<24)|((u32)buf[74+6])<<16|((u32)buf[73+6])<<8|((u32)buf[72+6]))*1e-5;								 
 					 
-					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
-					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
-					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.*-k_gps_dow_spd;
+					 gpsx.pvt.PVT_North_speed=Moving_Median(33,3,(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.);
+					 gpsx.pvt.PVT_East_speed=Moving_Median(34,3,(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.);
+					 gpsx.pvt.PVT_Down_speed=Moving_Median(35,3,(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.);
 					 gpsx.pvt.PVT_speed=(float)(int)((((u32)buf[63+6])<<24)|((u32)buf[62+6])<<16|((u32)buf[61+6])<<8|((u32)buf[60+6]))/1000.;	
 
 					 gpsx.pvt.headMot=(int)((((u32)buf[67+6])<<24)|((u32)buf[66+6])<<16|((u32)buf[65+6])<<8|((u32)buf[64+6]))*1e-5;
@@ -1936,6 +1911,152 @@ u8 Gps_data_get_DOP(u8 in)
 }
 
 
+u8 Gps_data_get_POSLLH(u8 in)
+{
+	static u8 buf[28+8],state;	
+	static u16 cnt;
+	u16 j;
+	u8 i=0,sum_a=0,sum_b=0;
+	switch(state)
+	{
+		case 0:
+			if(in==0xB5)
+			{
+			 for(j=0;j<28+8;j++)
+			 buf[j]=0;
+			cnt=0;buf[cnt++]=in;state++;}
+		break;
+	  case 1:
+			if(in==0x62)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+	  case 2:
+			if(in==0x01)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 3:
+			if(in==0x02)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 4:
+			if(in==28)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 5:
+			if(in==0x00)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 6:
+     if(cnt<28+8)
+			 buf[cnt++]=in;
+		 else 
+			 {  
+					for(i=2;i<28+8-2;i++)
+					{
+					sum_a+=buf[i];
+					sum_b+=sum_a;
+					}
+			   if(sum_a==buf[28+8-2]&&sum_b==buf[28+8-1])//0.1~0.2delay
+					{
+					gpsx.ubm.gpsPosFlag=1;	
+					gpsx.ubm.iTOW = ((((u32)buf[3+6])<<24)|((u32)buf[2+6])<<16|((u32)buf[1+6])<<8|((u32)buf[0+6]));	
+					gpsx.ubm.lon = (double)(long)((((u32)buf[7+6])<<24)|((u32)buf[6+6])<<16|((u32)buf[5+6])<<8|((u32)buf[4+6]))/10000000.;
+					gpsx.ubm.lat = (double)(long)((((u32)buf[11+6])<<24)|((u32)buf[10+6])<<16|((u32)buf[9+6])<<8|((u32)buf[8+6]))/10000000.;
+					gpsx.ubm.height = (double)(long)((((u32)buf[19+6])<<24)|((u32)buf[18+6])<<16|((u32)buf[17+6])<<8|((u32)buf[16+6]))/1000.;    // mm => m
+					gpsx.ubm.hAcc = (double)((((u32)buf[23+6])<<24)|((u32)buf[22+6])<<16|((u32)buf[21+6])<<8|((u32)buf[20+6]))/1000.;      // mm => m
+					gpsx.ubm.vAcc = (double)((((u32)buf[27+6])<<24)|((u32)buf[26+6])<<16|((u32)buf[25+6])<<8|((u32)buf[24+6]))/1000.;      // mm => m				
+          gpsx.ubm.lastPosUpdate = micros() - GPS_LATENCY; 						
+				  }
+					state=0;
+			 }
+    break;		
+	}
+}
+
+
+u8 Gps_data_get_VALNED(u8 in)
+{
+	static u8 buf[36+8],state;	
+	static u16 cnt;
+	u16 j;
+	u8 i=0,sum_a=0,sum_b=0;
+	switch(state)
+	{
+		case 0:
+			if(in==0xB5)
+			{
+			 for(j=0;j<36+8;j++)
+			 buf[j]=0;
+			cnt=0;buf[cnt++]=in;state++;}
+		break;
+	  case 1:
+			if(in==0x62)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+	  case 2:
+			if(in==0x01)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 3:
+			if(in==0x012)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;
+		case 4:
+			if(in==36)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 5:
+			if(in==0x00)
+			{buf[cnt++]=in;state++;}
+			else
+			 state=0;	
+		break;	
+		case 6:
+     if(cnt<36+8)
+			 buf[cnt++]=in;
+		 else 
+			 {  
+					for(i=2;i<36+8-2;i++)
+					{
+					sum_a+=buf[i];
+					sum_b+=sum_a;
+					}
+			   if(sum_a==buf[36+8-2]&&sum_b==buf[36+8-1])//0.1~0.2delay
+					{
+					gpsx.ubm.gpsVelFlag=1;	
+					gpsx.ubm.iTOW = ((((u32)buf[3+6])<<24)|((u32)buf[2+6])<<16|((u32)buf[1+6])<<8|((u32)buf[0+6]));	
+					gpsx.ubm.velN = Moving_Median(30,3,(double)(long)((((u32)buf[7+6])<<24)|((u32)buf[6+6])<<16|((u32)buf[5+6])<<8|((u32)buf[4+6])) * 0.01f);           // cm => m
+					gpsx.ubm.velE = Moving_Median(31,3,(double)(long)((((u32)buf[11+6])<<24)|((u32)buf[10+6])<<16|((u32)buf[9+6])<<8|((u32)buf[8+6])) * 0.01f);           // cm => m
+					gpsx.ubm.velD = Moving_Median(32,3,(double)(long)((((u32)buf[15+6])<<24)|((u32)buf[14+6])<<16|((u32)buf[13+6])<<8|((u32)buf[12+6])) * 0.01f);           // cm => m
+					gpsx.ubm.speed = (double)((((u32)buf[19+6])<<24)|((u32)buf[18+6])<<16|((u32)buf[17+6])<<8|((u32)buf[16+6])) * 0.01f;        // cm/s => m/s
+					gpsx.ubm.heading = (double)(long)((((u32)buf[27+6])<<24)|((u32)buf[26+6])<<16|((u32)buf[25+6])<<8|((u32)buf[24+6])) * 1e-5f;
+					gpsx.ubm.sAcc = (double)((((u32)buf[31+6])<<24)|((u32)buf[30+6])<<16|((u32)buf[29+6])<<8|((u32)buf[28+6])) * 0.01f;           // cm/s => m/s
+					gpsx.ubm.cAcc = (double)((((u32)buf[35+6])<<24)|((u32)buf[34+6])<<16|((u32)buf[33+6])<<8|((u32)buf[32+6])) * 1e-5f;
+					gpsx.ubm.lastVelUpdate = micros() - GPS_LATENCY; 						
+				  }
+					state=0;
+			 }
+    break;		
+	}
+}
 ///--
  void Data_Receive_Anl11(u8 *data_buf,u8 num)
 { static u8 flag;
@@ -2021,6 +2142,8 @@ void USART1_IRQHandler(void)//-------------------GPS
 		IMU_DJ_ANGLE(com_data);
 		Gps_data_get_PVT(com_data);
 		Gps_data_get_DOP(com_data);
+		Gps_data_get_POSLLH(com_data);
+		Gps_data_get_VALNED(com_data);
 		#endif
 		
 		if(cnt++>50)

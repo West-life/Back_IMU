@@ -23,7 +23,7 @@
 
 void ukf_autoquad(float PosN,float PosE,float PosZ,float SpdN,float SpdE,float SpdZ,float T);
 extern float K_spd_flow;
-extern  double X_ukf[6],X_ukf_nav[9],X_ukf_all[9];
+extern  double X_ukf[6],X_ukf_nav[9],X_ukf_all[9],X_ukf_global[6];
 extern double X_KF_NAV[2][3];
 extern float X_ukf_Pos[2];
 extern float GPS_J_F,GPS_W_F;//ÈÚºÏGPS
@@ -32,7 +32,7 @@ void ukf_flow(float flowx,float flowy,float accx,float accy,float T);
 void ukf_pos_task(double JIN,double WEI,float Yaw,float flowx,float flowy,float accx,float accy,float T);
 void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,float accx,float accy,float T);
 extern u8 gps_data_vaild,gps_init,force_test;
-extern float local_Lat,local_Lon;
+extern double local_Lat,local_Lon;
 extern float r1,r2;
 //openpilot
 

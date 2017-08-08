@@ -60,6 +60,39 @@ __packed typedef struct
 	u16 eDOP ;// Easting DOP
 }PVT;
 
+__packed typedef struct{  
+u8 gpsPosFlag;
+u8 gpsVelFlag;	
+unsigned long iTOW;
+    double lat;
+    double lon;
+    float height;   // above mean sea level (m)
+    float hAcc;     // horizontal accuracy est (m)
+    float vAcc;     // vertical accuracy est (m)
+    float velN;     // north velocity (m/s)
+    float velE;     // east velocity (m/s)
+    float velD;     // down velocity (m/s)
+    float speed;    // ground speed (m/s)
+    float heading;  // deg
+    float sAcc;     // speed accuracy est (m/s)
+    float cAcc;     // course accuracy est (deg)
+    float pDOP;     // position Dilution of Precision
+    float hDOP;
+    float vDOP;
+    float tDOP;
+    float nDOP;
+    float eDOP;
+    float gDOP;
+
+    unsigned long TPtowMS;    // timepulse time of week (ms)
+    unsigned long lastReceivedTPtowMS;
+
+    unsigned long lastTimepulse;
+    unsigned long lastPosUpdate;
+    unsigned long lastVelUpdate;
+    unsigned long lastMessage;
+}UBM;
+
 __packed typedef struct  
 {	
   u8 rmc_mode;	
@@ -86,6 +119,7 @@ __packed typedef struct
 	float angle_off;
 	u8 ewhemi_angle_off;
   PVT pvt; 
+	UBM ubm;
 }nmea_msg; 
 //////////////////////////////////////////////////////////////////////////////////////////////////// 	
 //UBLOX NEO-6M 配置(清除,保存,加载等)结构体
