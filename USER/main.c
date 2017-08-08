@@ -63,6 +63,14 @@ int main(void)
 	Delay_ms(4000);
   I2c_Soft_Init();					//初始化模拟I2C
   IIC_IMU1_Init();
+	HMC5883L_SetUp();	
+	if(mpu6050.good){
+	Delay_ms(10);
+	MS5611_Init();						//气压计初始化
+	Delay_ms(10);						//延时
+	MPU6050_Init(20);   			//加速度计、陀螺仪初始化，配置20hz低通
+	Delay_ms(10);						//延时
+	}
 	#if IMU_UPDATE
 	LIS3MDL_enableDefault();
 	Delay_ms(10);						//延时
@@ -146,59 +154,47 @@ int main(void)
   TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
 	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
-	#define TEST1 1
+	#define TEST1 0
 	#if TEST1
 	while(1)
 	{
-	static u8 cnt1;
-if(cnt1++>5){cnt1=0;		
 	LEDRGB_STATE();	
-	}
 	IWDG_Feed();
   ekf_loop_time1 = Get_Cycle_T(GET_T_EKF);		
   static u8 cnt4,cnt3;
-	
+	#if IMU_UPDATE	
 	LSM6_readAcc(0);
 	LSM6_readGyro(0);
 	if(cnt4++>=3){cnt4=0;
 	LIS3MDL_read(0);//80hz
 	}
 	LIS_Data_Prepare(ekf_loop_time1)	;
-	MPU6050_Data_Prepare( ekf_loop_time1 );
-	
-		
-	static u8 cnt_sonar;
-	if (cnt_sonar++>10){cnt_sonar=0;
-		if(fly_ready||en_ble_debug)
-		Ultra_Duty(); 
+	if(cnt3++>=5){cnt3=0;
+	if(!mpu6050.good)
+	LP_readbmp(0);//25hz
 	}
-	#define SEL_AHRS 0
-
-#if SEL_AHRS	
-	madgwick_update_new(
-	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*1.2,
-	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
-	&RollRm,&PitchRm,&YawRm,ekf_loop_time1);	
-//	RollR=RollRm;
-//	PitchR=PitchRm;
-//	YawR=YawRm;
-	reference_vr[0]=reference_vr_imd_down[0];
-	reference_vr[1]=reference_vr_imd_down[1]; 
-	reference_vr[2]=reference_vr_imd_down[2];
-	q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
-	q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
-	q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
-	q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
-
-	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time1);
-  RollR=AQ_ROLL;
-	PitchR=AQ_PITCH;
-	YawR=AQ_YAW;
-	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
-	Pitch_mid_down=Pitch=PitchR;
-	Roll_mid_down=Roll=RollR;
-#else	
+	#endif
+	MPU6050_Data_Prepare( ekf_loop_time1 );
+	float RollRm,PitchRm,YawRm;
+//	madgwick_update_new(
+//	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+//	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*1.2,
+//	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+//	&RollRm,&PitchRm,&YawRm,ekf_loop_time);	
+//	RollR=RollRm=AQ_ROLL;
+//	PitchR=PitchRm=AQ_PITCH;
+//	YawR=YawRm=AQ_YAW;
+//	reference_vr[0]=reference_vr_imd_down[0];
+//	reference_vr[1]=reference_vr_imd_down[1]; 
+//	reference_vr[2]=reference_vr_imd_down[2];
+//	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
+//	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
+//	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
+//	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 	
+//	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
+//	Pitch_mid_down=Pitch=PitchR;
+//	Roll_mid_down=Roll=RollR;
+	
 	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time1);
   RollR=RollRm=AQ_ROLL;
 	PitchR=PitchRm=AQ_PITCH;
@@ -217,7 +213,7 @@ if(cnt1++>5){cnt1=0;
 	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
 	Pitch_mid_down=Pitch=PitchR;
 	Roll_mid_down=Roll=RollR;
-#endif	
+	
 	//delay_ms(10);
 	}
 	#endif
@@ -255,9 +251,9 @@ void start_task(void *pdata)
 	OSTaskCreate(ekf_task,(void *)0,(OS_STK*)&EKF_TASK_STK[EKF_STK_SIZE-1],EKF_TASK_PRIO);
 	#endif
 	OSTaskCreate(flow_task1,(void *)0,(OS_STK*)&FLOW_TASK_STK[FLOW_STK_SIZE-1],FLOW_TASK_PRIO);
-	#if !UKF_IN_ONE_THREAD
+	//#if !UKF_IN_ONE_THREAD
 	OSTaskCreate(baro_task,(void *)0,(OS_STK*)&BARO_TASK_STK[BARO_STK_SIZE-1],BARO_TASK_PRIO);
-	#endif
+	//#endif
 	OSTaskCreate(sonar_task,(void *)0,(OS_STK*)&SONAR_TASK_STK[SONAR_STK_SIZE-1],SONAR_TASK_PRIO);	
 	OSTaskCreate(error_task,(void *)0,(OS_STK*)&ERROR_TASK_STK[ERROR_STK_SIZE-1],ERROR_TASK_PRIO);
 	//--

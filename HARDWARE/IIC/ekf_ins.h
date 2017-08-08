@@ -27,7 +27,7 @@ void EKF_INS_GPS_Run(float T);
 #define NOT_DEBUG_EKF 1
 extern float  Global_Now_Euler[3];
 extern NavStruct Nav;       //导航结构体
-extern float YawR,PitchR,RollR,RollRm,PitchRm,YawRm;;
+extern float YawR,PitchR,RollR;
 extern float fRPY[3] ;
 void GPS_Dates_Deal(void);
 #endif

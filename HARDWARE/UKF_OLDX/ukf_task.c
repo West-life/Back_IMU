@@ -69,13 +69,13 @@ float q_flow[3]={0.02,0.01,0.01};//{1,1,1};//0.6;///1;
 #endif
 float r_flow[3]={10,1,0.1};//{1,1,1};//0.6;///1;
 float flow_gain=1;//2;
-double X_ukf[6],X_ukf_global[6];
+double X_ukf[6];
 double X_ukf_baro[6];
 int acc_flag_flow[2]={1,1};
 float X_ukf_Pos[2];
 float r1,r2;
 float posNorth,posEast;
-double local_Lat,local_Lon;//GPS局部坐标初始
+float local_Lat,local_Lon;//GPS局部坐标初始
 float velEast,velNorth;
 float GPS_J_F,GPS_W_F;//融合GPS
 static void CalcEarthRadius(double lat) {
@@ -186,7 +186,7 @@ if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 {gpsx.pvt.PVT_numsv=3;gpsx.pvt.PVT_fixtype=3;}
 #endif			 
 			 
- if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=3){
+ if((gpsx.pvt.PVT_longitude!=0||force_test) && gps_init==0 && gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=3){
  gps_init=1;
  local_Lat=gpsx.pvt.PVT_latitude;
  local_Lon=gpsx.pvt.PVT_longitude;
@@ -203,7 +203,7 @@ u8 kf_data_sel_temp=kf_data_sel;
 if(module.gps&& gpsx.pvt.PVT_numsv>=1&&gpsx.pvt.PVT_fixtype>=3)
 kf_data_sel_temp=1;	
 else if(module.flow||module.flow_iic)
-{kf_data_sel_temp=2;gps_init=0;}	
+{kf_data_sel_temp=1;gps_init=0;}	
 //kf_data_sel_temp=0;
 #if NAV_USE_KF
 //--------------------------------GPS_KF------------------------------------- 
@@ -217,7 +217,7 @@ if(kf_data_sel_temp==1){
 	 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #else
-	 if(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
+	 if(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
 	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
 	 #endif
 
@@ -233,13 +233,8 @@ if(kf_data_sel_temp==1){
 	 }
 	 
 	 #if !USE_M100_IMU
-   #if GPS_FROM_UBM
-	   velEast=LIMIT(gpsx.ubm.velE,-3,3);//LIMIT(-gpsx.spd*sin((gpsx.angle-180)*0.0173),-3,3);
-		 velNorth=LIMIT(gpsx.ubm.velN,-3,3);//LIMIT(-gpsx.spd*cos((gpsx.angle-180)*0.0173),-3,3);
-		 #else
-		 velEast=LIMIT(gpsx.pvt.PVT_East_speed,-3,3);//LIMIT(-gpsx.spd*sin((gpsx.angle-180)*0.0173),-3,3);
-		 velNorth=LIMIT(gpsx.pvt.PVT_North_speed,-3,3);//LIMIT(-gpsx.spd*cos((gpsx.angle-180)*0.0173),-3,3);
-		 #endif
+   velEast=LIMIT(gpsx.pvt.PVT_East_speed,-3,3);//LIMIT(-gpsx.spd*sin((gpsx.angle-180)*0.0173),-3,3);
+   velNorth=LIMIT(gpsx.pvt.PVT_North_speed,-3,3);//LIMIT(-gpsx.spd*cos((gpsx.angle-180)*0.0173),-3,3);
 	 #else
 	 velEast=LIMIT(m100.spd[1],-3,3);//LIMIT(-gpsx.spd*sin((gpsx.angle-180)*0.0173),-3,3);
    velNorth=LIMIT(m100.spd[0],-3,3);//LIMIT(-gpsx.spd*cos((gpsx.angle-180)*0.0173),-3,3); 
@@ -251,7 +246,7 @@ if(kf_data_sel_temp==1){
 	 #endif
 	 Global_GPS_Sensor.NED_Vel[2]=gpsx.pvt.PVT_Down_speed;
    if((module.pi_flow&&pi_flow.insert)&&
-		!(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
+		!(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
    ;
 	 else{
    Global_GPS_Sensor.NED_Pos[1]=Posy=posNorth*K_pos_gps;//1-> west north
@@ -302,8 +297,8 @@ if(kf_data_sel_temp==1){
 	 X_ukf[3]=X_KF_NAV_TEMP[0][0];//East  pos
 	 X_ukf[5]=X_KF_NAV_TEMP[0][2];
 	//global
-	 X_ukf_global[1]=X_ukf[1]=X_KF_NAV_TEMP[1][1];//North vel
-	 X_ukf_global[4]=X_ukf[4]=X_KF_NAV_TEMP[0][1];//East  vel
+	 X_ukf[1]=X_KF_NAV_TEMP[1][1];//North vel
+	 X_ukf[4]=X_KF_NAV_TEMP[0][1];//East  vel
 	//turn to body frame
 	 X_ukf[4]=X_KF_NAV_TEMP[1][1]*cos(Yaw*0.0173)+X_KF_NAV_TEMP[0][1]*sin(Yaw*0.0173);//Y
 	 X_ukf[1]=-X_KF_NAV_TEMP[1][1]*sin(Yaw*0.0173)+X_KF_NAV_TEMP[0][1]*cos(Yaw*0.0173);//X

@@ -64,7 +64,7 @@ float invSqrt(float x) {
 
 //5.0f, 0.01f, 0.01f
 //5.0f, 0.25f, 0.01f
-volatile float beta_start=200;
+volatile float beta_start=5;
 volatile float beta_end=0.1666;
 volatile float beta_step=0.01;
 

@@ -311,7 +311,7 @@
           <Cads>
             <interw>1</interw>
             <Optim>1</Optim>
-            <oTime>1</oTime>
+            <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
             <Strict>0</Strict>
@@ -718,6 +718,11 @@
               <FilePath>..\HARDWARE\IIC\ultrasonic.c</FilePath>
             </File>
             <File>
+              <FileName>laser.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\laser.c</FilePath>
+            </File>
+            <File>
               <FileName>hml_sample.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
@@ -786,6 +791,16 @@
               <FileName>alt_kf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\alt_kf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>AVOID</GroupName>
+          <Files>
+            <File>
+              <FileName>avoid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\AVOID\avoid.c</FilePath>
             </File>
           </Files>
         </Group>

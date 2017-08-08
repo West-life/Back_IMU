@@ -17,9 +17,9 @@
 #define ALT_NOISE_BIAS  0
 #define ALT_NOISE_VEL   1
 
-#define ALT_POS         altUkfData_bmp.x[ALT_STATE_POS]
-#define ALT_VEL         altUkfData_bmp.x[ALT_STATE_VEL]
-#define ALT_BIAS        altUkfData_bmp.x[ALT_STATE_BIAS]
+#define ALT_POS         altUkfData.x[ALT_STATE_POS]
+#define ALT_VEL         altUkfData.x[ALT_STATE_VEL]
+#define ALT_BIAS        altUkfData.x[ALT_STATE_BIAS]
 
 #define ALT_POS_BMP         	altUkfData_bmp.x[ALT_STATE_POS]
 #define ALT_VEL_BMP         	altUkfData_bmp.x[ALT_STATE_VEL]

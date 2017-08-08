@@ -1269,7 +1269,7 @@ _f_set_st sonar_f_set = {
 
 
 //alt
-float ALT_PRES_NOISE = 0.001f;
+float ALT_PRES_NOISE = 0.02f;
 float ALT_PRES_NOISE_SONAR = 0.0002;//015f;
 #define USE_UKF_SONAR 0
 float ALT_POS_SONAR2,ALT_POS_SONAR3;
@@ -1555,7 +1555,7 @@ float baroAlt_temp;
 			float Z_kf[3]={(float)baroAlt_temp/1000.+LIMIT(my_deathzoom(X_kf_baro[1],0.68),-1,1)*dt*5,0,accz_bmp};
 			OLDX_KF2(Z_kf,r_baro_new[3],r_baro_new,flag_sensor,X_kf_baro,state_correct_baro,dt);
 			#elif defined(BARO_UKF) //UKF with limit bias
-		 float z[2] = { (float)baroAlt_temp/1000., (baro_matlab_data[1])};
+		 float z[2] = { (float)baroAlt_temp/1000., (-accz_bmp)};
 		 float noise = ALT_PRES_NOISE;	
 		 srcdkfTimeUpdate(altUkfData_bmp.kf, &z[1],dt);//5000			    // us (200 Hz)		
      srcdkfMeasurementUpdate(altUkfData_bmp.kf, 0, &z[0], 1, 1, &noise, altUkfPresUpdate);

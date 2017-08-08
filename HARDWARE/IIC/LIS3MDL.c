@@ -664,9 +664,9 @@ float AccBuffer[3],MagBuffer[3];
 //  lis3mdl.Mag_Val.x = firstOrderFilter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x),&firstOrderFilters[HML_LOWPASS_X],T);//*lis3mdl.Mag_Gain.x ;
 //	lis3mdl.Mag_Val.y = firstOrderFilter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y),&firstOrderFilters[HML_LOWPASS_Y],T);//*lis3mdl.Mag_Gain.y ;
 //	lis3mdl.Mag_Val.z = firstOrderFilter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z),&firstOrderFilters[HML_LOWPASS_Z],T);//*lis3mdl.Mag_Gain.z ;
-	lis3mdl.Mag_Val.x = IIR_I_Filter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x) , InPut_IIR_mag[0], OutPut_IIR_mag[0], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
-	lis3mdl.Mag_Val.y = IIR_I_Filter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y) , InPut_IIR_mag[1], OutPut_IIR_mag[1], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
-	lis3mdl.Mag_Val.z = IIR_I_Filter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z) , InPut_IIR_mag[2], OutPut_IIR_mag[2], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
+	lis3mdl.Mag_Val.x = IIR_I_Filter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x)*lis3mdl.Mag_Gain.x , InPut_IIR_mag[0], OutPut_IIR_mag[0], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
+	lis3mdl.Mag_Val.y = IIR_I_Filter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y)*lis3mdl.Mag_Gain.y , InPut_IIR_mag[1], OutPut_IIR_mag[1], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
+	lis3mdl.Mag_Val.z = IIR_I_Filter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z)*lis3mdl.Mag_Gain.z , InPut_IIR_mag[2], OutPut_IIR_mag[2], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
 	
 	
 	lis3mdl.Mag_Val_t.x=lis3mdl.Mag_Val.y;
