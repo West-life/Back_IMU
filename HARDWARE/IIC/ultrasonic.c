@@ -123,6 +123,31 @@ void Ultra_Duty()
 	ultra_start_f = 1;
 }
 
+void Ultra_Duty_SCL(void)
+{ float temp1,temp,temp2;
+	static u16 ultra_distance_old;
+  u16 range;
+//--
+	//KS103_WriteOneByte(0XE8,0X02,0XB0);//5m
+	//KS103_WriteOneByte(0XE8,0X02,0XB8);//11m
+//---
+
+//	range = KS103_ReadOneByte(0xe8, 0x02);
+//	range <<= 8;
+//	range += KS103_ReadOneByte(0xe8, 0x03);
+	range=Read_KS10X_Data(0XE8);
+	temp1=limit_mine(Roll,45);
+	temp2=limit_mine(Pitch,45);
+	temp=(float)range*cos(temp1*0.017)*cos(temp2*0.017);
+	temp=((temp)<(0)?(0):((temp)>(4500)?(4500):(temp)));
+	ultra_distance=Moving_Median(1,5,temp);
+	T_sonar=Get_Cycle_T(GET_T_SONAR_SAMPLE);
+	ultra_delta = (ultra_distance - ultra_distance_old)/LIMIT(T_sonar,0.0001,1);
+
+	ultra_distance_old = ultra_distance;
+	ultra_start_f = 1;
+	delay_ms(20);
+}
 // float t1r=1;
 /* kalman filter states */
 double x_pred = 0.0f; // m   0

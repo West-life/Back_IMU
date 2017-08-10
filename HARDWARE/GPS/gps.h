@@ -39,7 +39,8 @@ __packed typedef struct
 
 __packed typedef struct  
 {
-	u32 rx_cnt;
+	u32 rx_cnt,last_update;
+	u8 gps_update;
 	float rx_dt;	
 	u8 PVT_fixtype;//2-2D  3-3D
 	u8 PVT_numsv;

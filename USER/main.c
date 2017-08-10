@@ -19,7 +19,6 @@
 #include "LSM303.h"
 #include "Soft_I2C_PX4.h"
 #include "LIS3MDL.h"
-#include "nav_ukf.h"
  /////////////////////////UCOSII启动任务设置///////////////////////////////////
 //START 任务
 //设置任务优先级
@@ -54,15 +53,23 @@ void cpuidGetId(void)
     mcuID[2] = *(__IO u32*)(0x1FFF7A18);
 }
 
-float ekf_loop_time1;
+
 int main(void)
-{ 
+  { 
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();
 	Delay_ms(4000);
   I2c_Soft_Init();					//初始化模拟I2C
   IIC_IMU1_Init();
+	HMC5883L_SetUp();	
+	if(mpu6050.good){
+	Delay_ms(10);
+	MS5611_Init();						//气压计初始化
+	Delay_ms(10);						//延时
+	MPU6050_Init(20);   			//加速度计、陀螺仪初始化，配置20hz低通
+	Delay_ms(10);						//延时
+	}
 	#if IMU_UPDATE
 	LIS3MDL_enableDefault();
 	Delay_ms(10);						//延时
@@ -116,7 +123,7 @@ int main(void)
 		Delay_ms(100);
 	}
 	READ_PARM();//读取参数
-	Delay_ms(100);
+	Delay_ms(10);
 //-----------------------Mode &  Flag init--------------------	
 //--system
 	fly_ready=0;
@@ -141,90 +148,11 @@ int main(void)
 	MYDMA_Enable(DMA2_Stream7,SEND_BUF_SIZE1+2);     //开始一次DMA传输！	 
 #endif	
 #if EN_TIM_INNER
-  TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms    
+  TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms    
 #endif	
-  TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
+  TIM3_Int_Init(25-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
 	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
-	#define TEST1 1
-	#if TEST1
-	while(1)
-	{
-	static u8 cnt1;
-if(cnt1++>5){cnt1=0;		
-	LEDRGB_STATE();	
-	}
- if(imu_feed_dog==1&&FC_CONNECT==1)
-	IWDG_Feed();
- if(fc_loss_cnt++>3/0.01)
-			FC_CONNECT=0;
-  ekf_loop_time1 = Get_Cycle_T(GET_T_EKF);		
-  static u8 cnt4,cnt3;
-	
-	LSM6_readAcc(0);
-	LSM6_readGyro(0);
-	if(cnt4++>=3){cnt4=0;
-	LIS3MDL_read(0);//80hz
-	}
-	LIS_Data_Prepare(ekf_loop_time1)	;
-	MPU6050_Data_Prepare( ekf_loop_time1 );
-	
-		
-	static u8 cnt_sonar;
-	if (cnt_sonar++>10){cnt_sonar=0;
-		if(fly_ready||en_ble_debug)
-		Ultra_Duty(); 
-	}
-	#define SEL_AHRS 0
-
-#if SEL_AHRS	
-	madgwick_update_new(
-	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*1.2,
-	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
-	&RollRm,&PitchRm,&YawRm,ekf_loop_time1);	
-//	RollR=RollRm;
-//	PitchR=PitchRm;
-//	YawR=YawRm;
-	reference_vr[0]=reference_vr_imd_down[0];
-	reference_vr[1]=reference_vr_imd_down[1]; 
-	reference_vr[2]=reference_vr_imd_down[2];
-	q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
-	q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
-	q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
-	q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
-
-	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time1);
-  RollR=AQ_ROLL;
-	PitchR=AQ_PITCH;
-	YawR=AQ_YAW;
-	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
-	Pitch_mid_down=Pitch=PitchR;
-	Roll_mid_down=Roll=RollR;
-#else	
-  //module
-	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time1);
-  RollR=RollRm=AQ_ROLL;
-	PitchR=PitchRm=AQ_PITCH;
-	YawR=YawRm=AQ_YAW;
-
-	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
-	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
-	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
-	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
-	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
-	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
-	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
-	reference_vr[0]=reference_vr_imd_down[0];
-	reference_vr[1]=reference_vr_imd_down[1]; 
-	reference_vr[2]=reference_vr_imd_down[2];
-	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
-	Pitch_mid_down=Pitch=PitchR;
-	Roll_mid_down=Roll=RollR;
-#endif	
-	//delay_ms(10);
-	}
-	#endif
 	OSInit();  	 				
 	OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
 	OSStart();	    
@@ -249,20 +177,15 @@ void start_task(void *pdata)
 	OSTmrStart(tmr2,&err);//启动软件定时器1				 	
  	OS_ENTER_CRITICAL();			//进入临界区(无法被中断打断)    
  	//注册线程 	
-	#if !USE_UKF_FROM_AUTOQUAD	
 	OSTaskCreate(outer_task,(void *)0,(OS_STK*)&OUTER_TASK_STK[OUTER_STK_SIZE-1],OUTER_TASK_PRIO);
-	#endif
 	#if !EN_TIM_INNER
 	OSTaskCreate(inner_task,(void *)0,(OS_STK*)&INNER_TASK_STK[INNER_STK_SIZE-1],INNER_TASK_PRIO);
 	#endif
-	#if !UKF_IN_ONE_THREAD
 	OSTaskCreate(ekf_task,(void *)0,(OS_STK*)&EKF_TASK_STK[EKF_STK_SIZE-1],EKF_TASK_PRIO);
-	#endif
 	OSTaskCreate(flow_task1,(void *)0,(OS_STK*)&FLOW_TASK_STK[FLOW_STK_SIZE-1],FLOW_TASK_PRIO);
-	#if !UKF_IN_ONE_THREAD
 	OSTaskCreate(baro_task,(void *)0,(OS_STK*)&BARO_TASK_STK[BARO_STK_SIZE-1],BARO_TASK_PRIO);
-	#endif
 	OSTaskCreate(sonar_task,(void *)0,(OS_STK*)&SONAR_TASK_STK[SONAR_STK_SIZE-1],SONAR_TASK_PRIO);	
+	//OSTaskCreate(uart_task,(void *)0,(OS_STK*)&UART_TASK_STK[UART_STK_SIZE-1],UART_TASK_PRIO);
 	OSTaskCreate(error_task,(void *)0,(OS_STK*)&ERROR_TASK_STK[ERROR_STK_SIZE-1],ERROR_TASK_PRIO);
 	//--
  	OSTaskSuspend(START_TASK_PRIO);	//挂起起始任务.

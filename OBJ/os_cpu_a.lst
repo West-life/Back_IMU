@@ -336,11 +336,10 @@ ARM Macro Assembler    Page 6
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=..\obj\os_cpu_a.d -o..\obj\os_cpu_a.o -IC:\Users\Administrator\
-Desktop\新建文件夹\Back_IMU-9f0d5c6c188624a3cb69b7600fa57b41b3552ccb\USER\RTE -
-Id:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx
-\Include -Id:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION_VERSION SETA 520
-" --predefine="STM32F407xx SETA 1" --list=..\obj\os_cpu_a.lst ..\UCOSII\PORT\os
-_cpu_a.asm
+Desktop\Back_IMU-kf\USER\RTE -Id:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Dri
+vers\CMSIS\Device\ST\STM32F4xx\Include -Id:\Keil_v5\ARM\CMSIS\Include --predefi
+ne="__UVISION_VERSION SETA 520" --predefine="STM32F407xx SETA 1" --list=..\obj\
+os_cpu_a.lst ..\UCOSII\PORT\os_cpu_a.asm
 
 
 

@@ -64,11 +64,11 @@ float invSqrt(float x) {
 
 //5.0f, 0.01f, 0.01f
 //5.0f, 0.25f, 0.01f
-volatile float beta_start=200;
+volatile float beta_start=5;
 volatile float beta_end=0.1666;
 volatile float beta_step=0.01;
 
-volatile float beta;
+volatile float beta1;
 //accConfidenceDecay = 1.0f / sqrt(eepromConfig.accelCutoff);
 float accConfidenceDecay = 5.2f;
 float hmlConfidenceDecay = 2.8f;
@@ -120,6 +120,7 @@ void calculateHmlConfidence(float Mag_in)
 // *  b_step      algorithm gain decrement step size
 u8 init_hml_norm;
 u16 init_hml_norm_cnt;
+
 int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, float mx,float my ,float mz,float *rol,float *pit,float *yaw,float T)								
 {
     static u8 init;
@@ -130,7 +131,7 @@ int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, 
     float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
 
 		if(!init){init=1;
-				beta = beta_start;
+				beta1 = beta_start;
 		}
 		
     /* Check for valid magnetometer data. */
@@ -146,19 +147,19 @@ int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, 
 		}
     /* Check if beta has reached its specified end value or if it has to be
      * decremented. */
-    if (beta > beta_end)
+    if (beta1 > beta_end)
     {
         /* Decrement beta only if it does not fall below the specified end
          * value. */
-        if ((beta - beta_step) > beta_end)
+        if ((beta1 - beta_step) > beta_end)
         {
-            beta -= beta_step;
+            beta1 -= beta_step;
         }
         else
         {
-            beta = beta_end;
+            beta1 = beta_end;
         }
-    }else beta=beta_end;
+    }else beta1=beta_end;
 
     /* Calculate quaternion rate of change of from angular velocity. */
     dq1 = 0.5f * (-q1 * wx - q2 * wy - q3 * wz);
@@ -233,10 +234,10 @@ int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, 
         s3 *= recip_norm;
 
         /* Apply feedback step. */
-        dq1 -= beta * s0;
-        dq2 -= beta * s1;
-        dq3 -= beta * s2;
-        dq4 -= beta * s3;
+        dq1 -= beta1 * s0;
+        dq2 -= beta1 * s1;
+        dq3 -= beta1 * s2;
+        dq4 -= beta1 * s3;
     }
 
     /* Integrate quaternion rate of change to get quaternion describing the

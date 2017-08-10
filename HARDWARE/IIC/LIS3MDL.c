@@ -381,7 +381,7 @@ static u8 init;
 					lis3mdl.Gain_3d.y =  (acc_lsq.Gain[1]);
 					lis3mdl.Gain_3d.z =  (acc_lsq.Gain[2]);	
           WRITE_PARM();					
-          init_hml_norm=1;
+          //init_hml_norm=1;
 					if(fabs(lis3mdl.Off_3d.x)<400&&fabs(lis3mdl.Off_3d.y)<400&&fabs(lis3mdl.Off_3d.z)<400)
 					module.acc=2;
 					else
@@ -552,7 +552,7 @@ static double OutPut_IIR_mag[3][IIR_ORDER_MAG+1] = {0};
 static float lis3mdl_tmp[7],mpu_fil_tmp[7];
 static s16 FILT_BUF[7][(FILTER_NUM + 1)];
 static uint8_t filter_cnt = 0,filter_cnt_old = 0;
-utilFilter_t acc_tempFilter;
+
 void LIS_Data_Prepare(float T)
 {	static u8 init;
 	u8 i;
@@ -565,7 +565,7 @@ void LIS_Data_Prepare(float T)
 	Gyro_tmp[2] = lis3mdl.Gyro_I16.z ;//
   if(!init)
 	{init=1;
-	utilFilterInit(&acc_tempFilter, 0.005, 5.0, 20);
+	//utilFilterInit(&acc_tempFilter, 0.005, 5.0, 20);
 	}
 
 	lis3mdl.TEM_LPF += 2 *3.14f *T *(lis3mdl.Tempreature - lis3mdl.TEM_LPF);

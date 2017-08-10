@@ -35,8 +35,5 @@ void MargAHRSupdate(float gx, float gy, float gz,
                     float accelCutoff, uint8_t magDataUpdate, float dt,float *rol,float *pit,float *yaw);
 										
 int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, float mx,float my ,float mz,float *rol,float *pit,float *yaw,float T);									
-extern u8 init_hml_norm;
-extern u16 init_hml_norm_cnt;
-										
 #endif
 

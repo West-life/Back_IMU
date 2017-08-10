@@ -276,18 +276,8 @@ E	估算模式
 M	手动输入
 N	数据无效
 */		
-	posx=NMEA_Comma_Pos(p1,2);								
-	if(posx!=0XFF)gpsx->rmc_mode=*(p1+posx);		 	
-		
-	
-	posx=NMEA_Comma_Pos(p1,10);		//磁偏角度
-	if(posx!=0XFF)
-		{
-			gpsx->angle_off=NMEA_Str2float(p1+posx,&dx);       
-		}		
-		
-   posx=NMEA_Comma_Pos(p1,11);								//东经还是西经
-	 if(posx!=0XFF)gpsx->ewhemi_angle_off=*(p1+posx);		 
+	posx=NMEA_Comma_Pos(p1,2);								//东经还是西经
+	//if(posx!=0XFF)gpsx->rmc_mode=*(p1+posx);		 	
 	
 }
 

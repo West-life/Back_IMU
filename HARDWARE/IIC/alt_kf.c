@@ -9,7 +9,6 @@
 #include "filter.h"
 #include "baro_ekf.h"
 #include "gps.h"
-#include "nav_ukf.h"
 altUkfStruct_t altUkfData,altUkfData_sonar,altUkfData_bmp;
 altUkfStruct_t flowUkfData_x,flowUkfData_y;
 altUkfStruct_t gpsUkfData_e,gpsUkfData_n;
@@ -1068,9 +1067,10 @@ void flowUpdate(float *u, float *x, float *noise, float *y) {
     y[0] = x[ALT_STATE_VEL] + noise[0];     // return altitude
 }
 void gpsUpdate(float *u, float *x, float *noise, float *y) {
-   //y[0] = x[ALT_STATE_VEL] + noise[0];     // return altitude
-	 y[0] = x[ALT_STATE_POS] + noise[0];     // return altitude
+   y[0] = x[ALT_STATE_VEL] + noise[0];     // return altitude
+	 //y[0] = x[ALT_STATE_POS] + noise[0];     // return altitude
 }
+
 
 //flow
 float FLOW_NOISE =0.008;//2.00000011e-005;//0.0003;//.00000011e-005;//5e-5f;//5e-4f;//0.00052f;
@@ -1269,7 +1269,7 @@ _f_set_st sonar_f_set = {
 
 
 //alt
-float ALT_PRES_NOISE = 0.001f;
+float ALT_PRES_NOISE = 0.00052f;
 float ALT_PRES_NOISE_SONAR = 0.0002;//015f;
 #define USE_UKF_SONAR 0
 float ALT_POS_SONAR2,ALT_POS_SONAR3;
@@ -1309,6 +1309,17 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	#endif
 	 y = (float)baroAlt/1000;
 	   static u16 cnt_1;
+//  if(fabs(Pitch)>10||fabs(Roll)>10)
+//	{ALT_PRES_NOISE = NOISE[1];cnt_1=0;}
+//	else
+//	  cnt_1++;	
+//	
+//	if(cnt_1++>test_1){cnt_1=test_1+1;
+//		ALT_PRES_NOISE = NOISE[0];
+//	}
+
+//		ALT_PRES_NOISE=NOISE[0];
+//	  noise = ALT_PRES_NOISE;
 
 	 #if defined(SONAR_SAMPLE1)
 	 float temp_sonar;
@@ -1362,7 +1373,7 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 	  //ALT_POS_SONAR3+=dt*ALT_VEL_BMP_EKF*k_spd;
 		//double Z_kf[3]={(float)ultra_distance/1000,0,0};
 		double Z_kf[3]={(float)oldx_sonar+X_kf_sonar[1]*T,0,0};
-	  // kf_oldx( X_kf_sonar,  P_kf_sonar,  Z_kf,  acc_temp1, gh_sonar,  ga,  gwa,dt);
+	   kf_oldx( X_kf_sonar,  P_kf_sonar,  Z_kf,  acc_temp1, gh_sonar,  ga,  gwa,dt);
 		
 		 float ultra_dis_tmp1=oldx_sonar;//(float)sonar.displacement/1000;		
 		if( fabs(ultra_dis_tmp1 - ALT_POS_SONAR3) < 0.1 )
@@ -1384,11 +1395,17 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 			ALT_POS_SONAR3 += ( 1 / ( 1 + 1 / ( K_SONAR*0.6f *3.14f *dt ) ) ) *(ultra_dis_tmp1- ALT_POS_SONAR3) ;
 		}	
 		
-		
+		//ALT_POS_SONAR2=ALT_POS_SONAR3;
 		if(sonar_fc!=0&&!ultra_ok)
 		ALT_POS_SONAR2=sonar_fc;
 		else
-	  ALT_POS_SONAR2=ALT_POS_SONAR3;
+		ALT_POS_SONAR2=X_kf_sonar[0]*1;
+	
+		//ALT_POS_SONAR3=sonar_temp*K_SONAR/10+(1-K_SONAR/10)*(ALT_POS_SONAR3-dt*ALT_VEL_BMP_EKF);
+		//ALT_POS_SONAR2=(float)sonar_fusion.fusion_displacement.out/1000.;
+		//ALT_POS_SONAR2=X_apo_height1[0];
+		//ALT_POS_SONAR2=oldx_sonar;
+		//ALT_POS_SONAR2=ALT_POS_SONAR3;
 		#endif
 }
 
@@ -1498,7 +1515,7 @@ u8 baro_ekf_ero;
 float ALT_VEL_BMP_UNION,ALT_POS_BMP_UNION;
 u8 baroAlt_sel=0;
 
-float  r_baro_new[4]={0.015,0.05,0.03,3};
+float  r_baro_new[4]={0.015,0.05,0.03,1.5};
 double state_correct_baro[6];
 
 float g_baro_h=0.0025,g_baro_spd=0.0035;
@@ -1521,7 +1538,8 @@ float baroAlt_temp;
 		#endif
 		//baroAlt_temp=lis3mdl.Alt*1000;	
 	  dt = Get_Cycle_T(GET_T_BARO_UKF);	
-	
+		temp=(reference_vr_imd_down[2] *imu_fushion.Acc.z + reference_vr_imd_down[0] *imu_fushion.Acc.x + reference_vr_imd_down[1] *imu_fushion.Acc.y - 4096  )*k_flt_accz+(1-k_flt_accz)*temp_r;
+	  acc_temp1=my_deathzoom(-((float)temp/4096.0f) *9.8,dead_accz);
 		acc_temp1=acc_neo[2]+ acc_off_baro;
 	  baro_matlab_data[1]=accz_bmp=LIMIT(my_deathzoom(acc_temp1,dead_accz)*acc_scale_bmp,-3.6,3.6);
    
@@ -1542,7 +1560,7 @@ float baroAlt_temp;
 		if(force_fly_ready!=0)fly_ready=1;
 		baro_matlab_data[0]=(float)baroAlt_temp/1000.;
     static u8 cnt_ekf;
-		 #define BARO_UKF
+		  //#define BARO_UKF
 		 // #define BARO_KF2
 		 // #define BARO_EKF
 
@@ -1552,10 +1570,10 @@ float baroAlt_temp;
 			
 			#if defined(BARO_KF2) //UKF with limit bias
 			u8 flag_sensor[3]={1,0,1};	
-			float Z_kf[3]={(float)baroAlt_temp/1000.+LIMIT(my_deathzoom(X_kf_baro[1],0.68),-1,1)*dt*5,0,accz_bmp};
+			float Z_kf[3]={baroAlt_temp+LIMIT(my_deathzoom(X_kf_baro[1],0.68),-1,1)*dt*5,0,accz_bmp};
 			OLDX_KF2(Z_kf,r_baro_new[3],r_baro_new,flag_sensor,X_kf_baro,state_correct_baro,dt);
 			#elif defined(BARO_UKF) //UKF with limit bias
-		 float z[2] = { (float)baroAlt_temp/1000., (baro_matlab_data[1])};
+		 float z[2] = { (float)baroAlt_temp/1000., (-accz_bmp)};
 		 float noise = ALT_PRES_NOISE;	
 		 srcdkfTimeUpdate(altUkfData_bmp.kf, &z[1],dt);//5000			    // us (200 Hz)		
      srcdkfMeasurementUpdate(altUkfData_bmp.kf, 0, &z[0], 1, 1, &noise, altUkfPresUpdate);
@@ -1585,18 +1603,18 @@ float baroAlt_temp;
       #if !USE_M100_IMU
 			double Z_kf[3];	
 			static float off_gps_baro; 
-//			 if (gpsx.pvt.PVT_Hacc*0.001 < 0.8f&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1)
-//			 {
-//			  Z_kf[0]=gpsx.pvt.PVT_height;
-//				Z_kf[1]=gpsx.pvt.PVT_Down_speed; 
-//				if(gpsx.pvt.PVT_height>0) 
-//				off_gps_baro=gpsx.pvt.PVT_height-baroAlt_temp/1000.; 
-//			 }
-//			 else 
-//			 {
+			 if(gpsx.pvt.PVT_Hacc>100&&gpsx.pvt.PVT_longitude!=0 && gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1)
+			 {
+			  Z_kf[0]=gpsx.pvt.PVT_height;
+				Z_kf[1]=gpsx.pvt.PVT_Down_speed; 
+				if(gpsx.pvt.PVT_height>0) 
+				off_gps_baro=gpsx.pvt.PVT_height-baroAlt_temp/1000.; 
+			 }
+			 else 
+			 {
 				H[4]=0; 
 			  Z_kf[0]= baroAlt_temp/1000.+off_gps_baro;
-//			 }	 
+			 }	 
 		  #else
 			double Z_kf[3]={m100.H,m100.spd[2],0};	
 			#endif
@@ -1749,8 +1767,8 @@ void altUkfInit(void){
     Q[ALT_STATE_POS] = q_pos;
     Q[ALT_STATE_VEL] = v_q;
     Q[ALT_STATE_BIAS] = s_bais;//0.05f;
-		V[ALT_NOISE_BIAS] = 5e-4f;
-	  V[ALT_NOISE_VEL]=  5e-4f;
+		V[ALT_NOISE_BIAS] = v_bais;
+	  V[ALT_NOISE_VEL]=0.0005;//5e-4f;
     srcdkfSetVariance(altUkfData_bmp.kf, Q, V, 0, 0);
 		#if USE_UKF_SONAR	
 	  Q[ALT_STATE_POS] = 5.0f;
