@@ -11,7 +11,8 @@
 
 navUkfStruct_t navUkfData;
 
-float DELAY_GPS= 0.2;//s
+float DELAY_GPS= 0.45;//0.2;//s
+int   DELAY_GPS_STATE= -10000;//us
 #define INSGPS_GPS_TIMEOUT 2   /* 2 seconds triggers reinit of position */
 #define INSGPS_GPS_MINSAT  6   /* 2 seconds triggers reinit of position */
 #define INSGPS_GPS_MINPDOP 3.5 /* minimum PDOP for postition updates    */
@@ -167,8 +168,8 @@ float K_spd_gps=1;
 float g_pos_gps= 0.001;//10;
 float g_spd_gps= 0.001;//0.1;//0.1; 
 #else
-float g_pos_gps= 0.0455125;//10;
-float g_spd_gps= 0.000366*1000;//0.1;//0.1; 
+float g_pos_gps= 0.06;//10;
+float g_spd_gps= 0.0004*1000;//0.000366*1000;
 float g_spd_gps_use;
 float g_spd_gps_state;
 #endif
@@ -187,8 +188,8 @@ void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,flo
 {
 static int gps_h_off;	
 static u8 gps_init;
-float Sdpx,Accx;
-float Sdpy,Accy;
+float Sdpx,Accx,Accx_now;
+float Sdpy,Accy,Accy_now;
 
 u8 pos_vaild=0;
 double A[9]=
@@ -285,98 +286,114 @@ if(kf_data_sel_temp==1){
 	 Global_GPS_Sensor.NED_Pos[0]=Posx=posEast*K_pos_gps;
 	 Global_GPS_Sensor.NED_Vel[0]=Sdpx=velEast*K_spd_gps;
 	 Global_GPS_Sensor.NED_Acc[0]=Accx=get_acc_delay(0,DELAY_GPS,T);//accEast;
+	 Accy_now=get_acc_delay(1,0,T);
+	 Accx_now=get_acc_delay(0,0,T);
 	 u8 flag_sensor[3]={1,0,1};
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
 	 
-	 
-
-	 
-	 //acc update
-//	 H[0]=H[4]=0;
-//   KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T);
-//	 KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T);
-//	 
-//	 // store history
-//		navUkfData.posN[navUkfData.navHistIndex] = UKF_POSN;
-//		navUkfData.posE[navUkfData.navHistIndex] = UKF_POSE;
-//		navUkfData.posD[navUkfData.navHistIndex] = 0;
-
-//		navUkfData.velN[navUkfData.navHistIndex] = UKF_VELN;
-//		navUkfData.velE[navUkfData.navHistIndex] = UKF_VELE;
-//		navUkfData.velD[navUkfData.navHistIndex] = 0;
-
-//		navUkfData.navHistIndex = (navUkfData.navHistIndex + 1) % UKF_HIST;
-
-//	
-//	 //update speed & pos
+#define USE_STATE_FORWARD_UKF 	
+//#define FORWARD_IN_MEASURE 	 
+	//update speed & pos
+	#if defined(USE_STATE_FORWARD_UKF)	 	 
  if(((gps_init&&gps_data_vaild)||force_test)&&1)//gpsx.pvt.gps_update)//bei
 	 {
-//	 float posDelta[3],velDelta[3];
-		if(gpsx.pvt.gps_update)		 
-		{	 
-		g_spd_gps_use=0.001*g_spd_gps;
-		gpsx.pvt.gps_update=0;
-		}	else
-		g_spd_gps_use=5;
+		g_spd_gps_state=0.001*gpsx.ubm.sAcc * __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * 0.030;
+		g_spd_gps_use=0.001*g_spd_gps+g_spd_gps_state*1;	
 		
-    g_spd_gps_state=0.002*gpsx.ubm.sAcc  *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * 0.030;
-
-		g_spd_gps_use=0.001*g_spd_gps+g_spd_gps_state*1;
-//	 Zx[2]=Zy[2]=0;	 
-//	 H[0]=0;H[4]=1;
-//		 
-//    	histIndex = (micros() - (gpsx.pvt.last_update + DELAY_GPS)) / (int)(1e6f * T);	 	
-
-//		histIndex = navUkfData.navHistIndex - histIndex;
-//		if (histIndex < 0)
-//				histIndex += UKF_HIST;
-//		if (histIndex < 0 || histIndex >= UKF_HIST)
-//				histIndex = 0;		 
-//	 if(DELAY_GPS!=0){
-//		// calculate delta from current position
-//		posDelta[1] = UKF_POSN - navUkfData.posN[histIndex];
-//		posDelta[0] = UKF_POSE - navUkfData.posE[histIndex];
-//		// set current position state to historic data
-//		UKF_POSN = navUkfData.posN[histIndex];
-//		UKF_POSE = navUkfData.posE[histIndex];
-//		 // calculate delta from current position
-//    velDelta[1] = UKF_VELN - navUkfData.velN[histIndex];
-//    velDelta[0] = UKF_VELE - navUkfData.velE[histIndex];
-//    // set current position state to historic data
-//    UKF_VELN = navUkfData.velN[histIndex];
-//    UKF_VELE = navUkfData.velE[histIndex];
-//	 }
-//		
-//		//OLDX_KF3(Zx,r_gps_new[3],r_gps_new,flag_sensor,X_kf2_x,state_correct_posx,T);
-    KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps_use,  T);
-//    //OLDX_KF3(Zy,r_gps_new[3],r_gps_new,flag_sensor,X_kf2_y,state_correct_posy,T);
+  	float posDelta[3],velDelta[3];
+		if(gpsx.pvt.gps_update||1)		 
+		{	 
+		gpsx.pvt.gps_update=0;
+			
+		histIndex = (micros() - (gpsx.pvt.last_update + DELAY_GPS_STATE)) / (int)(1e6f * T);	 	
+		histIndex = navUkfData.navHistIndex - histIndex;
+		if (histIndex < 0)
+				histIndex += UKF_HIST;
+		if (histIndex < 0 || histIndex >= UKF_HIST)
+				histIndex = 0;		 
+		posDelta[1] = UKF_POSN - navUkfData.posN[histIndex];
+		posDelta[0] = UKF_POSE - navUkfData.posE[histIndex];
+		// set current position state to historic data
+		UKF_POSN = navUkfData.posN[histIndex];
+		UKF_POSE = navUkfData.posE[histIndex];
+		// calculate delta from current position
+		velDelta[1] = UKF_VELN - navUkfData.velN[histIndex];
+		velDelta[0] = UKF_VELE - navUkfData.velE[histIndex];
+		// set current position state to historic data
+		UKF_VELN = navUkfData.velN[histIndex];
+		UKF_VELE = navUkfData.velE[histIndex];
+					
+		KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps_use,  T);
 	  KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps_use,  T);
-//	 
-//	 if(DELAY_GPS!=0){
-//		// add the historic position delta back to the current state
-//		UKF_POSN += posDelta[1];
-//		UKF_POSE += posDelta[0];
-//    // add the historic position delta back to the current state
-//    UKF_VELN += velDelta[1];
-//    UKF_VELE += velDelta[0];
-//	  }
+		
+		// add the historic position delta back to the current state
+		UKF_POSN += posDelta[1];
+		UKF_POSE += posDelta[0];
+    // add the historic position delta back to the current state
+    UKF_VELN += velDelta[1];
+    UKF_VELE += velDelta[0];		
+		}	
+		else{
+		//ins update	
+		H[0]=H[4]=0;
+    KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, 5,  5,  T);
+    KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, 5,  5,  T);	
+		}	
+		
+    // store history
+		navUkfData.posN[navUkfData.navHistIndex] = UKF_POSN;
+		navUkfData.posE[navUkfData.navHistIndex] = UKF_POSE;
+		navUkfData.posD[navUkfData.navHistIndex] = 0;
+
+		navUkfData.velN[navUkfData.navHistIndex] = UKF_VELN;
+		navUkfData.velE[navUkfData.navHistIndex] = UKF_VELE;
+		navUkfData.velD[navUkfData.navHistIndex] = 0;	 
+    navUkfData.navHistIndex = (navUkfData.navHistIndex + 1) % UKF_HIST;
+
 	 }
+#else	 
+	 if(((gps_init&&gps_data_vaild)||force_test)&&1){
+		 
+	 #if defined(FORWARD_IN_MEASURE)	  
+		 Zx[1]+=DELAY_GPS*Zx[2];
+		 Zx[0]+=DELAY_GPS*Zx[1]+1/2*pow(DELAY_GPS,2)*(Zx[2]);
+		
+		 
+		 
+		 Zy[1]+=DELAY_GPS*Zy[2];
+		 Zy[0]+=DELAY_GPS*Zy[1]+1/2*pow(DELAY_GPS,2)*(Zy[2]);
+		 
+		 Accy=Accy_now;
+		 Accx=Accx_now;
+	 #endif	 
+	
+//	 Zx[1]+=DELAY_GPS*Zx[2];
+//	 Zy[1]+=DELAY_GPS*Zy[2];		 
+	 g_spd_gps_state=0.001*gpsx.ubm.sAcc * __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * 0.030;
+	 g_spd_gps_use=0.001*g_spd_gps+g_spd_gps_state*1;	 
+	 KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps_use,  T);
+	 KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps_use,  T);}
+#endif	 
+	 X_KF_NAV[0][1]=LIMIT(X_KF_NAV[0][1],-6.6,6.6);
+	 X_KF_NAV[1][1]=LIMIT(X_KF_NAV[1][1],-6.6,6.6); 
 	 
-	 X_KF_NAV[0][1]=LIMIT(X_KF_NAV[0][1],-3,3);
-	 X_KF_NAV[1][1]=LIMIT(X_KF_NAV[1][1],-3,3); 
-//	 X_KF_NAV[0][0]=X_kf2_x[0];
-//	 X_KF_NAV[0][1]=X_kf2_x[1];
-//	 
-//	 X_KF_NAV[1][0]=X_kf2_y[0];
-//	 X_KF_NAV[1][1]=X_kf2_y[1];
+
 	 float X_KF_NAV_TEMP[2][3];//0->x->east  1->y->north
-	 X_KF_NAV_TEMP[0][0]=X_KF_NAV[0][0]+DELAY_GPS*X_KF_NAV[0][1]+1/2*pow(DELAY_GPS,2)*(Accx+X_KF_NAV[0][2]);
-	 X_KF_NAV_TEMP[0][1]=X_KF_NAV[0][1]+DELAY_GPS*(Accx+X_KF_NAV[0][2]);
+	 X_KF_NAV_TEMP[0][0]=X_KF_NAV[0][0]+gpsx.pvt.rx_dt*2*X_KF_NAV[0][1]+1/2*pow(gpsx.pvt.rx_dt*2,2)*(Accx-X_KF_NAV[0][2]);
+	 X_KF_NAV_TEMP[0][1]=X_KF_NAV[0][1]+gpsx.pvt.rx_dt*2*(Accx-X_KF_NAV[0][2]);
 	 X_KF_NAV_TEMP[0][2]=X_KF_NAV[0][2];
-	 X_KF_NAV_TEMP[1][0]=X_KF_NAV[1][0]+DELAY_GPS*X_KF_NAV[1][1]+1/2*pow(DELAY_GPS,2)*(Accy+X_KF_NAV[1][2]);
-	 X_KF_NAV_TEMP[1][1]=X_KF_NAV[1][1]+DELAY_GPS*(Accy+X_KF_NAV[1][2]);
+	 X_KF_NAV_TEMP[1][0]=X_KF_NAV[1][0]+gpsx.pvt.rx_dt*2*X_KF_NAV[1][1]+1/2*pow(gpsx.pvt.rx_dt*2,2)*(Accy-X_KF_NAV[1][2]);
+	 X_KF_NAV_TEMP[1][1]=X_KF_NAV[1][1]+gpsx.pvt.rx_dt*2*(Accy-X_KF_NAV[1][2]);
 	 X_KF_NAV_TEMP[1][2]=X_KF_NAV[1][2];
+	 #if defined(FORWARD_IN_MEASURE)	
+	 X_KF_NAV_TEMP[0][0]=X_KF_NAV[0][0];
+	 X_KF_NAV_TEMP[0][1]=X_KF_NAV[0][1];
+	 X_KF_NAV_TEMP[0][2]=X_KF_NAV[0][2];
+	 X_KF_NAV_TEMP[1][0]=X_KF_NAV[1][0];
+	 X_KF_NAV_TEMP[1][1]=X_KF_NAV[1][1];
+	 X_KF_NAV_TEMP[1][2]=X_KF_NAV[1][2];
+	 #endif
 	 
 	 X_ukf[0]=X_KF_NAV_TEMP[0][0];
 	 X_ukf_global[1]=X_KF_NAV[0][1];
@@ -406,12 +423,7 @@ else if(kf_data_sel_temp==4){
 	 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
 	 gps_data_vaild=1;
 	 #endif
-//	 if(par[0]!=0)
-//		 g_pos_gps=(float)par[0]/100.;
-//   if(par[1]!=0)
-//		 g_spd_gps=(float)par[1]/100.;
-//	 if(par[2]!=0)
-//		 K_acc_gps=(float)par[2]/100.;
+
 	 CalcGlobalDistance(gpsx.latitude,gpsx.longitude); 
 	 static float dposEast,dposNorth;
 	 static u8 cnt;
@@ -462,17 +474,6 @@ else if(kf_data_sel_temp==4){
 // 	 X_ukf_Pos[0]=X_ukf[0];//X
 //   X_ukf_Pos[1]=X_ukf[3];//Y
    CalcGlobalLocation(X_ukf[0],X_ukf[3]);}
-//----------------------------------pilot EKF in global--------------------------------------------------------
-  else if(kf_data_sel_temp==3){
-	if(gpsx.gpssta>0&&gpsx.latitude!=0)
-	 {CalcEarthRadius(gpsx.latitude);CalcGlobalDistance(gpsx.latitude,gpsx.longitude); gps_data_vaild=1;}
-	   
-	  gps_data.NED[0]=posNorth;
-	  gps_data.NED[1]=posEast;
-	  gps_data.NED[2]=0;
-	 
-		
-  }
 //--------=-----------------flow in global---------------------------------------------------------
 	else if(kf_data_sel_temp==2){	 
 	 static int qr_yaw_init;	

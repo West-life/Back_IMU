@@ -152,7 +152,8 @@ extern navUkfStruct_t navUkfData;
 
 	 #define UKF_POSN  X_KF_NAV[1][0]
 	 #define UKF_POSE  X_KF_NAV[0][0]
-	 #define UKF_POSD  X_KF_NAV[1][1]
+   #define UKF_POSD  0
+	 #define UKF_VELN  X_KF_NAV[1][1]
 	 #define UKF_VELE  X_KF_NAV[0][1]
    #define UKF_VELD  0
    #define UKF_VELN_F  UKF_VELN

@@ -248,15 +248,11 @@ if(cnt_init++>2&&!init){cnt_init=101;
 #endif		
 	}
 	else{
-	if(ekf_loop_time<0.000002)ekf_loop_time=0.02;
+	if(ekf_loop_time<0.000002)ekf_loop_time=0.01;
 	static u8 ekf_gps_cnt;	
-	//if(ekf_gps_cnt++>1){ekf_gps_cnt=0;	
-	//EKF_INS_GPS_Run(0.015);		
-	//GpsUkfProcess(0.05);
-	//}
 		ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
 }
-	delay_ms(5);
+	delay_ms(10);
 	}
 }		
 
@@ -269,7 +265,7 @@ void baro_task(void *pdata)
 	{ static u8 cnt;
 		altUkfProcess(0);
 	  Laser_cal();
-		delay_ms(20);  
+		delay_ms(10);  
 	}
 }	
 
@@ -365,6 +361,37 @@ float baro_matlab_data[2];
 float flow_loop_time;
 
 
+#define IIR_ORDER_ACC_UKF 10
+static double b_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={
+0.00049945407823310042,
+0.0049945407823310042 ,
+0.022475433520489523  ,
+0.059934489387972065  ,
+0.10488535642895111  , 
+0.12586242771474132  , 
+0.10488535642895111  , 	
+0.059934489387972065  ,	
+0.022475433520489523  ,
+0.0049945407823310042 ,
+0.00049945407823310042	
+};  //ÏµÊýb
+static double a_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={ 
+ 1     ,
+-1.9924014816014133,   
+3.0194828633553867  ,      
+-2.8185224264945168  ,  
+2.0387206370625282   ,
+-1.0545446210956813   ,
+ 0.41444626875039958  ,
+-0.11571862523682841  ,
+ 0.022498509272218331 ,
+-0.0026689123535761092	,
+ 0.0001487644521777628
+};
+static double InPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
+static double OutPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
+
+float time_update;
 void flow_task1(void *pdata)
 {float flow_height_fliter;		
  static float acc_neo_off[3];
@@ -449,10 +476,13 @@ void flow_task1(void *pdata)
     acc_neo_temp1[0]=Moving_Median(5,5,acc_neo_temp[0]-acc_neo_off[0]);
 		acc_neo_temp1[1]=Moving_Median(6,5,acc_neo_temp[1]-acc_neo_off[1]);
 		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
-		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
-		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
-		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
-		
+		//acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
+		//acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+		//acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+		acc_flt[0] = IIR_I_Filter(acc_neo_temp[0]-acc_neo_off[0], InPut_IIR_acc_ukf[0], OutPut_IIR_acc_ukf[0], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
+	  acc_flt[1] = IIR_I_Filter(acc_neo_temp[1]-acc_neo_off[1], InPut_IIR_acc_ukf[1], OutPut_IIR_acc_ukf[1], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
+	  acc_flt[2] = IIR_I_Filter(acc_neo_temp[2]-acc_neo_off[2], InPut_IIR_acc_ukf[2], OutPut_IIR_acc_ukf[2], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
+	  
 //		acc_flt[0]=acc_neo_temp1[0];
 //		acc_flt[1]=acc_neo_temp1[1];
 //		acc_flt[2]=acc_neo_temp1[2];//
@@ -469,7 +499,7 @@ void flow_task1(void *pdata)
 		flow_matlab_data[3]=flow_ground_temp[3];
 		
 
-		FlowUkfProcess(0);//FK filter
+		//FlowUkfProcess(0);//FK filter
 		
 		float temp_spd[2];
 		temp_spd[0]=Moving_Median(16,MID_CNT_SPD,FLOW_VEL_X);

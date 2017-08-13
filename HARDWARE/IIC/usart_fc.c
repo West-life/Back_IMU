@@ -1801,7 +1801,7 @@ u8 Gps_data_get_PVT(u8 in)
 					{
 					 module.gps=1;
 					 gpsx.pvt.gps_update=1;
- 					 gpsx.pvt.last_update=micros()-75000;
+ 					 gpsx.pvt.last_update=micros()-75000*0;
 					 gpsx.pvt.rx_cnt++;	
 					 gpsx.pvt.rx_dt=Get_Cycle_T(GET_T_PVT); 	
 					 gpsx.pvt.PVT_fixtype=buf[20+6];
