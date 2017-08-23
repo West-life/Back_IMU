@@ -28,6 +28,7 @@
 #include "filter.h"
 #include "imu_oldx.h"
 #include "m100.h"
+#include "nav_ukf.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -36,6 +37,7 @@ u8 GOL_LINK_BUSY[2]={0,0};
 
 //========================外环  任务函数============================
 OS_STK INNER_TASK_STK[INNER_STK_SIZE];
+u16 cnt_time[2];
 #include "LSM303.h"
 void inner_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2,cnt3,cnt4,cnt5;			
@@ -50,23 +52,27 @@ void inner_task(void *pdata)
 	inner_loop_time_time=0.005;
 	}
 	else{
+	if(inner_loop_time_time<0.006)	
+		cnt_time[0]++;
+	else 
+		cnt_time[1]++;
 							//获取内环准确的执行周期
 	if(inner_loop_time_time<0.000002)inner_loop_time_time=0.005;
-	#if IMU_UPDATE	
-	if(cnt5++>0)	
-	#endif 
-	{cnt5=0;
-		if(mpu6050.good)
-		MPU6050_Read(); 															//读取mpu6轴传感器
-  if(cnt++>=3){cnt=0;
-		if(mpu6050.good)
-	  ANO_AK8975_Read();//75hz	
-	}			//获取电子罗盘数据	
-  if(cnt1++>=2){cnt1=0;
-		if(mpu6050.good)
-	MS5611_ThreadNew();//100hz
-	}
-  }
+//	#if IMU_UPDATE	
+//	if(cnt5++>0)	
+//	#endif 
+//	{cnt5=0;
+//		if(mpu6050.good)
+//		MPU6050_Read(); 															//读取mpu6轴传感器
+//  if(cnt++>=3){cnt=0;
+//		if(mpu6050.good)
+//	  ANO_AK8975_Read();//75hz	
+//	}			//获取电子罗盘数据	
+//  if(cnt1++>=2){cnt1=0;
+//		if(mpu6050.good)
+//	MS5611_ThreadNew();//100hz
+//	}
+//  }
 	
 	#if IMU_UPDATE	
 	LSM6_readAcc(0);
@@ -76,13 +82,47 @@ void inner_task(void *pdata)
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
 	if(cnt3++>=5){cnt3=0;
-	if(!mpu6050.good)
-	LP_readbmp(0);//25hz
+	//if(!mpu6050.good)
+	//LP_readbmp(0);//25hz
 	}
 	#endif
 	MPU6050_Data_Prepare( inner_loop_time_time );			//mpu6轴传感器数据处理
+	
+	#if UKF_IN_ONE_THREAD
+	if(!lis3mdl.Mag_CALIBRATED)		
+	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),inner_loop_time_time);
+	RollR=AQ_ROLL;
+	PitchR=AQ_PITCH;
+	YawR=AQ_YAW;
+
+	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
+	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
+	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
+	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
+	reference_vr[0]=reference_vr_imd_down[0];
+	reference_vr[1]=reference_vr_imd_down[1]; 
+	reference_vr[2]=reference_vr_imd_down[2];
+	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
+	Pitch_mid_down=Pitch=PitchR;
+	Roll_mid_down=Roll=RollR;
+	if(imu_feed_dog==1&&FC_CONNECT==1)
+	IWDG_Feed();//喂狗
+   
+	static u8 cnt_bmp;
+	if(cnt_bmp++>1){cnt_bmp=0;
+	//altUkfProcess(0);
+	}
+	#endif
+	
   }
+  #if UKF_IN_ONE_THREAD
 	delay_ms(5);
+	#else
+	delay_ms(5);
+	#endif
 	}
 }		
 
@@ -93,6 +133,7 @@ OS_STK OUTER_TASK_STK[OUTER_STK_SIZE];
 float YawR,PitchR,RollR;
 float YawRm,PitchRm,RollRm;
 float outer_loop_time;
+float k_gyro_z=1.2;
 void outer_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
@@ -115,7 +156,7 @@ void outer_task(void *pdata)
 		
 	madgwick_update_new(
 	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.1)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.1)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.1)*0.0173,
+	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*k_gyro_z,
 	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
 	&RollRm,&PitchRm,&YawRm,outer_loop_time);	
 	RollR=RollRm;
@@ -128,6 +169,7 @@ void outer_task(void *pdata)
 	q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
 	q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
 	q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
+
 //  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
 //						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
 //						imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
@@ -164,7 +206,7 @@ void outer_task(void *pdata)
 	#if USE_M100_IMU
 	m100_data(1);
 	#endif
-	delay_ms(10);
+	delay_ms(5);
 	}
 }		
 
@@ -176,83 +218,49 @@ float ekf_loop_time;
 #include "FastMath.h"
 #include "Quaternion.h"
 #include "ekf_ins.h"
-//#define USE_EKF
-//#define USE_UKF
-//#define USE_CKF
-//#define USE_SRCKF
-//#define USE_9AXIS_EKF
-//#define USE_EKF_INS
 
-#ifdef USE_EKF
-	#include "EKF.h"
-#elif defined USE_UKF
-  #include "UKF.h"
-#elif defined USE_CKF
-	#include "CKF.h"
-#elif defined USE_SRCKF
-	#include "SRCKF.h"
-#elif defined USE_9AXIS_EKF
-  #include "miniARSH.h"
-#endif
-
-
-#ifdef USE_EKF
-	EKF_Filter ekf;
-#elif defined USE_UKF
-	UKF_Filter ukf;
-#elif defined USE_CKF
-	CKF_Filter ckf;
-#elif defined USE_SRCKF
-	SRCKF_Filter srckf;
-#endif
-	float fRealGyro[3] = {0}, fRealAccel[3] = {0,0,0};
-	float fRealMag[3] = {0}, fRealQ[4] = {0,0,0,0};
-	long lQuat[4] = {0,0,0,0};
-	float fRPY[3] = {0};
-	float fQ[4] = {0};
-	int flag_mag[3]={1,1,-1};
-	float Kp_ekf=0.3f,Kp_ekf_pr=6; 
-	float reference_v_ekf[3];
 void ekf_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
-	float fRPYr[3] = {0};
  	while(1)
 	{	
-ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
-if(cnt_init++>2&&!init){cnt_init=101;
-		init=1;
-#ifdef USE_EKF
-	EKF_New(&ekf);
-#elif defined USE_UKF
-	UKF_New(&ukf);
-#elif defined USE_CKF
-	CKF_New(&ckf);
-#elif defined USE_SRCKF
-	SRCKF_New(&srckf);
-#endif
-#ifdef USE_EKF
-				EKF_Init(&ekf, fRealQ, fRealGyro);
-#elif defined USE_UKF
-				UKF_Init(&ukf, fRealQ, fRealGyro);
-#elif defined USE_CKF
-				CKF_Init(&ckf, fRealQ, fRealGyro);
-#elif defined USE_SRCKF
-				SRCKF_Init(&srckf, fRealAccel, fRealMag);
-#elif defined USE_6AXIS_EKF
-				EKF_IMUInit(fRealAccel, fRealGyro);
-#elif defined USE_6AXIS_FP_EKF
-				FP_EKF_IMUInit(fRealAccel, fRealGyro);
-#elif defined USE_9AXIS_EKF
-				EKF_AHRSInit(fRealAccel, fRealMag);
-#endif		
+	ekf_loop_time = Get_Cycle_T(GET_T_EKF);			
+	if(cnt_init++>2&&!init){cnt_init=101;
+		init=1;	
 	}
 	else{
-	if(ekf_loop_time<0.000002)ekf_loop_time=0.01;
-	static u8 ekf_gps_cnt;	
-		ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
-}
+	if(ekf_loop_time<0.000002)ekf_loop_time=0.02;
+	static u8 ekf_gps_cnt;
+  if(!lis3mdl.Mag_CALIBRATED)		
+	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
+  #if USE_UKF_FROM_AUTOQUAD	
+	RollR=RollRm=AQ_ROLL;
+	PitchR=PitchRm=AQ_PITCH;
+	YawR=YawRm=AQ_YAW;
+
+	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
+	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
+	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
+	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
+	reference_vr[0]=reference_vr_imd_down[0];
+	reference_vr[1]=reference_vr_imd_down[1]; 
+	reference_vr[2]=reference_vr_imd_down[2];
+	Yaw_mid_down=Yaw=To_180_degrees(YawR);	
+	Pitch_mid_down=Pitch=PitchR;
+	Roll_mid_down=Roll=RollR;
+	if(imu_feed_dog==1&&FC_CONNECT==1)
+	IWDG_Feed();//喂狗
+	#endif
+	
+	}
+	#if USE_UKF_FROM_AUTOQUAD
+  delay_ms(10);
+ #else
 	delay_ms(10);
+ #endif
 	}
 }		
 
@@ -264,8 +272,7 @@ void baro_task(void *pdata)
  	while(1)
 	{ static u8 cnt;
 		altUkfProcess(0);
-	  Laser_cal();
-		delay_ms(10);  
+		delay_ms(20);  
 	}
 }	
 
@@ -360,38 +367,7 @@ float flow_matlab_data[4];
 float baro_matlab_data[2];
 float flow_loop_time;
 
-
-#define IIR_ORDER_ACC_UKF 10
-static double b_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={
-0.00049945407823310042,
-0.0049945407823310042 ,
-0.022475433520489523  ,
-0.059934489387972065  ,
-0.10488535642895111  , 
-0.12586242771474132  , 
-0.10488535642895111  , 	
-0.059934489387972065  ,	
-0.022475433520489523  ,
-0.0049945407823310042 ,
-0.00049945407823310042	
-};  //系数b
-static double a_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={ 
- 1     ,
--1.9924014816014133,   
-3.0194828633553867  ,      
--2.8185224264945168  ,  
-2.0387206370625282   ,
--1.0545446210956813   ,
- 0.41444626875039958  ,
--0.11571862523682841  ,
- 0.022498509272218331 ,
--0.0026689123535761092	,
- 0.0001487644521777628
-};
-static double InPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
-static double OutPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
-
-float time_update;
+float k_flow_devide_pi=0.486;
 void flow_task1(void *pdata)
 {float flow_height_fliter;		
  static float acc_neo_off[3];
@@ -444,11 +420,18 @@ void flow_task1(void *pdata)
 	  flow_ground_temp[3]=-pi_flow.sensor.spdx;
 	  #else 
 	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
+		if(module.pi_flow&&!module.flow&&!module.flow_iic){
+		flow_ground_temp[0]=pi_flow.sensor.spdy*k_flow_devide_pi;
+		flow_ground_temp[1]=-pi_flow.sensor.spdx*k_flow_devide_pi;
+		flow_ground_temp[2]=pi_flow.sensor.spdy*k_flow_devide_pi;
+		flow_ground_temp[3]=-pi_flow.sensor.spdx*k_flow_devide_pi;
+		}else{
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
 		flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
-	  flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
-    #endif
+		flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
+		}
+		#endif
 		static float a_br[3]={0};	
 		static float acc_temp[3]={0};
 		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
@@ -461,9 +444,22 @@ void flow_task1(void *pdata)
 	  acc_temp[2] =(reference_vr[2] *a_br[2] + reference_vr[0] *a_br[0] + reference_vr[1] *a_br[1]);
     if(fabs(acc_temp[0])<1.5&&fabs(acc_temp[1])<1.5){
 		static float acc_neo_temp[3]={0};
+		#if USE_UKF_FROM_AUTOQUAD
+		float accIn[3];
+    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X;
+    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y;
+    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z;
+    float acc[3];
+    // rotate acc to world frame
+    navUkfRotateVectorByQuat(acc, accIn, &UKF_Q1);
+		acc_neo_temp[0]=-acc[0];
+		acc_neo_temp[1]=-acc[1];
+		acc_neo_temp[2]=-(acc[2]+9.87);	
+		#else
 	  acc_neo_temp[0]=-acc_temp[0]*9.87;
 		acc_neo_temp[1]=-acc_temp[1]*9.87;
 		acc_neo_temp[2]=(acc_temp[2]-1.0f)*9.87;		
+		#endif
 	  if(en_ble_debug||imu_board_test)
 			;
 		else if(!fly_ready){
@@ -476,13 +472,10 @@ void flow_task1(void *pdata)
     acc_neo_temp1[0]=Moving_Median(5,5,acc_neo_temp[0]-acc_neo_off[0]);
 		acc_neo_temp1[1]=Moving_Median(6,5,acc_neo_temp[1]-acc_neo_off[1]);
 		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]-acc_neo_off[2]);	
-		//acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
-		//acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
-		//acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
-		acc_flt[0] = IIR_I_Filter(acc_neo_temp[0]-acc_neo_off[0], InPut_IIR_acc_ukf[0], OutPut_IIR_acc_ukf[0], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
-	  acc_flt[1] = IIR_I_Filter(acc_neo_temp[1]-acc_neo_off[1], InPut_IIR_acc_ukf[1], OutPut_IIR_acc_ukf[1], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
-	  acc_flt[2] = IIR_I_Filter(acc_neo_temp[2]-acc_neo_off[2], InPut_IIR_acc_ukf[2], OutPut_IIR_acc_ukf[2], b_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1, a_IIR_acc_ukf, IIR_ORDER_ACC_UKF+1);
-	  
+		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
+		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+		
 //		acc_flt[0]=acc_neo_temp1[0];
 //		acc_flt[1]=acc_neo_temp1[1];
 //		acc_flt[2]=acc_neo_temp1[2];//
@@ -491,36 +484,27 @@ void flow_task1(void *pdata)
 		acc_neo[0]=acc_flt[0];
 		acc_neo[1]=acc_flt[1];
 		acc_neo[2]=acc_flt[2];
-	 	flow_matlab_data[0]=acc_neo[0];
+	 	flow_matlab_data[0]=acc_neo[0];//acc
 		flow_matlab_data[1]=acc_neo[1];}
 	  }
 	 }
-		flow_matlab_data[2]=flow_ground_temp[2];
+		flow_matlab_data[2]=flow_ground_temp[2];//spd
 		flow_matlab_data[3]=flow_ground_temp[3];
 		
-
-		//FlowUkfProcess(0);//FK filter
-		
+    #if !USE_UKF_FROM_AUTOQUAD
+		FlowUkfProcess(0);//FK filter
+		#endif
+	 
 		float temp_spd[2];
 		temp_spd[0]=Moving_Median(16,MID_CNT_SPD,FLOW_VEL_X);
 		temp_spd[1]=Moving_Median(17,MID_CNT_SPD,FLOW_VEL_Y);
 		imu_nav.flow.speed.x=imu_nav.flow.speed.x*(1-k_flp)+k_flp*temp_spd[0];
 		imu_nav.flow.speed.y=imu_nav.flow.speed.y*(1-k_flp)+k_flp*temp_spd[1];
-		delay_ms(5); 
+		delay_ms(10); 
 	}
 }	
 
 
-//=======================DEBUG串口 任务函数===========================
-OS_STK  UART_TASK_STK[UART_STK_SIZE];
-u8 en_imu_debug,force_imu_debug;
-void uart_task(void *pdata)
-{	static u8 cnt[4];					 		
- 	while(1)
-	{
-		delay_ms(5);  
-	}
-}	
 
 u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
@@ -542,7 +526,7 @@ void TIM3_IRQHandler(void)
 		Send_TO_FLOW_PI();		
   }		
 							//获取内环准确的执行周期
-	if(time_uart<0.000002)time_uart=0.0025;
+	if(time_uart<0.000002)time_uart=0.005;
 		#if EN_DMA_UART2 			
 			     if(DMA_GetFlagStatus(DMA1_Stream6,DMA_FLAG_TCIF6)!=RESET)//等待DMA2_Steam7传输完成
 								{ 
@@ -555,12 +539,12 @@ void TIM3_IRQHandler(void)
 					#else
 								 GOL_LINK_TASK();
 					#endif
-//		SPI_ReadWriteByte(0xaa); 		
-debug_pi_flow[0]=0;  
-en_ble_debug=1;								
+	
+	debug_pi_flow[0]=0;  
+	en_ble_debug=1;								
 if(debug_pi_flow[0])									
   en_ble_debug=1;
-	if(cnt++>4-1){cnt=0;	
+	if(cnt++>2-1){cnt=0;	
 								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
 								switch(UART_UP_LOAD_SEL)
@@ -593,11 +577,7 @@ if(debug_pi_flow[0])
 								Send_BLE_DEBUG((int16_t)(X_ukf_baro[3]*100),baro_matlab_data[0]*100,X_ukf_baro[0]*100,
 								X_ukf_baro[4]*100,X_ukf_baro[1]*100,ALT_VEL_BMP_EKF*100,
 								0,ALT_VEL_BMP_UNION*100,X_kf_sonar[1]*100);break;	
-								case 7:
-								Send_BLE_DEBUG((int16_t)(laser_buf[1]),Laser_avoid[1],Laser_avoid[2],
-								(int16_t)(Laser_avoid[3]),Laser_avoid[4],Laser_avoid[5],
-								(int16_t)(Laser_avoid[6]),Laser_avoid[7],Laser_avoid[8]);break;	
-								case 8:
+						  	case 8:
 								Send_BLE_DEBUG(0,accumulated_flow_y*1000,flow_rad.integrated_y*1000,
 								0,accumulated_gyro_z*1000,flow_rad.integrated_zgyro*1000,
 								0,0,0);break;	
@@ -618,7 +598,7 @@ if(debug_pi_flow[0])
 								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
 								0,flow_rad.integrated_x*1000,accumulated_flow_x*1000);break;	
 								case 13:
-								Send_BLE_DEBUG(0,0,X_kf_baro[1]*100,
+								Send_BLE_DEBUG(0,gpsx.pvt.PVT_Down_speed*100,X_kf_baro[1]*100,
 								(ultra_distance),m100.H*100,X_kf_baro[0]*100,
 								m100.H_Spd*1000,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100);break;
 								case 14:
@@ -626,13 +606,13 @@ if(debug_pi_flow[0])
 								X_ukf[4]*100,pi_flow.spdy*100,imu_nav.flow.speed.y*100,
 								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
 								case 15:
-								Send_BLE_DEBUG(X_ukf_global[1]*100,X_ukf_global[4]*100, 0,
-								Global_GPS_Sensor.NED_Vel[0]*100,Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Pos[0]*100,
-								X_ukf_Pos[0]*100, X_ukf_Pos[1]*100, gpsx.pvt.PVT_height*100);break;
+								Send_BLE_DEBUG(X_ukf_global[1]*100,X_ukf_global[4]*100,UKF_VELD_F*100,
+								Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Vel[0]*100,gpsx.pvt.PVT_Down_speed*100,
+								UKF_POSE*100, Global_GPS_Sensor.NED_Pos[0]*100, gpsx.pvt.PVT_height*100);break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
-								flow_rad.integrated_xgyro,flow_rad.integrated_ygyro,flow_rad.integrated_zgyro,
-								0,0,0);break;
+								UKF_PRES_ALT*100,UKF_VELD_F*100,UKF_POSD*100,
+								ALT_POS*100,-ALT_VEL*100,AQ_PRESSURE*100);break;
 								}				
 								GOL_LINK_BUSY[1]=0;		
 								} 
@@ -653,15 +633,14 @@ void error_task(void *pdata)
 			gps_good=0;
 		if(pi_flow.loss_cnt++>1/0.2)
 			pi_flow.insert=0;
+		if(pi_flow.sensor.loss_cnt++>1/0.2)
+			pi_flow.sensor.connect=0;
 	  if(fc_loss_cnt++>3/0.2)
 			FC_CONNECT=0;
 		
 		flow.rate=flow.flow_cnt;
 	  flow.flow_cnt=0;
-		if(fly_ready)
-			Laser_start();
-		else 
-			Laser_stop();
+
 		delay_ms(200); 
 	}
 }	

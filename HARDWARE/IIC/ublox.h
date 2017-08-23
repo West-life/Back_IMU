@@ -24,7 +24,7 @@
 #define GPS_BAUD_RATE           230400
 
 #define GPS_LATENCY             75000       // us (comment out to use uBlox timepulse)
-
+#define FLOW_PI_LATENCY         GPS_LATENCY
 //#define GPS_LOG_BUF             2048        // comment out to disable logging
 //#define GPS_FNAME               "GPS"
 //#define GPS_DO_RTK                          // comment out to disable GPS Raw data reports

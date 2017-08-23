@@ -1,8 +1,8 @@
 #ifndef _UKF_TASK_H
 #define _UKF_TASK_H
-
+#include "alt_kf.h"
 #include "stm32f4xx.h"
-#define NAV_MIN_GPS_ACC		3.0f					    // minimum gps hAcc needed to enter auto nav modes, in meters
+#define NAV_MIN_GPS_ACC		8.80f					    // minimum gps hAcc needed to enter auto nav modes, in meters
 #define NAV_MAX_GPS_AGE		1e6					    // maximum age of position update needed to enter auto nav modes, in microseconds
 #define NAV_MIN_FIX_ACC		4.0f					    // minimum gps hAcc still considered a valid "2D" fix, in meters
 #define NAV_MAX_FIX_AGE		10e6					    // maximum age of position update still considered a valid "2D" fix, in microseconds
@@ -19,6 +19,9 @@
 #define RAD_TO_DEG		(180.0f / M_PI)
 #define DEG_TO_RAD		(M_PI / 180.0f)
 
+
+
+void ukf_autoquad(float PosN,float PosE,float PosZ,float SpdN,float SpdE,float SpdZ,float T);
 extern float K_spd_flow;
 extern  double X_ukf[6],X_ukf_nav[9],X_ukf_all[9],X_ukf_global[6];
 extern double X_KF_NAV[2][3];
@@ -28,8 +31,8 @@ extern float velEast,velNorth, velNorth_gps,velEast_gps;;
 void ukf_flow(float flowx,float flowy,float accx,float accy,float T);
 void ukf_pos_task(double JIN,double WEI,float Yaw,float flowx,float flowy,float accx,float accy,float T);
 void ukf_pos_task_qr(float Qr_x,float Qr_y,float Yaw,float flowx,float flowy,float accx,float accy,float T);
-
-extern float local_Lat,local_Lon;
+extern u8 gps_data_vaild,gps_init,force_test;
+extern double local_Lat,local_Lon;
 extern float r1,r2;
 //openpilot
 
@@ -116,47 +119,4 @@ struct gps_sensor {
 	u8 updated;
 };
 
-#define UKF_HIST		50
-typedef struct {
-   // srcdkf_t *kf;
-    float v0a[3];
-    float v0m[3];
-    double holdLat, holdLon;
-    double r1, r2;
-    float posN[UKF_HIST];
-    float posE[UKF_HIST];
-    float posD[UKF_HIST];
-    float velN[UKF_HIST];
-    float velE[UKF_HIST];
-    float velD[UKF_HIST];
-    int navHistIndex;
-    float yaw, pitch, roll;
-    float yawCos, yawSin;
-    float *x;			// states
-    float flowSumX, flowSumY;
-    int32_t flowSumQuality;
-    float flowSumAlt;
-    float flowVelX, flowVelY;
-    float flowPosN, flowPosE;
-    float flowQuality;
-    float flowAlt;
-    float flowRotCos, flowRotSin;
-    uint32_t flowCount, flowAltCount;
-    int logPointer;
-    volatile uint8_t flowLock;
-    uint8_t flowInit;
-    uint8_t logHandle;
-} navUkfStruct_t;
-
-extern navUkfStruct_t navUkfData;
-
-	 #define UKF_POSN  X_KF_NAV[1][0]
-	 #define UKF_POSE  X_KF_NAV[0][0]
-   #define UKF_POSD  0
-	 #define UKF_VELN  X_KF_NAV[1][1]
-	 #define UKF_VELE  X_KF_NAV[0][1]
-   #define UKF_VELD  0
-   #define UKF_VELN_F  UKF_VELN
-	 #define UKF_VELE_F  UKF_VELE
-   #define UKF_VELD_F  UKF_POSD
 #endif

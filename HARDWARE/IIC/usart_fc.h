@@ -345,8 +345,10 @@ float x,y,z,pit,rol,yaw;
 float spdx,spdy,spdz;
 u8 check,use_spd,connect;
 float yaw_off;
-u8 insert;
+u8 insert,update,qual;
+u32 last_update;
 u16 loss_cnt;
+float dt;
 };
 extern struct _QR qr;
 
@@ -356,7 +358,8 @@ float x,y,z,z_o,pit,rol,yaw;
 float spdx,spdy,spdz;
 float yaw_off;
 u16 loss_cnt;
-u8 check,use_spd,connect,insert;
+u8 check,use_spd,connect,insert,update;
+uint32_t last_update;	
 struct _QR sensor;
 float acc[3];
 float gyro[3];
@@ -399,4 +402,5 @@ extern u8 en_px4_mapper,imu_feed_dog;
 void Send_TO_FLOW_NAV_GPS(void);
 extern u8 FC_CONNECT;
 extern u16 fc_loss_cnt;
+extern uint32_t gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
 #endif

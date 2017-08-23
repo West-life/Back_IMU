@@ -1,8 +1,7 @@
 #include "include.h"
 #include "filter.h"
 #include "my_math.h"
-// #define WIDTH_NUM 101
-// #define FIL_ITEM  10
+
 void anotc_filter_1(float base_hz,float gain_hz,float dT,float in,_filter_1_st *f1)
 {
 	LPF_1_(gain_hz,dT,(in - f1->out),f1->a); //µÍÍ¨ºóµÄ±ä»¯Á¿
@@ -58,8 +57,6 @@ float my_deathzoom1(float x,float ref,float zoom)//my_deadzone
 }
 
 
-
-
  void Moving_Average(float in,float moavarray[],u16 len ,u16 fil_cnt[2],float *out)
 {
 	u16 width_num;
@@ -83,8 +80,8 @@ float my_deathzoom1(float x,float ref,float zoom)//my_deadzone
 
 
 
-#define MED_WIDTH_NUM 50
-#define MED_FIL_ITEM  30
+#define MED_WIDTH_NUM 20
+#define MED_FIL_ITEM  35
 
 float med_filter_tmp[MED_FIL_ITEM][MED_WIDTH_NUM ];
 float med_filter_out[MED_FIL_ITEM];
@@ -96,7 +93,8 @@ float Moving_Median(u8 item,u8 width_num,float in)
 	u8 i,j;
 	float t;
 	float tmp[MED_WIDTH_NUM];
-	
+	if(width_num==0)
+		return in;
 	if(item >= MED_FIL_ITEM || width_num >= MED_WIDTH_NUM )
 	{
 		return 0;
@@ -187,35 +185,6 @@ double IIR_I_Filter(double InData, double *x, double *y, double *b, short nb, do
   return OutData;
 }
 
-/*====================================================================================================*/
-/*====================================================================================================*
-**º¯Êı : KalmanFilter
-**¹¦ÄÜ : ¿¨¶ûÂüÂË²¨
-**ÊäÈë :  
-**İ”³ö : None
-**±¸×¢ : None
-**====================================================================================================*/
-/*====================================================================================================*/
-double KalmanFilter(const double ResrcData,double ProcessNiose_Q,double MeasureNoise_R,double x_last,double p_last)
-{
-   double R = MeasureNoise_R;
-   double Q = ProcessNiose_Q;
-   double x_mid = x_last;
-   double x_now;
-   double p_mid ;
-   double p_now;
-   double kg;        
-
-   x_mid=x_last;          //x_last=x(k-1|k-1),x_mid=x(k|k-1)
-   p_mid=p_last+Q;        //p_mid=p(k|k-1),p_last=p(k-1|k-1),Q=ÔëÉù
-   kg=p_mid/(p_mid+R);    //kgÎªkalman filter£¬RÎªÔëÉù
-   x_now=x_mid+kg*(ResrcData-x_mid);//¹À¼Æ³öµÄ×îÓÅÖµ
-                
-   p_now=(1-kg)*p_mid;   //×îÓÅÖµ¶ÔÓ¦µÄcovariance       
-   p_last = p_now;       //¸üĞÂcovarianceÖµ
-   x_last = x_now;       //¸üĞÂÏµÍ³×´Ì¬Öµ
-   return x_now;                
-}
 
 /******************* (C) COPYRIGHT 2012 WildFire Team *****END OF FILE************/
 fp32 LPF_1st(fp32 oldData, fp32 newData, fp32 lpf_factor)
@@ -261,37 +230,44 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ğ¡·¶Î§ÄÚÕıÈ·¡
 // GX2 = -A / (1 + A)
 // GX3 = (1 - A) / (1 + A)
 
-///////////////////////////////////////
+///////////////////////////////////////larger tau, smoother filter
 
-float ACC_HIGHPASS_TAU        = 4;//0.005f;
-float ACC_LOWPASS_TAU        = 0.05f;
-float ACC_LOWPASS_SAMPLE_TIME =0.02f;
-float ACC_LOWPASS_A        ;//   (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
-float ACC_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
-float ACC_LOWPASS_GX2      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
-float ACC_LOWPASS_GX3      ;// ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
+#define ACC_HIGHPASS_TAU         4//0.005f;
+#define ACC_LOWPASS_TAU         0.02f
+#define ACC_LOWPASS_SAMPLE_TIME 0.01f
+#define ACC_LOWPASS_A          (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
+#define ACC_LOWPASS_GX1       (1.0f / (1.0f + ACC_LOWPASS_A))
+#define ACC_LOWPASS_GX2       (1.0f / (1.0f + ACC_LOWPASS_A))
+#define ACC_LOWPASS_GX3       ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
+
+#define ACC_UKF_LOWPASS_TAU        0.05f
+#define ACC_UKF_LOWPASS_SAMPLE_TIME 0.01f
+#define ACC_UKF_LOWPASS_A          (2.0f * ACC_UKF_LOWPASS_TAU / ACC_UKF_LOWPASS_SAMPLE_TIME )
+#define ACC_UKF_LOWPASS_GX1        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
+#define ACC_UKF_LOWPASS_GX2        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
+#define ACC_UKF_LOWPASS_GX3       ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A))
 
 
-float HML_LOWPASS_TAU        = 0.005f;
-float HML_LOWPASS_SAMPLE_TIME =0.02f;
-float HML_LOWPASS_A        ;//   (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME )
-float HML_LOWPASS_GX1      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
-float HML_LOWPASS_GX2      ;//  (1.0f / (1.0f + ACC_LOWPASS_A))
-float HML_LOWPASS_GX3      ;// ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
+#define HML_LOWPASS_TAU        0.025f
+#define HML_LOWPASS_SAMPLE_TIME 0.02f
+#define	HML_LOWPASS_A           2.0f * 0.05 * 500.0f
+#define	HML_LOWPASS_GX1        (1.0f / (1.0f + HML_LOWPASS_A))
+#define	HML_LOWPASS_GX2        (1.0f / (1.0f + HML_LOWPASS_A))
+#define	HML_LOWPASS_GX3        ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A))
 
 firstOrderFilterData_t firstOrderFilters[NUMBER_OF_FIRST_ORDER_FILTERS];
 
 void initFirstOrderFilter(float T)
 { 
-	ACC_LOWPASS_SAMPLE_TIME= T;
-	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
-	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
-	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
-	ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
-//	ACC_LOWPASS_A       =    (2.0f * ACC_HIGHPASS_TAU / ACC_LOWPASS_SAMPLE_TIME);
-//  ACC_LOWPASS_GX1     =    ( ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
-//  ACC_LOWPASS_GX2     =   (-ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
-//  ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+//  ACC_LOWPASS_SAMPLE_TIME=T;
+//	ACC_LOWPASS_A       =    (2.0f * ACC_LOWPASS_TAU / ACC_LOWPASS_SAMPLE_TIME );
+//	ACC_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_LOWPASS_A));
+//	ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
+////	ACC_LOWPASS_A       =    (2.0f * ACC_HIGHPASS_TAU / ACC_LOWPASS_SAMPLE_TIME);
+////  ACC_LOWPASS_GX1     =    ( ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
+////  ACC_LOWPASS_GX2     =   (-ACC_LOWPASS_A / (1.0f + ACC_LOWPASS_A));
+////  ACC_LOWPASS_GX3     =    ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A));
 
 
   firstOrderFilters[ACC_LOWPASS_X].gx1 = ACC_LOWPASS_GX1;
@@ -304,11 +280,26 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[ACC_LOWPASS_Z].gx2 = ACC_LOWPASS_GX2;
 	firstOrderFilters[ACC_LOWPASS_Z].gx3 = ACC_LOWPASS_GX3;
 	
-	HML_LOWPASS_SAMPLE_TIME= T;
-	HML_LOWPASS_A       =     2.0f * 0.05 * 500.0f;//(2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
-	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
-	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));
-	HML_LOWPASS_GX3     =    ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A));
+//  ACC_UKF_LOWPASS_SAMPLE_TIME=T;
+//	ACC_UKF_LOWPASS_A       =    (2.0f * ACC_UKF_LOWPASS_TAU / ACC_UKF_LOWPASS_SAMPLE_TIME );
+//	ACC_UKF_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
+//	ACC_UKF_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
+//	ACC_UKF_LOWPASS_GX3     =    ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A));
+  firstOrderFilters[ACC_UKF_LOWPASS_X].gx1 = ACC_UKF_LOWPASS_GX1;
+	firstOrderFilters[ACC_UKF_LOWPASS_X].gx2 = ACC_UKF_LOWPASS_GX2;
+	firstOrderFilters[ACC_UKF_LOWPASS_X].gx3 = ACC_UKF_LOWPASS_GX3;
+	firstOrderFilters[ACC_UKF_LOWPASS_Y].gx1 = ACC_UKF_LOWPASS_GX1;
+	firstOrderFilters[ACC_UKF_LOWPASS_Y].gx2 = ACC_UKF_LOWPASS_GX2;
+	firstOrderFilters[ACC_UKF_LOWPASS_Y].gx3 = ACC_UKF_LOWPASS_GX3;
+	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx1 = ACC_UKF_LOWPASS_GX1;
+	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx2 = ACC_UKF_LOWPASS_GX2;
+	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx3 = ACC_UKF_LOWPASS_GX3;
+	
+
+//	HML_LOWPASS_A       =     2.0f * 0.05 * 500.0f;//(2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
+//	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
+//	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));
+//	HML_LOWPASS_GX3     =    ((1.0f - HML_LOWPASS_A) / (1.0f + HML_LOWPASS_A));
   firstOrderFilters[HML_LOWPASS_X].gx1 = HML_LOWPASS_GX1;
 	firstOrderFilters[HML_LOWPASS_X].gx2 = HML_LOWPASS_GX2;
 	firstOrderFilters[HML_LOWPASS_X].gx3 = HML_LOWPASS_GX3;
@@ -325,7 +316,7 @@ float firstOrderFilter(float input, struct firstOrderFilterData *filterParameter
 {   static u8 init; 
     float output;
     if(!init){init=1;initFirstOrderFilter(T);}
-		initFirstOrderFilter(T);
+		//initFirstOrderFilter(T);
     output = filterParameters->gx1 * input +
              filterParameters->gx2 * filterParameters->previousInput -
              filterParameters->gx3 * filterParameters->previousOutput;
@@ -334,4 +325,86 @@ float firstOrderFilter(float input, struct firstOrderFilterData *filterParameter
     filterParameters->previousOutput = output;
 
     return output;
+}
+
+Butter_Parameter LF_20Hz; 
+Butter_BufferData Acc_20Hz[3];
+
+void LPButterworth_Init(void)
+{
+	LF_20Hz.a[0]=0.06745;
+	LF_20Hz.a[1]=0.1349;
+	LF_20Hz.a[2]=0.06745;
+
+	LF_20Hz.b[0]=1;
+	LF_20Hz.b[1]=-1.4298;
+	LF_20Hz.b[2]=0.41280;
+}
+
+float LPButterworth(float curr_input,Butter_BufferData *Buffer,Butter_Parameter *Parameter)
+{
+static u8 init;
+if(!init){init=1;
+LPButterworth_Init();
+}	
+static int LPB_Cnt=0;
+        /* ????Butterworth?? */
+/* ????x(n) */
+        Buffer->Input_Butter[2]=curr_input;
+        if(LPB_Cnt>=500)
+        {
+/* Butterworth?? */
+        Buffer->Output_Butter[2]=
+         Parameter->b[0] * Buffer->Input_Butter[2]
+        +Parameter->b[1] * Buffer->Input_Butter[1]
++Parameter->b[2] * Buffer->Input_Butter[0]
+        -Parameter->a[1] * Buffer->Output_Butter[1]
+        -Parameter->a[2] * Buffer->Output_Butter[0];
+        }
+        else
+        {
+          Buffer->Output_Butter[2]=Buffer->Input_Butter[2];
+          LPB_Cnt++;
+        }
+/* x(n) ???? */
+        Buffer->Input_Butter[0]=Buffer->Input_Butter[1];
+        Buffer->Input_Butter[1]=Buffer->Input_Butter[2];
+/* y(n) ???? */
+        Buffer->Output_Butter[0]=Buffer->Output_Butter[1];
+        Buffer->Output_Butter[1]=Buffer->Output_Butter[2];
+        return (Buffer->Output_Butter[2]);
+}
+
+
+
+void utilFilterReset(utilFilter_t *f, float setpoint) {
+    f->z1 = setpoint;
+}
+
+void utilFilterReset3(utilFilter_t *f, float setpoint) {
+    utilFilterReset(&f[0], setpoint);
+    utilFilterReset(&f[1], setpoint);
+    utilFilterReset(&f[2], setpoint);
+}
+
+// larger tau, smoother filter
+void utilFilterInit(utilFilter_t *f, float dt, float tau, float setpoint) {
+    f->tc = dt / tau;
+    utilFilterReset(f, setpoint);
+}
+
+void utilFilterInit3(utilFilter_t *f, float dt, float tau, float setpoint) {
+    utilFilterInit(&f[0], dt, tau, setpoint);
+    utilFilterInit(&f[1], dt, tau, setpoint);
+    utilFilterInit(&f[2], dt, tau, setpoint);
+}
+
+float utilFilter(utilFilter_t *f, float signal) {
+    register float z1;
+
+    z1 = f->z1 + (signal - f->z1) * f->tc;
+
+    f->z1 = z1;
+
+    return z1;
 }
