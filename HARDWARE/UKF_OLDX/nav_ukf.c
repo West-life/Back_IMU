@@ -56,7 +56,7 @@ float UKF_GPS_VD_N_TEMP_FLOW=1;
 float UKF_MAG_N_TEMP=UKF_MAG_N;
 
 
-u8 en_dop_gps=0;
+u8 en_dop_gps=1;
 u8 en_z_bais=0;
 
 navUkfStruct_t navUkfData;
@@ -492,7 +492,9 @@ void navUkfFinish(void) {
     navUkfData.yaw = To_180_degrees(compassNormalize(navUkfData.yaw * RAD_TO_DEG));
     navUkfData.pitch *= RAD_TO_DEG;
     navUkfData.roll *= RAD_TO_DEG;
-
+    UKF_VELN=LIMIT(UKF_VELN,-6.66,6.66);
+	  UKF_VELE=LIMIT(UKF_VELE,-6.66,6.66);
+	  UKF_VELD=LIMIT(UKF_VELD,-6.66,6.66);
     //    x' = x cos f - y sin f
     //    y' = y cos f + x sin f
     navUkfData.yawCos = cosf(navUkfData.yaw * DEG_TO_RAD);
@@ -947,11 +949,11 @@ if(!init){init=1;
 
 	// soft start GPS accuracy
   if(gpsx.pvt.PVT_numsv>=3&&gpsx.pvt.PVT_fixtype>=1)
-	{runData.accMask -= 1000/(3.6/AQ_OUTER_TIMESTEP);loss_cnt=0;}
+	{runData.accMask -= 1000/(4.6/AQ_OUTER_TIMESTEP);loss_cnt=0;}
 	else 
 	loss_cnt++;	
 	runData.accMask=LIMIT(runData.accMask,0,1000);
-	if(loss_cnt>200)
+	if(loss_cnt>333)
   runData.accMask =1000;
 	navUkfInertialUpdate(AQ_OUTER_TIMESTEP);//200 hz 5ms
 
