@@ -326,7 +326,11 @@ uint16_t accumulated_quality = 0;
 uint32_t integration_timespan = 0;
 float k_flow_acc[2]={0.1,0.1};
 float k_gro_acc=0.1;
+#if FLOW_USE_P5A
+float flt_gro=0.066;//1;
+#else
 float flt_gro=0.03;//1;
+#endif
 float k_time_use=4.2;
 void flow_sample(void)
 {
@@ -336,10 +340,15 @@ float y_rate = imu_fushion.Gyro_deg.x;
 float z_rate = -imu_fushion.Gyro_deg.z; // z is correct
 
 integration_timespan = deltatime*k_time_use;
+#if FLOW_USE_P5A
+accumulated_flow_x = -flow_5a.flow_x_integral  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
+accumulated_flow_y = -flow_5a.flow_y_integral / focal_length_px * 1.0f*k_flow_acc[1];//rad	
+#else	
 accumulated_flow_x = qr.spdx  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
 accumulated_flow_y = qr.spdy / focal_length_px * 1.0f*k_flow_acc[1];//rad
-accumulated_gyro_x = LIMIT(x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro),-fabs(accumulated_flow_x*5),fabs(accumulated_flow_x*5));	//rad
-accumulated_gyro_y = LIMIT(y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro),-fabs(accumulated_flow_y*5),fabs(accumulated_flow_y*5));	//rad
+#endif
+accumulated_gyro_x = LIMIT(x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro),-fabs(accumulated_flow_x*8),fabs(accumulated_flow_x*8));	//rad
+accumulated_gyro_y = LIMIT(y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro),-fabs(accumulated_flow_y*8),fabs(accumulated_flow_y*8));	//rad
 accumulated_gyro_z = z_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_z*(1-flt_gro);	//rad
 }
 
@@ -393,6 +402,9 @@ void flow_task1(void *pdata)
 	 flow_height_fliter=ALT_POS_SONAR3;	
 	 #endif
 	 flow_sample();
+	 #if FLOW_USE_P5A
+	 qr.use_spd=1;
+	 #endif
 	 if(qr.use_spd==0)
 	 {
 	 flow_rad_use.time_usec=flow_rad_use.integration_time_us=flow_rad.integration_time_us;
@@ -428,8 +440,13 @@ void flow_task1(void *pdata)
 		}else{
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
-		flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
-		flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
+		#if FLOW_USE_P5A
+		flow_ground_temp[2]=firstOrderFilter(-flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_ground_temp[3]=firstOrderFilter(-flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+    #else
+		flow_ground_temp[2]=firstOrderFilter(flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_ground_temp[3]=firstOrderFilter(flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		#endif
 		}
 		#endif
 		static float a_br[3]={0};	
@@ -446,9 +463,9 @@ void flow_task1(void *pdata)
 		static float acc_neo_temp[3]={0};
 		#if USE_UKF_FROM_AUTOQUAD
 		float accIn[3];
-    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X;
-    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y;
-    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z;
+    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X*0;
+    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y*0;
+    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z*0;
     float acc[3];
     // rotate acc to world frame
     navUkfRotateVectorByQuat(acc, accIn, &UKF_Q1);
@@ -594,9 +611,9 @@ if(debug_pi_flow[0])
 								Global_GPS_Sensor.NED_Vel[0]*100,Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Vel[2]*100,
 								0,0,0);break;
 								case 12:
-								Send_BLE_DEBUG(flow_rad.integrated_xgyro*1000,accumulated_flow_x*1000,accumulated_gyro_x*1000,
-								0,flow_rad.integrated_xgyro*1000,flow_rad.integrated_x*1000,
-								0,flow_rad.integrated_x*1000,accumulated_flow_x*1000);break;	
+								Send_BLE_DEBUG(flow_ground_temp[3]*100,accumulated_flow_x*1000,Global_GPS_Sensor.NED_Velf[Xr]*100,
+								flow_ground_temp[2]*100,accumulated_flow_y*1000,Global_GPS_Sensor.NED_Velf[Yr]*100,
+								Global_GPS_Sensor.NED_Acc[1]*100,X_ukf[4]*100,X_ukf[1]*100);break;	
 								case 13:
 								Send_BLE_DEBUG(0,gpsx.pvt.PVT_Down_speed*100,X_kf_baro[1]*100,
 								(ultra_distance),m100.H*100,X_kf_baro[0]*100,
@@ -612,8 +629,12 @@ if(debug_pi_flow[0])
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
 								UKF_PRES_ALT*100,UKF_VELD_F*100,UKF_POSD*100,
+								ALT_POS*100,-ALT_VEL*100,AQ_PRESSURE*100);break;		
+								case 17:
+								Send_BLE_DEBUG(0,0,flow_5a.flow_x_integral,
+								0,0,flow_5a.flow_y_integral,
 								ALT_POS*100,-ALT_VEL*100,AQ_PRESSURE*100);break;
-								}				
+							 }
 								GOL_LINK_BUSY[1]=0;		
 								} 
 							}								

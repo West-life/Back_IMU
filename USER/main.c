@@ -101,10 +101,14 @@ int main(void)
 	//#if EN_DMA_UART3
 	//MYDMA_Config(DMA1_Stream3,DMA_Channel_4,(u32)&USART3->DR,(u32)SendBuff3,SEND_BUF_SIZE3+2,2);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	// #endif
+	#if FLOW_USE_P5A
+	Uart5_Init(19200);	
+	#else
 	#if FLOW_USE_IIC
 	Soft_I2C_Init_PX4();      //FLOW PX4 IIC
 	#else
   Uart5_Init(115200L);			//FLOW PX4
+	#endif
 	#endif
 	Delay_ms(10);
 //-------------------------Para Init------------------------------------	

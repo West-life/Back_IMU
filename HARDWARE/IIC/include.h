@@ -54,6 +54,8 @@
 
 #define FLOW_USE_IIC 0
 
+#define FLOW_USE_P5A 0
+
 #define USE_LASER_AVOID 0
 
 #define USE_FLOW_SONAR 0

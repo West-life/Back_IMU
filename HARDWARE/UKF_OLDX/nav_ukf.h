@@ -93,9 +93,9 @@ extern u32 dImuData_lastUpdate;
 #define UKF_VELE		navUkfData.x[UKF_STATE_VELE]
 #define UKF_VELD		navUkfData.x[UKF_STATE_VELD]
 
-#define UKF_VELN_F		Moving_Median(8,5,UKF_VELN)
-#define UKF_VELE_F		Moving_Median(9,5,UKF_VELE)
-#define UKF_VELD_F		Moving_Median(10,5,-UKF_VELD)
+#define UKF_VELN_F		Moving_Median(8,0,UKF_VELN)
+#define UKF_VELE_F		Moving_Median(9,0,UKF_VELE)
+#define UKF_VELD_F		Moving_Median(10,0,-UKF_VELD)
 
 #define UKF_POSN		navUkfData.x[UKF_STATE_POSN]
 #define UKF_POSE		navUkfData.x[UKF_STATE_POSE]

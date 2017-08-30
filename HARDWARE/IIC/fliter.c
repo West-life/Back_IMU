@@ -247,6 +247,12 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ð¡·¶Î§ÄÚÕýÈ·¡
 #define ACC_UKF_LOWPASS_GX2        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
 #define ACC_UKF_LOWPASS_GX3       ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A))
 
+#define FLOW_LOWPASS_TAU        0.025f
+#define FLOW_LOWPASS_SAMPLE_TIME 0.01f
+#define FLOW_LOWPASS_A          (2.0f * FLOW_LOWPASS_TAU / FLOW_LOWPASS_SAMPLE_TIME )
+#define FLOW_LOWPASS_GX1        (1.0f / (1.0f + FLOW_LOWPASS_A))
+#define FLOW_LOWPASS_GX2        (1.0f / (1.0f + FLOW_LOWPASS_A))
+#define FLOW_LOWPASS_GX3       ((1.0f - FLOW_LOWPASS_A) / (1.0f + FLOW_LOWPASS_A))
 
 #define HML_LOWPASS_TAU        0.025f
 #define HML_LOWPASS_SAMPLE_TIME 0.02f
@@ -285,6 +291,15 @@ void initFirstOrderFilter(float T)
 //	ACC_UKF_LOWPASS_GX1    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
 //	ACC_UKF_LOWPASS_GX2    =     (1.0f / (1.0f + ACC_UKF_LOWPASS_A));
 //	ACC_UKF_LOWPASS_GX3     =    ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A));
+  firstOrderFilters[FLOW_LOWPASS_X].gx1 = FLOW_LOWPASS_GX1;
+	firstOrderFilters[FLOW_LOWPASS_X].gx2 = FLOW_LOWPASS_GX2;
+	firstOrderFilters[FLOW_LOWPASS_X].gx3 = FLOW_LOWPASS_GX3;
+	firstOrderFilters[FLOW_LOWPASS_Y].gx1 = FLOW_LOWPASS_GX1;
+	firstOrderFilters[FLOW_LOWPASS_Y].gx2 = FLOW_LOWPASS_GX2;
+	firstOrderFilters[FLOW_LOWPASS_Y].gx3 = FLOW_LOWPASS_GX3;
+
+	
+
   firstOrderFilters[ACC_UKF_LOWPASS_X].gx1 = ACC_UKF_LOWPASS_GX1;
 	firstOrderFilters[ACC_UKF_LOWPASS_X].gx2 = ACC_UKF_LOWPASS_GX2;
 	firstOrderFilters[ACC_UKF_LOWPASS_X].gx3 = ACC_UKF_LOWPASS_GX3;
@@ -294,8 +309,6 @@ void initFirstOrderFilter(float T)
 	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx1 = ACC_UKF_LOWPASS_GX1;
 	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx2 = ACC_UKF_LOWPASS_GX2;
 	firstOrderFilters[ACC_UKF_LOWPASS_Z].gx3 = ACC_UKF_LOWPASS_GX3;
-	
-
 //	HML_LOWPASS_A       =     2.0f * 0.05 * 500.0f;//(2.0f * HML_LOWPASS_TAU / HML_LOWPASS_SAMPLE_TIME );
 //	HML_LOWPASS_GX1    =     (1.0f / (1.0f + HML_LOWPASS_A));
 //	HML_LOWPASS_GX2    =     (1.0f / (1.0f + HML_LOWPASS_A));

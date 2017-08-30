@@ -39,6 +39,9 @@ float my_deathzoom1(float x,float ref,float zoom);//my_deadzone;
 #define ACC_UKF_LOWPASS_X 6
 #define ACC_UKF_LOWPASS_Y 7
 #define ACC_UKF_LOWPASS_Z 8
+#define FLOW_LOWPASS_X 9
+#define FLOW_LOWPASS_Y 10
+
 typedef struct firstOrderFilterData {
   float   gx1;
   float   gx2;

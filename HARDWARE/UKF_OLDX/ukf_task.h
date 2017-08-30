@@ -2,7 +2,7 @@
 #define _UKF_TASK_H
 #include "alt_kf.h"
 #include "stm32f4xx.h"
-#define NAV_MIN_GPS_ACC		8.80f					    // minimum gps hAcc needed to enter auto nav modes, in meters
+#define NAV_MIN_GPS_ACC		8.80f*2					    // minimum gps hAcc needed to enter auto nav modes, in meters
 #define NAV_MAX_GPS_AGE		1e6					    // maximum age of position update needed to enter auto nav modes, in microseconds
 #define NAV_MIN_FIX_ACC		4.0f					    // minimum gps hAcc still considered a valid "2D" fix, in meters
 #define NAV_MAX_FIX_AGE		10e6					    // maximum age of position update still considered a valid "2D" fix, in microseconds
@@ -19,7 +19,9 @@
 #define RAD_TO_DEG		(180.0f / M_PI)
 #define DEG_TO_RAD		(M_PI / 180.0f)
 
-
+#define Xr 0
+#define Yr 1
+#define Zr 2
 
 void ukf_autoquad(float PosN,float PosE,float PosZ,float SpdN,float SpdE,float SpdZ,float T);
 extern float K_spd_flow;

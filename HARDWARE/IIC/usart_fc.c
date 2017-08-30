@@ -1405,6 +1405,46 @@ void Data_Receive_Anl_FLOW(u8 *data_buf,u8 num)
 }
 
 
+FLOW_P5A flow_5a;
+void RX_FLOW_P5A(u8 in)
+{
+ static u8 state;
+ static u8 cnt;
+ static u8 buf[30];
+ switch(state)
+ {
+	 case 0:
+		 if(in==0xfe)
+			 state=1;
+	 break;	 
+	case 1:
+	 if(in==0x0a)
+	 {state=2;cnt=0;}
+	 else
+		 state=0;
+	 break;	  
+  case 2:
+		 if(in==0x55)
+			 state=3;
+		 else if(cnt>13)
+			 state=0;
+		 else
+			 buf[cnt++]=in;
+ 
+   break;
+	case 3:
+	flow_5a.flow_x_integral=(int16_t)((*(buf+1)<<8)|*(buf+0));
+	flow_5a.flow_y_integral=(int16_t)((*(buf+3)<<8)|*(buf+2));
+	flow_5a.integration_timespan=(int16_t)((*(buf+5)<<8)|*(buf+4));
+	flow_5a.ground_distance=(int16_t)((*(buf+7)<<8)|*(buf+6));
+	flow_5a.quality=*(buf+8);
+	flow_5a.version=*(buf+9);
+	state=0;
+	
+	break;
+ }	 
+}	
+
 u8 Tx5Buffer[256];
 u8 Tx5Counter=0;
 u8 count5=0; 
@@ -1428,8 +1468,10 @@ static u8 state = 0;
 		USART_ClearITPendingBit(UART5,USART_IT_RXNE);//清除中断标志
 
 		com_data = UART5->DR;
+		#if FLOW_USE_P5A
+	  RX_FLOW_P5A(com_data);
+		#endif
 		
-	
 		if(state==0&&com_data==0xAA)
 		{
 			state=1;
@@ -1824,9 +1866,9 @@ u8 Gps_data_get_PVT(u8 in)
 					 gpsx.pvt.PVT_Sacc=((((u32)buf[71+6])<<24)|((u32)buf[70+6])<<16|((u32)buf[69+6])<<8|((u32)buf[68+6]));		
 					 gpsx.pvt.PVT_Headacc=((((u32)buf[75+6])<<24)|((u32)buf[74+6])<<16|((u32)buf[73+6])<<8|((u32)buf[72+6]))*1e-5;								 
 					 
-					 gpsx.pvt.PVT_North_speed=(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.;
-					 gpsx.pvt.PVT_East_speed=(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.;
-					 gpsx.pvt.PVT_Down_speed=(float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;
+					 gpsx.pvt.PVT_North_speed= Moving_Median(28,3,(float)(int)((((u32)buf[51+6])<<24)|((u32)buf[50+6])<<16|((u32)buf[49+6])<<8|((u32)buf[48+6]))/1000.);
+					 gpsx.pvt.PVT_East_speed= Moving_Median(29,3,(float)(int)((((u32)buf[55+6])<<24)|((u32)buf[54+6])<<16|((u32)buf[53+6])<<8|((u32)buf[52+6]))/1000.);
+					 gpsx.pvt.PVT_Down_speed= (float)(int)((((u32)buf[59+6])<<24)|((u32)buf[58+6])<<16|((u32)buf[57+6])<<8|((u32)buf[56+6]))/1000.;
 					 gpsx.pvt.PVT_speed=(float)(int)((((u32)buf[63+6])<<24)|((u32)buf[62+6])<<16|((u32)buf[61+6])<<8|((u32)buf[60+6]))/1000.;	
 
 					 gpsx.pvt.headMot=(int)((((u32)buf[67+6])<<24)|((u32)buf[66+6])<<16|((u32)buf[65+6])<<8|((u32)buf[64+6]))*1e-5;
