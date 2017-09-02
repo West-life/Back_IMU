@@ -424,7 +424,7 @@ void flow_task1(void *pdata)
 	 flow_rad_use.integrated_y=accumulated_flow_y;
 	 }	 
 	  flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
-	  
+	  if(flow_loop_time<0.001)flow_loop_time=0.01;
 	  #if SENSOR_FORM_PI_FLOW
 	  flow_ground_temp[0]=pi_flow.sensor.spdy;
 		flow_ground_temp[1]=-pi_flow.sensor.spdx;
@@ -435,17 +435,19 @@ void flow_task1(void *pdata)
 		if(module.pi_flow&&!module.flow&&!module.flow_iic){
 		flow_ground_temp[0]=pi_flow.sensor.spdy*k_flow_devide_pi;
 		flow_ground_temp[1]=-pi_flow.sensor.spdx*k_flow_devide_pi;
-		flow_ground_temp[2]=pi_flow.sensor.spdy*k_flow_devide_pi;
-		flow_ground_temp[3]=-pi_flow.sensor.spdx*k_flow_devide_pi;
+		flow_matlab_data[2]=pi_flow.sensor.spdy*k_flow_devide_pi;
+		flow_matlab_data[3]=-pi_flow.sensor.spdx*k_flow_devide_pi;
 		}else{
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
 		#if FLOW_USE_P5A
-		flow_ground_temp[2]=firstOrderFilter(-flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
-		flow_ground_temp[3]=firstOrderFilter(-flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		flow_matlab_data[2]=firstOrderFilter(-flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_matlab_data[3]=firstOrderFilter(-flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
     #else
-		flow_ground_temp[2]=firstOrderFilter(flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
-		flow_ground_temp[3]=firstOrderFilter(flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		flow_matlab_data[2]=firstOrderFilter(LIMIT(flow_per_out[2]*k_flow_devide,-6,6),&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_matlab_data[3]=firstOrderFilter(LIMIT(flow_per_out[3]*k_flow_devide,-6,6),&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		//	flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
+		//	flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
 		#endif
 		}
 		#endif
@@ -463,9 +465,9 @@ void flow_task1(void *pdata)
 		static float acc_neo_temp[3]={0};
 		#if USE_UKF_FROM_AUTOQUAD
 		float accIn[3];
-    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X*0;
-    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y*0;
-    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z*0;
+    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X*1;
+    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y*1;
+    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z*1;
     float acc[3];
     // rotate acc to world frame
     navUkfRotateVectorByQuat(acc, accIn, &UKF_Q1);
@@ -505,8 +507,8 @@ void flow_task1(void *pdata)
 		flow_matlab_data[1]=acc_neo[1];}
 	  }
 	 }
-		flow_matlab_data[2]=flow_ground_temp[2];//spd
-		flow_matlab_data[3]=flow_ground_temp[3];
+		//flow_matlab_data[2]=flow_ground_temp[2];//spd
+		//flow_matlab_data[3]=flow_ground_temp[3];
 		
     #if !USE_UKF_FROM_AUTOQUAD
 		FlowUkfProcess(0);//FK filter
@@ -523,7 +525,7 @@ void flow_task1(void *pdata)
 
 
 
-u8 UART_UP_LOAD_SEL=15;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=14;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 void TIM3_IRQHandler(void)
 {
@@ -619,9 +621,9 @@ if(debug_pi_flow[0])
 								(ultra_distance),m100.H*100,X_kf_baro[0]*100,
 								m100.H_Spd*1000,Global_GPS_Sensor.NED_Pos[1]*100,Global_GPS_Sensor.NED_Pos[0]*100);break;
 								case 14:
-								Send_BLE_DEBUG(X_ukf[1]*100,pi_flow.spdx*100,imu_nav.flow.speed.x*100,
-								X_ukf[4]*100,pi_flow.spdy*100,imu_nav.flow.speed.y*100,
-								flow_matlab_data[2]*100,pi_flow.sensor.spdx*100,0);break;
+								Send_BLE_DEBUG(X_ukf[1]*100,flow_matlab_data[3]*100,imu_nav.flow.speed.x*100,
+								X_ukf[4]*100,flow_matlab_data[2]*100,imu_nav.flow.speed.y*100,
+								X_ukf[0]*100,Global_GPS_Sensor.NED_Posf_reg[Yr]*100,0);break;
 								case 15:
 								Send_BLE_DEBUG(X_ukf_global[1]*100,X_ukf_global[4]*100,UKF_VELD_F*100,
 								Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Vel[0]*100,gpsx.pvt.PVT_Down_speed*100,

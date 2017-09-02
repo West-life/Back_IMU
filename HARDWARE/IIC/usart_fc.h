@@ -414,4 +414,12 @@ typedef struct  {
 	u8 version; //????????? 
 	}FLOW_P5A ;
 extern FLOW_P5A flow_5a;
+	
+extern float accumulated_flow_x ;
+extern float accumulated_flow_y ;
+extern float accumulated_gyro_x ;
+extern float accumulated_gyro_y ;
+extern float accumulated_gyro_z ;
+extern uint32_t integration_timespan ;
+void flow_sample(void);	
 #endif

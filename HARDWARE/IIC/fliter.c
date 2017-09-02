@@ -335,6 +335,9 @@ float firstOrderFilter(float input, struct firstOrderFilterData *filterParameter
              filterParameters->gx3 * filterParameters->previousOutput;
 
     filterParameters->previousInput  = input;
+		if(isnan(output))
+		output=	filterParameters->previousOutput;
+		
     filterParameters->previousOutput = output;
 
     return output;

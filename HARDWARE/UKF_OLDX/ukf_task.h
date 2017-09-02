@@ -2,7 +2,7 @@
 #define _UKF_TASK_H
 #include "alt_kf.h"
 #include "stm32f4xx.h"
-#define NAV_MIN_GPS_ACC		8.80f*2					    // minimum gps hAcc needed to enter auto nav modes, in meters
+#define NAV_MIN_GPS_ACC		8.80f					    // minimum gps hAcc needed to enter auto nav modes, in meters
 #define NAV_MAX_GPS_AGE		1e6					    // maximum age of position update needed to enter auto nav modes, in microseconds
 #define NAV_MIN_FIX_ACC		4.0f					    // minimum gps hAcc still considered a valid "2D" fix, in meters
 #define NAV_MAX_FIX_AGE		10e6					    // maximum age of position update still considered a valid "2D" fix, in microseconds

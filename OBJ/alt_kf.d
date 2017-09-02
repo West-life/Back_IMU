@@ -76,6 +76,7 @@
 ..\obj\alt_kf.o: ..\HARDWARE\GPS\gps.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_OLDX\nav_ukf.h
 ..\obj\alt_kf.o: ..\HARDWARE\IIC\LIS3MDL.h
+..\obj\alt_kf.o: ..\HARDWARE\IIC\my_math.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\kf_oldx.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rt_nonfinite.h
 ..\obj\alt_kf.o: ..\HARDWARE\UKF_BARO\rtwtypes.h

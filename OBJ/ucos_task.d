@@ -100,6 +100,7 @@
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\imu_oldx.h
 ..\obj\ucos_task.o: ..\HARDWARE\GPS\m100.h
 ..\obj\ucos_task.o: ..\HARDWARE\UKF_OLDX\nav_ukf.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\my_math.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LSM303.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\FastMath.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Double.h

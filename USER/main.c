@@ -149,9 +149,9 @@ int main(void)
 #endif	
   TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
-	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
-	#define TEST1 0
-	#if TEST1
+	//IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
+	#define NO_UCOS 1
+	#if NO_UCOS
 	while(1)
 	{
 	static u8 cnt1;
@@ -171,7 +171,8 @@ if(imu_feed_dog==1&&FC_CONNECT==1)
 	LIS_Data_Prepare(ekf_loop_time1)	;
 	MPU6050_Data_Prepare( ekf_loop_time1 );
 	
-		
+	if(imu_feed_dog==1&&FC_CONNECT==1)
+	IWDG_Feed();//喂狗		
 	static u8 cnt_sonar;
 	if (cnt_sonar++>10){cnt_sonar=0;
 		if(fly_ready||en_ble_debug)
@@ -179,7 +180,7 @@ if(imu_feed_dog==1&&FC_CONNECT==1)
 	}
 	#define SEL_AHRS 0
 
-#if SEL_AHRS	
+#if SEL_AHRS==1	
 	madgwick_update_new(
 	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
 	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*1.2,
@@ -223,6 +224,132 @@ if(imu_feed_dog==1&&FC_CONNECT==1)
 	Pitch_mid_down=Pitch=PitchR;
 	Roll_mid_down=Roll=RollR;
 #endif	
+
+
+//flow
+float flow_height_fliter;		
+static float acc_neo_off[3];
+FLOW_RAD flow_rad_use;
+
+	 #if FLOW_USE_IIC
+		Read_Px4flow();		
+	 #endif	
+	 #if SENSOR_FORM_PI_FLOW&&!SENSOR_FORM_PI_FLOW_SONAR_NOT
+	 if(!pi_flow.insert)
+	 flow_height_fliter=0.666;
+	 else if(pi_flow.z>4)
+	 flow_height_fliter=4;
+	 else
+	 flow_height_fliter=pi_flow.z;
+   #else
+	 if(!ultra_ok)
+	 flow_height_fliter=0.666;
+	 else if(ALT_POS_SONAR3>4)
+	 flow_height_fliter=4;
+	 else
+	 flow_height_fliter=ALT_POS_SONAR3;	
+	 #endif
+	 flow_sample();
+	 #if FLOW_USE_P5A
+	 qr.use_spd=1;
+	 #endif
+	 if(qr.use_spd==0)
+	 {
+	 flow_rad_use.time_usec=flow_rad_use.integration_time_us=flow_rad.integration_time_us;
+	 flow_rad_use.integrated_xgyro=flow_rad.integrated_xgyro;
+	 flow_rad_use.integrated_ygyro=flow_rad.integrated_ygyro;
+   flow_rad_use.integrated_zgyro=flow_rad.integrated_zgyro;		 
+	 flow_rad_use.integrated_x=flow_rad.integrated_x;
+	 flow_rad_use.integrated_y=flow_rad.integrated_y;
+	 }
+	 else
+	 {
+	 flow_rad_use.integration_time_us=integration_timespan;
+	 flow_rad_use.integrated_xgyro=accumulated_gyro_x;
+	 flow_rad_use.integrated_ygyro=accumulated_gyro_y;
+   flow_rad_use.integrated_zgyro=accumulated_gyro_z;		 
+	 flow_rad_use.integrated_x=accumulated_flow_x;
+	 flow_rad_use.integrated_y=accumulated_flow_y;
+	 }	 
+	  float flow_loop_time = Get_Cycle_T(GET_T_FLOW);			
+	  if(flow_loop_time<0.001)flow_loop_time=0.01;
+	  #if SENSOR_FORM_PI_FLOW
+	  flow_ground_temp[0]=pi_flow.sensor.spdy;
+		flow_ground_temp[1]=-pi_flow.sensor.spdx;
+		flow_ground_temp[2]=pi_flow.sensor.spdy;
+	  flow_ground_temp[3]=-pi_flow.sensor.spdx;
+	  #else 
+	  flow_pertreatment_oldx( &flow_rad_use , flow_height_fliter);
+		if(module.pi_flow&&!module.flow&&!module.flow_iic){
+		flow_ground_temp[0]=pi_flow.sensor.spdy*0.486;
+		flow_ground_temp[1]=-pi_flow.sensor.spdx*0.486;
+		flow_matlab_data[2]=pi_flow.sensor.spdy*0.486;
+		flow_matlab_data[3]=-pi_flow.sensor.spdx*0.486;
+		}else{
+		flow_ground_temp[0]=flow_per_out[0];
+		flow_ground_temp[1]=flow_per_out[1];
+		#if FLOW_USE_P5A
+		flow_matlab_data[2]=firstOrderFilter(-flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_matlab_data[3]=firstOrderFilter(-flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+    #else
+		flow_matlab_data[2]=firstOrderFilter(LIMIT(flow_per_out[2]*k_flow_devide,-6,6),&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_matlab_data[3]=firstOrderFilter(LIMIT(flow_per_out[3]*k_flow_devide,-6,6),&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		//	flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
+		//	flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
+		#endif
+		}
+		#endif
+		static float a_br[3]={0};	
+		static float acc_temp[3]={0};
+		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
+		a_br[1] =(float) imu_fushion.Acc.y/4096.;//16438.;
+		a_br[2] =(float) imu_fushion.Acc.z/4096.;//16438.;
+		// acc
+	  if(fabs(a_br[0])<1.5&&fabs(a_br[1])<1.5){
+		acc_temp[0] = a_br[1]*reference_vr[2]  - a_br[2]*reference_vr[1] ;
+		acc_temp[1] = a_br[2]*reference_vr[0]  - a_br[0]*reference_vr[2] ;
+	  acc_temp[2] =(reference_vr[2] *a_br[2] + reference_vr[0] *a_br[0] + reference_vr[1] *a_br[1]);
+    if(fabs(acc_temp[0])<1.5&&fabs(acc_temp[1])<1.5){
+		static float acc_neo_temp[3]={0};
+		#if USE_UKF_FROM_AUTOQUAD
+		float accIn[3];
+    accIn[0] = IMU_ACCX + UKF_ACC_BIAS_X*1;
+    accIn[1] = IMU_ACCY + UKF_ACC_BIAS_Y*1;
+    accIn[2] = IMU_ACCZ + UKF_ACC_BIAS_Z*1;
+    float acc[3];
+    // rotate acc to world frame
+    navUkfRotateVectorByQuat(acc, accIn, &UKF_Q1);
+		acc_neo_temp[0]=-acc[0];
+		acc_neo_temp[1]=-acc[1];
+		acc_neo_temp[2]=-(acc[2]+9.87);	
+		#else
+	  acc_neo_temp[0]=-acc_temp[0]*9.87;
+		acc_neo_temp[1]=-acc_temp[1]*9.87;
+		acc_neo_temp[2]=(acc_temp[2]-1.0f)*9.87;		
+		#endif
+
+		static float acc_neo_temp1[3]={0};
+		static float acc_flt[3];
+    acc_neo_temp1[0]=Moving_Median(5,5,acc_neo_temp[0]);
+		acc_neo_temp1[1]=Moving_Median(6,5,acc_neo_temp[1]);
+		acc_neo_temp1[2]=Moving_Median(7,5,acc_neo_temp[2]);	
+		acc_flt[0]=firstOrderFilter(acc_neo_temp1[0],&firstOrderFilters[ACC_LOWPASS_X],flow_loop_time);
+		acc_flt[1]=firstOrderFilter(acc_neo_temp1[1],&firstOrderFilters[ACC_LOWPASS_Y],flow_loop_time);
+		acc_flt[2]=firstOrderFilter(acc_neo_temp1[2],&firstOrderFilters[ACC_LOWPASS_Z],flow_loop_time);		
+		
+		if(fabs(acc_neo_temp[0])<8.6&&fabs(acc_neo_temp[1])<8.6){
+		acc_neo[0]=acc_flt[0];
+		acc_neo[1]=acc_flt[1];
+		acc_neo[2]=acc_flt[2];
+	 	flow_matlab_data[0]=acc_neo[0];//acc
+		flow_matlab_data[1]=acc_neo[1];}
+	  }
+	 }
+		float temp_spd[2];
+		imu_nav.flow.speed.x=Moving_Median(16,5,FLOW_VEL_X);
+		imu_nav.flow.speed.y=Moving_Median(17,5,FLOW_VEL_Y);
+
+
 	//delay_ms(10);
 	}
 	#endif

@@ -73,6 +73,7 @@
 ..\obj\nav_ukf.o: ..\CORE\core_cm4.h
 ..\obj\nav_ukf.o: ..\HARDWARE\IIC\filter.h
 ..\obj\nav_ukf.o: ..\HARDWARE\IIC\LIS3MDL.h
+..\obj\nav_ukf.o: ..\HARDWARE\IIC\my_math.h
 ..\obj\nav_ukf.o: ..\HARDWARE\GPS\gps.h
 ..\obj\nav_ukf.o: ..\HARDWARE\UKF_OLDX\ukf_task.h
 ..\obj\nav_ukf.o: ..\HARDWARE\IIC\ublox.h

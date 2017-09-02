@@ -436,18 +436,18 @@ void navUkfAccUpdate(float *u, float *x, float *noise, float *y) {
 void navUkfMagUpdate(float *u, float *x, float *noise, float *y) {
   static u8 cnt;
 	
-	float mag[3];	
+	static float mag[3];	
 	    // calculate mag vector based on inclination
-    if(cnt++>10){cnt=0;
-	  mag[0] = cosf(IMU_MAG_INCL * DEG_TO_RAD);
-    mag[1] = 0.0f;
-    mag[2] = -sinf(IMU_MAG_INCL * DEG_TO_RAD);
+//    if(cnt++>10){cnt=0;
+//	  mag[0] = cosf(IMU_MAG_INCL * DEG_TO_RAD);
+//    mag[1] = 0.0f;
+//    mag[2] = -sinf(IMU_MAG_INCL * DEG_TO_RAD);
 
-    // rotate local mag vector to align with true north
-    navUkfData.v0m[0] = mag[0] * cosf(IMU_MAG_DECL * DEG_TO_RAD) - mag[1] * sinf(IMU_MAG_DECL  * DEG_TO_RAD);
-    navUkfData.v0m[1] = mag[1] * cosf(IMU_MAG_DECL * DEG_TO_RAD) + mag[0] * sinf(IMU_MAG_DECL  * DEG_TO_RAD);
-    navUkfData.v0m[2] = mag[2];
-    }
+//    // rotate local mag vector to align with true north
+//    navUkfData.v0m[0] = mag[0] * cosf(IMU_MAG_DECL * DEG_TO_RAD) - mag[1] * sinf(IMU_MAG_DECL  * DEG_TO_RAD);
+//    navUkfData.v0m[1] = mag[1] * cosf(IMU_MAG_DECL * DEG_TO_RAD) + mag[0] * sinf(IMU_MAG_DECL  * DEG_TO_RAD);
+//    navUkfData.v0m[2] = mag[2];
+//    }
     navUkfRotateVectorByRevQuat(y, navUkfData.v0m, &x[UKF_STATE_Q1]);
     y[0] += noise[0];
     y[1] += noise[1];
@@ -602,8 +602,7 @@ void simDoMagUpdate(float magX, float magY, float magZ) {
     if ((fly_ready))
 	  noise[0] *= 0.001f;
     
-		if(fabs(AQ_PITCH)<6&&fabs(AQ_ROLL)<6)
-		noise[0]/=2;	
+		//if(fabs(AQ_PITCH)<6&&fabs(AQ_ROLL)<6)noise[0]/=2;	
     noise[1] = noise[0];
     noise[2] = noise[0];
 
@@ -948,7 +947,7 @@ if(!init){init=1;
 }
 
 	// soft start GPS accuracy
-  if(gpsx.pvt.PVT_numsv>=3&&gpsx.pvt.PVT_fixtype>=1)
+  if(gpsx.pvt.PVT_numsv>=5&&gpsx.pvt.PVT_fixtype>=1)
 	{runData.accMask -= 1000/(4.6/AQ_OUTER_TIMESTEP);loss_cnt=0;}
 	else 
 	loss_cnt++;	

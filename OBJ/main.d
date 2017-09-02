@@ -91,3 +91,4 @@
 ..\obj\main.o: ..\HARDWARE\IIC\Soft_I2C_PX4.h
 ..\obj\main.o: ..\HARDWARE\IIC\LIS3MDL.h
 ..\obj\main.o: ..\HARDWARE\UKF_OLDX\nav_ukf.h
+..\obj\main.o: ..\HARDWARE\IIC\my_math.h

@@ -86,3 +86,5 @@
 ..\obj\ukf_task.o: ..\HARDWARE\AHRS\insgps.h
 ..\obj\ukf_task.o: ..\HARDWARE\UKF_OLDX\nav_ukf.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\LIS3MDL.h
+..\obj\ukf_task.o: ..\HARDWARE\IIC\my_math.h
+..\obj\ukf_task.o: ..\HARDWARE\IIC\matlib.h

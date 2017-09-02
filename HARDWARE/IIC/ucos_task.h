@@ -57,7 +57,7 @@ void outer_task(void *pdata);
 
 //------------------------EKF解算线程
 //设置任务堆栈大小
-#define EKF_STK_SIZE  					64*9*8*2
+#define EKF_STK_SIZE  					64*9*9*2
 //任务堆栈	
 extern OS_STK EKF_TASK_STK[EKF_STK_SIZE];
 //任务函数
@@ -107,7 +107,7 @@ void uart_task(void *pdata);
 
 //-----------------------FLOW线程
 //设置任务堆栈大小
-#define FLOW_STK_SIZE  					64*4
+#define FLOW_STK_SIZE  					64*5
 //任务堆栈	
 extern OS_STK FLOW_TASK_STK[FLOW_STK_SIZE];
 //任务函数

@@ -59,6 +59,7 @@
 "..\obj\hml_sample.o"
 "..\HARDWARE\IIC\cycle_cal_oldx.lib"
 "..\HARDWARE\IIC\flow_oldx.lib"
+"..\obj\matlib.o"
 "..\obj\fastmath.o"
 "..\obj\my_math.o"
 "..\obj\kf_oldx_nav.o"
