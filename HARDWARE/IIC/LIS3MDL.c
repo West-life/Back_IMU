@@ -472,8 +472,8 @@ static float Data_conversion(float *AccBuffer,float *MagBuffer)
 }
 
 //#define IIR_ACC_ODER_20HZ_4
-//#define IIR_ACC_ODER_20HZ_10
-#define IIR_ACC_ODER_50HZ_10
+#define IIR_ACC_ODER_20HZ_10
+//#define IIR_ACC_ODER_50HZ_10
 #if defined(IIR_ACC_ODER_20HZ_4)
 #define  IIR_ORDER_ACC     4      //使用IIR滤波器的阶数
 static double b_IIR[IIR_ORDER_ACC+1] ={ 0.004824  ,  0.0193  ,  0.02894  ,  0.01929 ,   0.0048};  //系数b
@@ -515,8 +515,8 @@ static double InPut_IIR[3][IIR_ORDER_ACC+1] = {0};
 static double OutPut_IIR[3][IIR_ORDER_ACC+1] = {0};
 
 #define IIR_ORDER_GRO 10
-static double b_IIR_gro[IIR_ORDER_GRO+1] ={ 0.0000016835  ,  0.000016835  ,  0.0000757611  ,  0.0002020 ,   0.00035355, 0.00042426, 0.0003535520 ,0.0002020,0.00007576,0.000016835,0.0000016835};  //系数b
-static double a_IIR_gro[IIR_ORDER_GRO+1] ={ 1.0000   ,-5.987589   , 16.67219 , -28.25878  ,  32.15975648, -25.601749, 14.405687, -5.6470743,1.473727,-0.230919345,0.016479};//系数a
+static double b_IIR_gro[IIR_ORDER_ACC+1] ={ 0.0000016835  ,  0.000016835  ,  0.0000757611  ,  0.0002020 ,   0.00035355, 0.00042426, 0.0003535520 ,0.0002020,0.00007576,0.000016835,0.0000016835};  //系数b
+static double a_IIR_gro[IIR_ORDER_ACC+1] ={ 1.0000   ,-5.987589   , 16.67219 , -28.25878  ,  32.15975648, -25.601749, 14.405687, -5.6470743,1.473727,-0.230919345,0.016479};//系数a
 static double InPut_IIR_gro[3][IIR_ORDER_GRO+1] = {0};
 static double OutPut_IIR_gro[3][IIR_ORDER_GRO+1] = {0};
 
@@ -637,10 +637,16 @@ float AccBuffer[3],MagBuffer[3];
 	/*坐标转换*/
 	Transform(mpu_fil_tmp[A_X],mpu_fil_tmp[A_Y],mpu_fil_tmp[A_Z],&lis3mdl.Acc.x,&lis3mdl.Acc.y,&lis3mdl.Acc.z);
 	Transform(mpu_fil_tmp[G_X],mpu_fil_tmp[G_Y],mpu_fil_tmp[G_Z],&lis3mdl.Gyro.x,&lis3mdl.Gyro.y,&lis3mdl.Gyro.z);
-
+#define EN_LF_GRO 1
+#if EN_LF_GRO
+	lis3mdl.Gyro_deg.x = IIR_I_Filter((lis3mdl.Gyro.x *TO_ANGLE) , InPut_IIR_gro[0], OutPut_IIR_gro[0], b_IIR_gro, IIR_ORDER_MAG+1, a_IIR_gro, IIR_ORDER_GRO+1);
+	lis3mdl.Gyro_deg.y = IIR_I_Filter((lis3mdl.Gyro.y *TO_ANGLE) , InPut_IIR_gro[1], OutPut_IIR_gro[1], b_IIR_gro, IIR_ORDER_MAG+1, a_IIR_gro, IIR_ORDER_GRO+1);
+	lis3mdl.Gyro_deg.z = IIR_I_Filter((lis3mdl.Gyro.z *TO_ANGLE) , InPut_IIR_gro[2], OutPut_IIR_gro[2], b_IIR_gro, IIR_ORDER_MAG+1, a_IIR_gro, IIR_ORDER_GRO+1);
+#else	
 	lis3mdl.Gyro_deg.x = lis3mdl.Gyro.x *TO_ANGLE;
 	lis3mdl.Gyro_deg.y = lis3mdl.Gyro.y *TO_ANGLE;
 	lis3mdl.Gyro_deg.z = lis3mdl.Gyro.z *TO_ANGLE;
+#endif
 #define EN_LF_ACC 1
 #if EN_LF_ACC
 	lis3mdl.Acc_t.x = IIR_I_Filter(lis3mdl.Acc.y, InPut_IIR[0], OutPut_IIR[0], b_IIR, IIR_ORDER_ACC+1, a_IIR, IIR_ORDER_ACC+1);
@@ -661,13 +667,16 @@ float AccBuffer[3],MagBuffer[3];
 	lis3mdl.Gyro_deg_t.y = lis3mdl.Gyro_t.y *TO_ANGLE;
 	lis3mdl.Gyro_deg_t.z = lis3mdl.Gyro_t.z *TO_ANGLE;
 
-//  lis3mdl.Mag_Val.x = firstOrderFilter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x),&firstOrderFilters[HML_LOWPASS_X],T);//*lis3mdl.Mag_Gain.x ;
-//	lis3mdl.Mag_Val.y = firstOrderFilter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y),&firstOrderFilters[HML_LOWPASS_Y],T);//*lis3mdl.Mag_Gain.y ;
-//	lis3mdl.Mag_Val.z = firstOrderFilter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z),&firstOrderFilters[HML_LOWPASS_Z],T);//*lis3mdl.Mag_Gain.z ;
+#define EN_LF_HML 0
+#if EN_LF_HML
 	lis3mdl.Mag_Val.x = IIR_I_Filter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x) , InPut_IIR_mag[0], OutPut_IIR_mag[0], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
 	lis3mdl.Mag_Val.y = IIR_I_Filter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y) , InPut_IIR_mag[1], OutPut_IIR_mag[1], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
 	lis3mdl.Mag_Val.z = IIR_I_Filter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z) , InPut_IIR_mag[2], OutPut_IIR_mag[2], b_IIR_mag, IIR_ORDER_MAG+1, a_IIR_mag, IIR_ORDER_MAG+1);
-	
+	#else
+  lis3mdl.Mag_Val.x = firstOrderFilter((lis3mdl.Mag_Adc.x - lis3mdl.Mag_Offset.x),&firstOrderFilters[HML_LOWPASS_X],T);//*lis3mdl.Mag_Gain.x ;
+	lis3mdl.Mag_Val.y = firstOrderFilter((lis3mdl.Mag_Adc.y - lis3mdl.Mag_Offset.y),&firstOrderFilters[HML_LOWPASS_Y],T);//*lis3mdl.Mag_Gain.y ;
+	lis3mdl.Mag_Val.z = firstOrderFilter((lis3mdl.Mag_Adc.z - lis3mdl.Mag_Offset.z),&firstOrderFilters[HML_LOWPASS_Z],T);//*lis3mdl.Mag_Gain.z ;
+#endif
 	
 	lis3mdl.Mag_Val_t.x=lis3mdl.Mag_Val.y;
 	lis3mdl.Mag_Val_t.y=-lis3mdl.Mag_Val.x;

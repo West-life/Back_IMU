@@ -34,9 +34,9 @@
 #define IMU_ACCY  imu_fushion.Acc.y/4096.*9.8
 #define IMU_ACCZ  imu_fushion.Acc.z/4096.*9.8
 
-#define IMU_RATEX  my_deathzoom(imu_fushion.Gyro_deg.x,0.33)*DEG_TO_RAD
-#define IMU_RATEY  my_deathzoom(imu_fushion.Gyro_deg.y,0.33)*DEG_TO_RAD
-#define IMU_RATEZ  my_deathzoom(imu_fushion.Gyro_deg.z,0.66)*DEG_TO_RAD*1.225
+#define IMU_RATEX  my_deathzoom(imu_fushion.Gyro_deg.x,0.0)*DEG_TO_RAD
+#define IMU_RATEY  my_deathzoom(imu_fushion.Gyro_deg.y,0.0)*DEG_TO_RAD
+#define IMU_RATEZ  my_deathzoom(imu_fushion.Gyro_deg.z,0.0)*DEG_TO_RAD*1.225
 
 #define IMU_MAGX   imu_fushion.Mag_Val.x//855.0
 #define IMU_MAGY   imu_fushion.Mag_Val.y//855.0

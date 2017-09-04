@@ -76,31 +76,25 @@ K_ACC_Z =(5.0f / (tau * tau * tau));
 K_VEL_Z =(3.0f / (tau * tau));
 K_POS_Z =(3.0f / tau);
 //d spd	
-if(flag_sensor[0]&&!flag_sensor[1])	//pos acc
 PosDealt=(measure[0]-state[0]);
-else if(!flag_sensor[0]&&flag_sensor[1])//spd acc
-PosDealt=(measure[1]-state[1])*T;
-else if(flag_sensor[0]&&flag_sensor[1])//pos spd acc
-PosDealt=(measure[0]-state[0])/2+state[1]/2*T;
-
 
 if(flag_sensor[0]){
 state_correct[3*0+0] += r_sensor[0]*PosDealt* K_POS_Z ;//pos correct
 state_correct[3*0+1] += r_sensor[1]*PosDealt* K_VEL_Z ;//spd correct
-state_correct[3*0+2] += r_sensor[2]*PosDealt* K_ACC_Z ;//acc correct
+//state_correct[3*0+2] += r_sensor[2]*PosDealt* K_ACC_Z ;//acc correct
 }
-//}else if(flag_sensor[1])
-//{
+
+if(flag_sensor[1])
+{
 state_correct[3*0+1] += r_sensor[0]*(measure[1]-state[1])*33* K_VEL_Z ;//spd correct
 state_correct[3*0+2] += r_sensor[1]*(measure[1]-state[1])*33* K_ACC_Z ;//acc correct
-//}
-
+}
 
 //acc correct
 //估计
 state_correct[3*1+2]=0;
 //修正
-state[2]=measure[2]+state_correct[3*0+2];
+state[2]=measure[2]*flag_sensor[2]+state_correct[3*0+2];
 
 //vel correct
 //估计
@@ -114,9 +108,6 @@ state_correct[3*1+0]+=state[1]*T+0.5*state[2]*T*T;
 //修正
 state[0]=state_correct[3*1+0]+state_correct[3*0+0];
 
-
-
-	
 return 1;	
 }
 

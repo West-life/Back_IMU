@@ -379,6 +379,41 @@
           <WinNumber>1</WinNumber>
           <ItemText>pi_flow</ItemText>
         </Ww>
+        <Ww>
+          <count>34</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>navUkfData.x[11]</ItemText>
+        </Ww>
+        <Ww>
+          <count>35</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/LIS3MDL.c\lis3mdl.Gyro_deg.z</ItemText>
+        </Ww>
+        <Ww>
+          <count>36</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>navUkfData.x[6]</ItemText>
+        </Ww>
+        <Ww>
+          <count>37</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>en_bias_gz</ItemText>
+        </Ww>
+        <Ww>
+          <count>38</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>UKF_MAG_N_TEMP</ItemText>
+        </Ww>
+        <Ww>
+          <count>39</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\YawR</ItemText>
+        </Ww>
+        <Ww>
+          <count>40</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>YawRm</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

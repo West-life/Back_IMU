@@ -57,7 +57,7 @@ float UKF_MAG_N_TEMP=UKF_MAG_N;
 
 
 u8 en_dop_gps=1;
-u8 en_z_bais=0;
+u8 en_z_bais=1,en_bias_gz=1;
 
 navUkfStruct_t navUkfData;
 u32 dImuData_lastUpdate;
@@ -400,7 +400,7 @@ time_update = Get_Cycle_T(TIME_UPDATE);
 	// rate = rate + bias + noise
 	rate[0] = (u[3] + in[UKF_STATE_GYO_BIAS_X*n + i] + noise[UKF_V_NOISE_RATE_X*n + i]) * dt;
 	rate[1] = (u[4] + in[UKF_STATE_GYO_BIAS_Y*n + i] + noise[UKF_V_NOISE_RATE_Y*n + i]) * dt;
-	rate[2] = (u[5] + in[UKF_STATE_GYO_BIAS_Z*n + i] + noise[UKF_V_NOISE_RATE_Z*n + i]) * dt;
+	rate[2] = (u[5] + in[UKF_STATE_GYO_BIAS_Z*n + i]*en_bias_gz + noise[UKF_V_NOISE_RATE_Z*n + i]) * dt;
 
 	// rotate quat
 	navUkfRotateQuat(q, q, rate);
@@ -495,6 +495,12 @@ void navUkfFinish(void) {
     UKF_VELN=LIMIT(UKF_VELN,-6.66,6.66);
 	  UKF_VELE=LIMIT(UKF_VELE,-6.66,6.66);
 	  UKF_VELD=LIMIT(UKF_VELD,-6.66,6.66);
+	  UKF_ACC_BIAS_X=LIMIT(UKF_ACC_BIAS_X,-2,2);  
+		UKF_ACC_BIAS_Y=LIMIT(UKF_ACC_BIAS_Y,-2,2); 
+		UKF_ACC_BIAS_Y=LIMIT(UKF_ACC_BIAS_Z,-2,2); 
+	  UKF_GYO_BIAS_X=LIMIT(UKF_GYO_BIAS_X,-2.1,2.1);  
+		UKF_GYO_BIAS_Y=LIMIT(UKF_GYO_BIAS_Y,-2.1,2.1); 
+		UKF_GYO_BIAS_Z=LIMIT(UKF_GYO_BIAS_Z,-2.1,2.1); 
     //    x' = x cos f - y sin f
     //    y' = y cos f + x sin f
     navUkfData.yawCos = cosf(navUkfData.yaw * DEG_TO_RAD);

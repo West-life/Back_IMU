@@ -178,7 +178,7 @@ if(imu_feed_dog==1&&FC_CONNECT==1)
 		if(fly_ready||en_ble_debug)
 		Ultra_Duty(); 
 	}
-	#define SEL_AHRS 0
+	#define SEL_AHRS 1
 
 #if SEL_AHRS==1	
 	madgwick_update_new(
@@ -322,7 +322,7 @@ FLOW_RAD flow_rad_use;
 		acc_neo_temp[0]=-acc[0];
 		acc_neo_temp[1]=-acc[1];
 		acc_neo_temp[2]=-(acc[2]+9.87);	
-		#else
+		#else // body acc use AHRS
 	  acc_neo_temp[0]=-acc_temp[0]*9.87;
 		acc_neo_temp[1]=-acc_temp[1]*9.87;
 		acc_neo_temp[2]=(acc_temp[2]-1.0f)*9.87;		

@@ -3,9 +3,9 @@
 <title>Static Call Graph - [..\OBJ\UCOSII-3.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\UCOSII-3.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Sat Sep 02 16:45:51 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Mon Sep 04 16:55:53 2017
 <BR><P>
-<H3>Maximum Stack Usage =       1512 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       1528 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 __rt_entry_main &rArr; main &rArr; ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 <P>
@@ -263,7 +263,7 @@ Global Symbols
 <P><STRONG><a name="[304]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[81]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1512 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 1528 + Unknown Stack Size
 <LI>Call Chain = __rt_entry_main &rArr; main &rArr; ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -447,8 +447,8 @@ Global Symbols
 <LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSFlagCreate
 </UL>
 
-<P><STRONG><a name="[82]"></a>main</STRONG> (Thumb, 3366 bytes, Stack size 120 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1512 + Unknown Stack Size
+<P><STRONG><a name="[82]"></a>main</STRONG> (Thumb, 3610 bytes, Stack size 136 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1528 + Unknown Stack Size
 <LI>Call Chain = main &rArr; ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_init
@@ -473,6 +473,8 @@ Global Symbols
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay_ms
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfRotateVectorByQuat
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom_2
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;madgwick_update_new
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_pertreatment_oldx
 <LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;firstOrderFilter
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultra_Duty
@@ -4143,10 +4145,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 </UL>
 
-<P><STRONG><a name="[8e]"></a>LIS_Data_Prepare</STRONG> (Thumb, 2366 bytes, Stack size 112 bytes, lis3mdl.o(.text))
+<P><STRONG><a name="[8e]"></a>LIS_Data_Prepare</STRONG> (Thumb, 2404 bytes, Stack size 112 bytes, lis3mdl.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 512<LI>Call Chain = LIS_Data_Prepare &rArr; LIS_Data_Offset &rArr; cycle_cal_oldx &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
+<BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;firstOrderFilter
+<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
 <LI><a href="#[225]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;utilFilterInit
 <LI><a href="#[227]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IIR_I_Filter
 <LI><a href="#[221]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Offset
@@ -4231,6 +4234,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initFirstOrderFilter
 </UL>
 <BR>[Called By]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIS_Data_Prepare
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flow_task1
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfTimeUpdate
 </UL>
@@ -4420,7 +4424,7 @@ Global Symbols
 
 <P><STRONG><a name="[3e5]"></a>crossSkew</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, matlib.o(.text), UNUSED)
 
-<P><STRONG><a name="[247]"></a>my_abs</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, my_math.o(.text), UNUSED)
+<P><STRONG><a name="[247]"></a>my_abs</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, my_math.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fast_atan2
 <LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sign_flow
 </UL>
@@ -4429,8 +4433,10 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_abs
 </UL>
 
-<P><STRONG><a name="[248]"></a>fast_atan2</STRONG> (Thumb, 350 bytes, Stack size 4 bytes, my_math.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_abs
+<P><STRONG><a name="[248]"></a>fast_atan2</STRONG> (Thumb, 350 bytes, Stack size 4 bytes, my_math.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = fast_atan2
+</UL>
+<BR>[Calls]<UL><LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_abs
 </UL>
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;madgwick_update_new
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_atan
@@ -4486,8 +4492,9 @@ Global Symbols
 <LI><a href="#[267]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfInertialUpdate
 </UL>
 
-<P><STRONG><a name="[95]"></a>my_deathzoom_2</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, my_math.o(.text), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
+<P><STRONG><a name="[95]"></a>my_deathzoom_2</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, my_math.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
 </UL>
 
 <P><STRONG><a name="[23b]"></a>limit_mine</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, my_math.o(.text))
@@ -4562,8 +4569,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfRotateVectorByQuat
 </UL>
-<BR>[Called By]<UL><LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfAccUpdate
-<LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfMagUpdate
+<BR>[Called By]<UL><LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfMagUpdate
+<LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfAccUpdate
 </UL>
 
 <P><STRONG><a name="[25e]"></a>navUkfRotateVecByMatrix</STRONG> (Thumb, 122 bytes, Stack size 0 bytes, nav_ukf.o(.text))
@@ -4585,7 +4592,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[262]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfFinish
 </UL>
 
-<P><STRONG><a name="[72]"></a>navUkfTimeUpdate</STRONG> (Thumb, 2020 bytes, Stack size 144 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[72]"></a>navUkfTimeUpdate</STRONG> (Thumb, 2032 bytes, Stack size 144 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = navUkfTimeUpdate &rArr; __aeabi_dsub
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;firstOrderFilter
@@ -4637,7 +4644,7 @@ Global Symbols
 
 <P><STRONG><a name="[3ee]"></a>navUkfOfPosUpdate</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, nav_ukf.o(.text), UNUSED)
 
-<P><STRONG><a name="[262]"></a>navUkfFinish</STRONG> (Thumb, 616 bytes, Stack size 24 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[262]"></a>navUkfFinish</STRONG> (Thumb, 1290 bytes, Stack size 24 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = navUkfFinish &rArr; navUkfQuatExtractEuler &rArr; __hardfp_asinf &rArr; sqrtf &rArr; __set_errno
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
@@ -4654,7 +4661,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[267]"></a>navUkfInertialUpdate</STRONG> (Thumb, 564 bytes, Stack size 64 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[267]"></a>navUkfInertialUpdate</STRONG> (Thumb, 570 bytes, Stack size 64 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = navUkfInertialUpdate &rArr; srcdkfTimeUpdate &rArr; qrDecompositionT_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[268]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_deathzoom
@@ -4683,7 +4690,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[270]"></a>simDoAccUpdate</STRONG> (Thumb, 474 bytes, Stack size 96 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[270]"></a>simDoAccUpdate</STRONG> (Thumb, 386 bytes, Stack size 96 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 336<LI>Call Chain = simDoAccUpdate &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
@@ -4698,7 +4705,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[271]"></a>simDoMagUpdate</STRONG> (Thumb, 152 bytes, Stack size 56 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[271]"></a>simDoMagUpdate</STRONG> (Thumb, 228 bytes, Stack size 56 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 296<LI>Call Chain = simDoMagUpdate &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[26c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srcdkfMeasurementUpdate
@@ -4741,7 +4748,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[275]"></a>navUkfGpsVelUpdate</STRONG> (Thumb, 1800 bytes, Stack size 216 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[275]"></a>navUkfGpsVelUpdate</STRONG> (Thumb, 1796 bytes, Stack size 216 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 456<LI>Call Chain = navUkfGpsVelUpdate &rArr; srcdkfMeasurementUpdate &rArr; matrixDiv_f32 &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;micros
@@ -4755,11 +4762,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[3ef]"></a>navUkfResetBias</STRONG> (Thumb, 130 bytes, Stack size 0 bytes, nav_ukf.o(.text), UNUSED)
+<P><STRONG><a name="[3ef]"></a>navUkfResetBias</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, nav_ukf.o(.text), UNUSED)
 
 <P><STRONG><a name="[3f0]"></a>navUkfResetVels</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, nav_ukf.o(.text), UNUSED)
 
-<P><STRONG><a name="[276]"></a>navUkfInitState</STRONG> (Thumb, 864 bytes, Stack size 128 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[276]"></a>navUkfInitState</STRONG> (Thumb, 914 bytes, Stack size 128 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = navUkfInitState &rArr; __aeabi_ddiv
 </UL>
 <BR>[Calls]<UL><LI><a href="#[263]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfNormalizeQuat
@@ -4775,7 +4782,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[279]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;navUkfInit
 </UL>
 
-<P><STRONG><a name="[279]"></a>navUkfInit</STRONG> (Thumb, 618 bytes, Stack size 144 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[279]"></a>navUkfInit</STRONG> (Thumb, 634 bytes, Stack size 144 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = navUkfInit &rArr; navUkfInitState &rArr; __aeabi_ddiv
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
@@ -4793,7 +4800,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[27d]"></a>runInit</STRONG> (Thumb, 640 bytes, Stack size 64 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[27d]"></a>runInit</STRONG> (Thumb, 538 bytes, Stack size 64 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = runInit &rArr; __aeabi_ddiv
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
@@ -4805,7 +4812,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
 </UL>
 
-<P><STRONG><a name="[27e]"></a>runTaskCode</STRONG> (Thumb, 2714 bytes, Stack size 80 bytes, nav_ukf.o(.text))
+<P><STRONG><a name="[27e]"></a>runTaskCode</STRONG> (Thumb, 2816 bytes, Stack size 80 bytes, nav_ukf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = runTaskCode &rArr; navUkfGpsPosUpdate &rArr; navUkfCalcEarthRadius &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altUkfProcess
@@ -4838,12 +4845,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[283]"></a>invSqrt</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, imu_m.o(.text), UNUSED)
+<P><STRONG><a name="[283]"></a>invSqrt</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, imu_m.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;madgwick_update_new
 </UL>
 
-<P><STRONG><a name="[281]"></a>calculateAccConfidence</STRONG> (Thumb, 224 bytes, Stack size 56 bytes, imu_m.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<P><STRONG><a name="[281]"></a>calculateAccConfidence</STRONG> (Thumb, 224 bytes, Stack size 56 bytes, imu_m.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = calculateAccConfidence &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[21e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
@@ -4853,8 +4862,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;madgwick_update_new
 </UL>
 
-<P><STRONG><a name="[282]"></a>calculateHmlConfidence</STRONG> (Thumb, 198 bytes, Stack size 56 bytes, imu_m.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+<P><STRONG><a name="[282]"></a>calculateHmlConfidence</STRONG> (Thumb, 198 bytes, Stack size 56 bytes, imu_m.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = calculateHmlConfidence &rArr; __hardfp_sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[21e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sqrt
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_fabs
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -4863,8 +4874,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;madgwick_update_new
 </UL>
 
-<P><STRONG><a name="[96]"></a>madgwick_update_new</STRONG> (Thumb, 3578 bytes, Stack size 272 bytes, imu_m.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fast_atan2
+<P><STRONG><a name="[96]"></a>madgwick_update_new</STRONG> (Thumb, 3578 bytes, Stack size 272 bytes, imu_m.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 432<LI>Call Chain = madgwick_update_new &rArr; __hardfp_asin &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fast_atan2
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[282]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculateHmlConfidence
@@ -4875,7 +4888,8 @@ Global Symbols
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 </UL>
-<BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
+<BR>[Called By]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outer_task
 </UL>
 
 <P><STRONG><a name="[285]"></a>KF_OLDX4</STRONG> (Thumb, 366 bytes, Stack size 416 bytes, ukf_task.o(.text), UNUSED)
@@ -4888,11 +4902,10 @@ Global Symbols
 <LI><a href="#[286]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 
-<P><STRONG><a name="[28c]"></a>OLDX_KF3</STRONG> (Thumb, 1226 bytes, Stack size 104 bytes, ukf_task.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = OLDX_KF3 &rArr; __aeabi_ddiv
+<P><STRONG><a name="[28c]"></a>OLDX_KF3</STRONG> (Thumb, 960 bytes, Stack size 104 bytes, ukf_task.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = OLDX_KF3 &rArr; __aeabi_dsub
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<BR>[Calls]<UL><LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -4901,7 +4914,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[90]"></a>ukf_pos_task_qr</STRONG> (Thumb, 8886 bytes, Stack size 408 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[90]"></a>ukf_pos_task_qr</STRONG> (Thumb, 8874 bytes, Stack size 408 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1392<LI>Call Chain = ukf_pos_task_qr &rArr; KF_OLDX_NAV &rArr; rt_powd_snf &rArr; __hardfp_pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;To_180_degrees
@@ -5390,8 +5403,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[222]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_conversion
 </UL>
 
-<P><STRONG><a name="[284]"></a>__hardfp_asin</STRONG> (Thumb, 770 bytes, Stack size 88 bytes, asin.o(i.__hardfp_asin), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<P><STRONG><a name="[284]"></a>__hardfp_asin</STRONG> (Thumb, 770 bytes, Stack size 88 bytes, asin.o(i.__hardfp_asin))
+<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = __hardfp_asin &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[22a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[1ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
@@ -5960,7 +5975,6 @@ Global Symbols
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sonar_filter_oldx
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gps_ukf_Update
 <LI><a href="#[2a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;altDoPresUpdate
-<LI><a href="#[28c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLDX_KF3
 <LI><a href="#[28d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcEarthRadius
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculateAccConfidence
 <LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;runTaskCode
@@ -6673,13 +6687,13 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[290]"></a>feed_acc_buf</STRONG> (Thumb, 242 bytes, Stack size 320 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[290]"></a>feed_acc_buf</STRONG> (Thumb, 138 bytes, Stack size 320 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 320<LI>Call Chain = feed_acc_buf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
 </UL>
 
-<P><STRONG><a name="[291]"></a>get_acc_delay</STRONG> (Thumb, 128 bytes, Stack size 8 bytes, ukf_task.o(.text))
+<P><STRONG><a name="[291]"></a>get_acc_delay</STRONG> (Thumb, 232 bytes, Stack size 8 bytes, ukf_task.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = get_acc_delay
 </UL>
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ukf_pos_task_qr
