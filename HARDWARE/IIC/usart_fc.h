@@ -306,6 +306,7 @@ void data_per_uart4(u8 sel);
 #define SEND_IMU_QR 6
 #define SEND_IMU_MEMS 7
 #define SEND_ALL 9
+#define SEND_SD 10
 extern float sonar_fc,baroAlt_fc;
 extern float k_flow_devide;
 extern float flow_module_offset_y,flow_module_offset_x,flow_module_set_yaw;//光流安装位移 单位米

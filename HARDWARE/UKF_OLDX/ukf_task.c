@@ -386,7 +386,7 @@ if(kf_data_sel_temp==1){
 			 if(cnt_off_yaw_correct>333)
 			 { has_off_flag=1;cnt_off_yaw_correct=0; }			
 			 if(has_off_flag==0&&pi_flow.yaw!=0){
-			 pi_flow.yaw_off=Moving_Median(0,19,Yaw-pi_flow.yaw);
+			 pi_flow.yaw_off=Moving_Median(0,19,Yaw-pi_flow.sensor.yaw);
 			 }
 		
 			 if(pi_flow.yaw_off!=0){

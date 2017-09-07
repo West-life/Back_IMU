@@ -792,6 +792,46 @@ goto end_gol_link;
 end_gol_link:;
 }
 
+
+int sd_save[20];
+u8 sd_save_sel=0;
+void sd_save_publish(void)
+{
+u8 i=0;	
+switch(sd_save_sel)
+{
+	case 0:
+sd_save[i++]=RollR*100;
+sd_save[i++]=PitchR*100;
+sd_save[i++]=YawR*100;
+sd_save[i++]=YawRm*100;
+sd_save[i++]=0;
+	
+sd_save[i++]=Global_GPS_Sensor.NED_Acc[Xr]*100;
+sd_save[i++]=Global_GPS_Sensor.NED_Acc[Yr]*100;
+sd_save[i++]=X_ukf_global[1]*100;
+sd_save[i++]=X_ukf_global[4]*100;
+sd_save[i++]= X_ukf_Pos[1]*100;
+
+sd_save[i++]= X_ukf_Pos[0]*100;
+sd_save[i++]=0;
+sd_save[i++]=pi_flow.check&&pi_flow.connect;
+sd_save[i++]= Global_GPS_Sensor.NED_Posf_reg[Yr]*100;
+sd_save[i++]= Global_GPS_Sensor.NED_Posf_reg[Xr]*100;
+
+sd_save[i++]=0;
+sd_save[i++]=0;
+sd_save[i++]=0;
+sd_save[i++]=0;
+sd_save[i++]=0;
+  break;
+}
+}
+
+
+
+
+
 u16 nrf_uart_cnt;
 void data_per_uart4(u8 sel)
 {
@@ -1243,6 +1283,25 @@ switch(sel){
 		sum += SendBuff2[i];
 	SendBuff2[nrf_uart_cnt++] = sum;
   break;	
+	
+	case SEND_SD:
+	cnt_reg=nrf_uart_cnt;
+	SendBuff2[nrf_uart_cnt++]=0xAA;
+	SendBuff2[nrf_uart_cnt++]=0xAF;
+	SendBuff2[nrf_uart_cnt++]=0x99;//功能字
+	SendBuff2[nrf_uart_cnt++]=0;//数据量
+  for(i=0;i<20;i++){
+	_temp = (vs16)(sd_save[i]);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+  }
+
+	
+	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
+	for( i=cnt_reg;i< nrf_uart_cnt;i++)
+		sum += SendBuff2[i];
+	SendBuff2[nrf_uart_cnt++] = sum;
+  break;	
 	default:break;
 }
 }
@@ -1252,6 +1311,10 @@ void GOL_LINK_TASK_DMA(void)//5ms
 static u8 cnt[10];
 static u8 flag[10];
 data_per_uart4(SEND_ALL);	
+if(cnt[1]++>9){cnt[1]=0;
+sd_save_publish();	
+data_per_uart4(SEND_SD);	
+}	
 /*	
 //传感器值
 //data_per_uart4(SEND_IMU_MEMS);

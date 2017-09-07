@@ -149,8 +149,8 @@ int main(void)
 #endif	
   TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
 	Delay_ms(20);//上电延时
-	//IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
-	#define NO_UCOS 1
+	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
+	#define NO_UCOS 0
 	#if NO_UCOS
 	while(1)
 	{
@@ -178,7 +178,7 @@ if(imu_feed_dog==1&&FC_CONNECT==1)
 		if(fly_ready||en_ble_debug)
 		Ultra_Duty(); 
 	}
-	#define SEL_AHRS 1
+	#define SEL_AHRS 0
 
 #if SEL_AHRS==1	
 	madgwick_update_new(
