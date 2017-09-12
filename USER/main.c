@@ -60,6 +60,17 @@ int main(void)
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();
+	LED_Init();								//LED功能初始化
+	Delay_ms(100);
+	//-------------------------Para Init------------------------------------	
+	W25QXX_Init();			//W25QXX初始化
+	while(W25QXX_ReadID()!=W25Q32&&W25QXX_ReadID()!=W25Q16)								//检测不到W25Q128
+	{	LEDRGB_COLOR(RED);
+		Delay_ms(100);
+		LEDRGB_COLOR(BLACK);
+		Delay_ms(100);
+	}
+	READ_PARM();//读取参数
 	Delay_ms(4000);
   I2c_Soft_Init();					//初始化模拟I2C
   IIC_IMU1_Init();
@@ -68,7 +79,6 @@ int main(void)
 	Delay_ms(10);						//延时
 	#endif
 	altUkfInit();
-	LED_Init();								//LED功能初始化
 	Delay_ms(500);
 //------------------------Uart Init-------------------------------------
 	Usart1_Init(115200L);			//GPS_LINK
@@ -111,16 +121,6 @@ int main(void)
 	#endif
 	#endif
 	Delay_ms(10);
-//-------------------------Para Init------------------------------------	
-	W25QXX_Init();			//W25QXX初始化
-	while(W25QXX_ReadID()!=W25Q32&&W25QXX_ReadID()!=W25Q16)								//检测不到W25Q128
-	{	LEDRGB_COLOR(RED);
-		Delay_ms(100);
-		LEDRGB_COLOR(BLACK);
-		Delay_ms(100);
-	}
-	READ_PARM();//读取参数
-	Delay_ms(100);
 //-----------------------Mode &  Flag init--------------------	
 //--system
 	fly_ready=0;

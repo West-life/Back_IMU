@@ -65,8 +65,12 @@ void W25QXX_PowerDown(void);        	//进入掉电模式
 void W25QXX_WAKEUP(void);				//唤醒
 
 void SPI1_Init(void);			 //初始化SPI1口
-void SPI1_SetSpeed(u8 SpeedSet); //设置SPI1速度   
+void SPI1_SetSpeed(u8 SpeedSet); //设置SPI1速度  
 u8 SPI1_ReadWriteByte(u8 TxData);//SPI1总线读写一个字节
+#define CS_FLASH 0
+#define CS_DS33 1
+#define CS_LIS  2
+void SPI_CS(u8 sel,u8 set);
 #endif
 
 

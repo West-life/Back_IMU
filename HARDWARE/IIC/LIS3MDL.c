@@ -1,5 +1,6 @@
 #include "LIS3MDL.h"
 #include "iic_soft.h"
+#include "flash_w25.h"
 #include "iic.h"
 #include "iic_imu1.h"
 #include "iic2.h"
@@ -21,6 +22,7 @@ Cal_Cycle_OLDX acc_lsq;
 
 #define LIS3MDL_IIC_ID LIS3MDL_ADDRESS1
 
+#define DS33_WHO_AM_I_ID     0x69  
 #define DS33_SA0_HIGH_ADDRESS 0x6b
 #define DS33_SA0_LOW_ADDRESS  0x6a
 // Reads the 3 mag channels and stores them in vector m
@@ -33,6 +35,95 @@ Cal_Cycle_OLDX acc_lsq;
 #define LPSSA0_LOW_ADDRESS  0x5c<<	1
 #define LPS_IIC_ID LPSSA0_HIGH_ADDRESS
 
+u8 Lis3mdl_SPI_RD(u8 add,u8 sel)
+{
+ u8  tmp;
+	SPI_CS(sel,0);
+	SPI1_ReadWriteByte(add|0x80);
+	tmp=SPI1_ReadWriteByte(0xff);  
+	SPI_CS(sel,1);
+ return tmp;
+}
+#define ST_SENSORS_SPI_READ			0x80
+//写程序：
+void Lis3mdl_SPI_WR(u8 add,u8 wrdata,u8 sel)
+{
+  SPI_CS(sel,0);
+	if(sel!=CS_LIS)
+	//SPI1_ReadWriteByte(add&0x7F );	
+	SPI1_ReadWriteByte(add);	
+	else
+  SPI1_ReadWriteByte(add);
+  SPI1_ReadWriteByte(wrdata);
+  SPI_CS(sel,1);
+}
+
+void SPI_BufferRead(u8*buf, u8 add, u8 len,u8 sel)
+{
+	u8 i=0;
+ SPI_CS(sel,0);
+	if(sel!=CS_LIS)
+	SPI1_ReadWriteByte(add|ST_SENSORS_SPI_READ);	
+	else
+	SPI1_ReadWriteByte(add|0xC0);//连续读增加地址
+	for(i=0;i<len;i++)
+	{
+	if(sel!=CS_LIS)
+	 *buf++ = SPI1_ReadWriteByte(0xff); 
+	else
+	 *buf++ = SPI1_ReadWriteByte(0xff); 
+	} 
+ SPI_CS(sel,1);
+}
+
+
+
+/* Write Data.
+*/
+void LSM6DS33_IO_Write(uint8_t* pBuffer,
+                                               uint8_t  DeviceAddr,
+                                               uint8_t  RegisterAddr,
+                                               uint16_t NumByteToWrite
+                                              )
+{ uint16_t temp;
+
+  SPI_CS(CS_DS33,1);
+
+  //Send Device Address.
+  SPI1_ReadWriteByte(RegisterAddr);
+
+  for(temp = 0; temp < NumByteToWrite; temp ++)
+  {
+    SPI1_ReadWriteByte( *(pBuffer + temp));
+  }
+
+  SPI_CS(CS_DS33,0);
+
+
+}
+
+/* Read Data.
+*/
+void LSM6DS33_IO_Read(uint8_t* pBuffer,
+                                              uint8_t  DeviceAddr,
+                                              uint8_t  RegisterAddr,
+                                              uint16_t NumByteToRead
+                                             )
+{ uint16_t temp;
+
+  SPI_CS(CS_DS33,1);
+
+  //Send Device Address.
+  SPI1_ReadWriteByte((RegisterAddr | 0x80));
+
+  for(temp = 0; temp < NumByteToRead; temp ++)
+  {
+    *(pBuffer + temp) = SPI1_ReadWriteByte( 0x00);
+  }
+
+  SPI_CS(CS_DS33,0);
+
+}
 
 uint8_t id[3] ;
 void LIS3MDL_enableDefault(void)
@@ -40,8 +131,14 @@ void LIS3MDL_enableDefault(void)
  //------------init hml
    // 0x70 = 0b01110000
     // OM = 11 (ultra-high-performance mode for X and Y); DO = 100 (10 Hz ODR)
+	  #if USE_VER_3
+	  Lis3mdl_SPI_WR(CTRL_REG1, 0x74,CS_LIS);
+	  Lis3mdl_SPI_WR(CTRL_REG2, 0x60,CS_LIS);
+	  Lis3mdl_SPI_WR(CTRL_REG3, 0x00,CS_LIS);
+	  Lis3mdl_SPI_WR(CTRL_REG4, 0x0C,CS_LIS);
+	  #else
     IIC_IMU1writeByte(LIS3MDL_IIC_ID,CTRL_REG1, 0x74);//20hz
-
+ 
     // 0x00 = 0b00000000
     // FS = 00 (+/- 4 gauss full scale)
     IIC_IMU1writeByte(LIS3MDL_IIC_ID,CTRL_REG2, 0x60);
@@ -53,10 +150,31 @@ void LIS3MDL_enableDefault(void)
     // 0x0C = 0b00001100
     // OMZ = 11 (ultra-high-performance mode for Z)
     IIC_IMU1writeByte(LIS3MDL_IIC_ID,CTRL_REG4, 0x0C);
-  
+		#endif
+    #if USE_VER_3
+	  SPI_CS(CS_LIS,0);
+	  SPI1_ReadWriteByte(0x80|0x0f);
+	  u8 l_u8_ID= SPI1_ReadWriteByte(0xFF);
+	  id[0] = l_u8_ID;
+//		if(LIS3MDL_IIC_ID==l_u8_ID)
+//			 module.hml =1; 
+//		else
+//			 module.hml= 0; 
+			 SPI_CS(CS_LIS,1);
+	  #else
     id[0] = I2C_IMU1_ReadOneByte(LIS3MDL_IIC_ID,WHO_AM_I);
-		
+		#endif
 //---------------init acc & gro		
+		#if USE_VER_3
+		//Lis3mdl_SPI_WR(0x21,0x04,CS_DS33);
+		//Delay_ms(10);
+	  Lis3mdl_SPI_WR(CTRL1_XL, 0x4f,CS_DS33);
+	  Lis3mdl_SPI_WR(CTRL2_G, 0x4c,CS_DS33);
+	  Lis3mdl_SPI_WR(CTRL3_C, 0x04,CS_DS33);
+		
+		Delay_ms(10);
+		LSM6_readGyro(0);
+		#else
 		// 0x80 = 0b10000000
     // ODR = 1000 (1.66 kHz (high performance)); FS_XL = 00 (+/-2 g full scale)
     IIC_IMU1writeByte(DS33_IIC_ID,CTRL1_XL, 0x4f);//50hz 8g  0x88);
@@ -72,14 +190,28 @@ void LIS3MDL_enableDefault(void)
     // 0x04 = 0b00000100
     // IF_INC = 1 (automatically increment register address)
     IIC_IMU1writeByte(DS33_IIC_ID,CTRL3_C, 0x04);
+		#endif
+		#if USE_VER_3
+	  SPI_CS(CS_DS33,0);
+	  SPI1_ReadWriteByte(0x80|0x0f);
+	  u8 l_u8_ID1= SPI1_ReadWriteByte(0xFF);
+	  id[1] = l_u8_ID1;
+//		if(DS33_WHO_AM_I_ID==l_u8_ID1)
+//			 module.acc=module.gyro =1; 
+//		else
+//			 module.acc=module.gyro= 0; 
+			 SPI_CS(CS_DS33,1);
+	  #else
+    id[1] = I2C_IMU1_ReadOneByte(DS33_IIC_ID,WHO_AM_I);
+		#endif
 		
-		
-		id[1] = I2C_IMU1_ReadOneByte(DS33_IIC_ID,WHO_AM_I);
 //------------------------init bmp
 		// 0xB0 = 0b10110000
     // PD = 1 (active mode);  ODR = 011 (12.5 Hz pressure & temperature output data rate)
+		#if !USE_VER_3
 		IIC_IMU1writeByte(LPS_IIC_ID,CTRL_REG1, 0xB4);//0xB4);
 		id[2] = I2C_IMU1_ReadOneByte(LPS_IIC_ID,WHO_AM_I);
+		#endif
 }
 
 
@@ -87,16 +219,26 @@ void LIS3MDL_read(u8 fast)
 { u8 buffer[6];
 
   IMU1_Fast=fast;
+	#if USE_VER_3
+	SPI_BufferRead(buffer, OUT_X_L, 6, CS_LIS);
+
+   lis3mdl.Mag_Adc.x = (buffer[1] << 8) | buffer[0];
+   lis3mdl.Mag_Adc.y = (buffer[3] << 8) | buffer[2];
+   lis3mdl.Mag_Adc.z = (buffer[5] << 8) | buffer[4];
+  //*temperature = (buffer[7] << 8) | buffer[6];
+	#else
   IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_X_H, 1,buffer);
 	IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_X_L, 1,buffer+1);
 	IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_Y_H, 1,buffer+2);
 	IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_Y_L, 1,buffer+3);
 	IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_Z_H, 1,buffer+4);
 	IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_Z_L, 1,buffer+5);
+	
   // combine high and low bytes
   lis3mdl.Mag_Adc.x = (int16_t)(buffer[0] << 8 | buffer[1]);
   lis3mdl.Mag_Adc.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Mag_Adc.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#endif
 }
 
 
@@ -105,6 +247,21 @@ void LIS3MDL_read(u8 fast)
 void LSM6_readAcc(u8 fast)
 {u8 buffer[6];
 	IMU1_Fast=fast;
+	#if USE_VER_3
+//   uint8_t tempReg[2] = {0,0};
+//    LSM6DS33_IO_Read(&tempReg[0], LSM6DS33_XG_MEMS_ADDRESS, LSM6DS33_XG_OUT_X_L_XL, 2);
+//    lis3mdl.Acc_I16.x = ((((int16_t)tempReg[1]) << 8)+(int16_t)tempReg[0]);
+//    LSM6DS33_IO_Read(&tempReg[0], LSM6DS33_XG_MEMS_ADDRESS, LSM6DS33_XG_OUT_Y_L_XL, 2); 
+//    lis3mdl.Acc_I16.y = ((((int16_t)tempReg[1]) << 8)+(int16_t)tempReg[0]);
+//    LSM6DS33_IO_Read(&tempReg[0], LSM6DS33_XG_MEMS_ADDRESS, LSM6DS33_XG_OUT_Z_L_XL, 2); 
+//    lis3mdl.Acc_I16.z = ((((int16_t)tempReg[1]) << 8)+(int16_t)tempReg[0]);
+	SPI_BufferRead(buffer, OUTX_L_XL, 6, CS_DS33);
+
+  lis3mdl.Acc_I16.x = (buffer[1] << 8) | buffer[0];
+	lis3mdl.Acc_I16.y = (buffer[3] << 8) | buffer[2];
+	lis3mdl.Acc_I16.z = (buffer[5] << 8) | buffer[4];
+  //*temperature = (buffer[7] << 8) | buffer[6];
+	#else
   IIC_IMU1readBytes(DS33_IIC_ID, OUTX_H_XL, 1, buffer);
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTX_L_XL, 1,buffer+1);
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTY_H_XL, 1,buffer+2);
@@ -115,13 +272,21 @@ void LSM6_readAcc(u8 fast)
   lis3mdl.Acc_I16.x = (int16_t)(buffer[0] << 8 | buffer[1]);
   lis3mdl.Acc_I16.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Acc_I16.z = (int16_t)(buffer[4] << 8 | buffer[5]);
-	
+	#endif
 }
 
 // Reads the 3 gyro channels and stores them in vector g
 void LSM6_readGyro(u8 fast)
 {u8 buffer[6];
 	IMU1_Fast=fast;
+	#if USE_VER_3
+	SPI_BufferRead(buffer, OUTX_L_G, 6, CS_DS33);
+
+	lis3mdl.Gyro_I16.x = (buffer[1] << 8) | buffer[0];
+	lis3mdl.Gyro_I16.y = (buffer[3] << 8) | buffer[2];
+	lis3mdl.Gyro_I16.z = (buffer[5] << 8) | buffer[4];
+  //*temperature = (buffer[7] << 8) | buffer[6];
+	#else
   IIC_IMU1readBytes(DS33_IIC_ID, OUTX_H_G, 1,buffer);
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTX_L_G, 1,buffer+1);
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTY_H_G, 1,buffer+2);
@@ -132,7 +297,7 @@ void LSM6_readGyro(u8 fast)
   lis3mdl.Gyro_I16.x = (int16_t)(buffer[0] << 8 | buffer[1]);
   lis3mdl.Gyro_I16.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Gyro_I16.z = (int16_t)(buffer[4] << 8 | buffer[5]);
-	
+	#endif
 }
 
 

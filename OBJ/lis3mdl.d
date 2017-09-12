@@ -39,6 +39,8 @@
 ..\obj\lis3mdl.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\iic_soft.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\time.h
+..\obj\lis3mdl.o: ..\HARDWARE\flash\flash_w25.h
+..\obj\lis3mdl.o: ..\SYSTEM\sys\sys.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\iic.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\include.h
 ..\obj\lis3mdl.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
@@ -50,7 +52,6 @@
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\mpu6050.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\include.h
 ..\obj\lis3mdl.o: ..\SYSTEM\delay\delay.h
-..\obj\lis3mdl.o: ..\SYSTEM\sys\sys.h
 ..\obj\lis3mdl.o: ..\MALLOC\malloc.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\usart_fc.h
 ..\obj\lis3mdl.o: ..\HARDWARE\IIC\flow.h

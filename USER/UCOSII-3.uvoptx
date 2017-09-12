@@ -404,6 +404,21 @@
           <WinNumber>1</WinNumber>
           <ItemText>YawRm</ItemText>
         </Ww>
+        <Ww>
+          <count>39</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>inner_loop_time_time</ItemText>
+        </Ww>
+        <Ww>
+          <count>40</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>navUkfData.pitch</ItemText>
+        </Ww>
+        <Ww>
+          <count>41</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>navUkfData.roll</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -464,7 +479,7 @@
         <Ww>
           <count>11</count>
           <WinNumber>2</WinNumber>
-          <ItemText>lis3mdl</ItemText>
+          <ItemText>lis3mdl,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
@@ -1142,7 +1157,7 @@
 
   <Group>
     <GroupName>HARDWARE</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

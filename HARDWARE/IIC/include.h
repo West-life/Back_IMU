@@ -33,6 +33,7 @@
 //================传感器===================
 #define IMU_UPDATE 1
 #define NEW_IMU 1  //1使用LSD IMU
+#define USE_VER_3 1
 #define FLOW_USE_FLY_LAB 0 //
 #define USE_UKF_FROM_AUTOQUAD 1
 #define UKF_IN_ONE_THREAD 1  //<<------------------

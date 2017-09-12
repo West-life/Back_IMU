@@ -190,7 +190,7 @@ float g_pos_flow= 0.0086;//0.0051;
 float g_spd_flow= 0.000368;//0.0006;
 #else
 float g_pos_flow= 0.0086*1.2;//0.0051;
-float g_spd_flow= 0.000035;//0.0006;
+float g_spd_flow= 0.000025;//0.0006;
 #endif
 float K_pos_qr=0.01;
 float K_spd_flow=0.86;//1.2;//0.86;
