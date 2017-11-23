@@ -21,7 +21,19 @@
 void IIC_IMU1_Init(void)
 {			
  GPIO_InitTypeDef  GPIO_InitStructure;
+  #if USE_VER_4
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);//使能GPIOB时钟
 
+  //GPIOB8,B9初始化设置
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//普通输出模式
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
+  GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化
+	IIC_IMU1_SCL4=1;
+	IIC_IMU1_SDA4=1;
+	#else
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);//使能GPIOB时钟
 
   //GPIOB8,B9初始化设置
@@ -33,6 +45,7 @@ void IIC_IMU1_Init(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化
 	IIC_IMU1_SCL=1;
 	IIC_IMU1_SDA=1;
+	#endif
 }
 
 /**************************实现函数********************************************
@@ -41,6 +54,15 @@ void IIC_IMU1_Init(void)
 *******************************************************************************/
 void IIC_IMU1_Start(void)
 {
+	#if USE_VER_4
+		SDA_IMU1_OUT4();     //sda线输出
+	IIC_IMU1_SDA4=1;	  	  
+	IIC_IMU1_SCL4=1;
+	Delay_us_IMU14(4);
+ 	IIC_IMU1_SDA4=0;//START:when CLK is high,DATA change form high to low 
+	Delay_us_IMU14(4);
+	IIC_IMU1_SCL4=0;//钳住I2C总线，准备发送或接收数据 
+	#else
 	SDA_IMU1_OUT();     //sda线输出
 	IIC_IMU1_SDA=1;	  	  
 	IIC_IMU1_SCL=1;
@@ -48,6 +70,7 @@ void IIC_IMU1_Start(void)
  	IIC_IMU1_SDA=0;//START:when CLK is high,DATA change form high to low 
 	Delay_us_IMU1(4);
 	IIC_IMU1_SCL=0;//钳住I2C总线，准备发送或接收数据 
+	#endif
 }
 
 /**************************实现函数********************************************
@@ -56,13 +79,23 @@ void IIC_IMU1_Start(void)
 *******************************************************************************/	  
 void IIC_IMU1_Stop(void)
 {
+		#if USE_VER_4
+	SDA_IMU1_OUT4();//sda线输出
+	IIC_IMU1_SCL4=0;
+	IIC_IMU1_SDA4=0;//STOP:when CLK is high DATA change form low to high
+ 	Delay_us_IMU14(4);
+	IIC_IMU1_SCL4=1; 
+	IIC_IMU1_SDA4=1;//发送I2C总线结束信号
+	Delay_us_IMU14(4);				
+	#else
 	SDA_IMU1_OUT();//sda线输出
 	IIC_IMU1_SCL=0;
 	IIC_IMU1_SDA=0;//STOP:when CLK is high DATA change form low to high
  	Delay_us_IMU1(4);
 	IIC_IMU1_SCL=1; 
 	IIC_IMU1_SDA=1;//发送I2C总线结束信号
-	Delay_us_IMU1(4);							   	
+	Delay_us_IMU1(4);				
+#endif	
 }
 
 /**************************实现函数********************************************
@@ -74,6 +107,22 @@ void IIC_IMU1_Stop(void)
 u8 IIC_IMU1_Wait_Ack(void)
 {
 	u8 ucErrTime=0;
+		#if USE_VER_4
+	SDA_IMU1_IN4();      //SDA设置为输入  
+	IIC_IMU1_SDA4=1;Delay_us_IMU1(1);	   
+	IIC_IMU1_SCL4=1;Delay_us_IMU1(1);	 
+	while(READ_IMU1_SDA4)
+	{
+		ucErrTime++;
+		if(ucErrTime>50)
+		{
+			IIC_IMU1_Stop();
+			return 1;
+		}
+	  Delay_us_IMU1(1);
+	}
+	IIC_IMU1_SCL4=0;//时钟输出0 	
+	#else
 	SDA_IMU1_IN();      //SDA设置为输入  
 	IIC_IMU1_SDA=1;Delay_us_IMU1(1);	   
 	IIC_IMU1_SCL=1;Delay_us_IMU1(1);	 
@@ -87,7 +136,8 @@ u8 IIC_IMU1_Wait_Ack(void)
 		}
 	  Delay_us_IMU1(1);
 	}
-	IIC_IMU1_SCL=0;//时钟输出0 	   
+	IIC_IMU1_SCL=0;//时钟输出0 	
+	#endif	
 	return 0;  
 } 
 
@@ -97,6 +147,15 @@ u8 IIC_IMU1_Wait_Ack(void)
 *******************************************************************************/
 void IIC_IMU1_Ack(void)
 {
+		#if USE_VER_4
+	IIC_IMU1_SCL4=0;
+	SDA_IMU1_OUT4();
+	IIC_IMU1_SDA4=0;
+	Delay_us_IMU1(2);
+	IIC_IMU1_SCL4=1;
+	Delay_us_IMU1(2);
+	IIC_IMU1_SCL4=0;
+	#else
 	IIC_IMU1_SCL=0;
 	SDA_IMU1_OUT();
 	IIC_IMU1_SDA=0;
@@ -104,6 +163,7 @@ void IIC_IMU1_Ack(void)
 	IIC_IMU1_SCL=1;
 	Delay_us_IMU1(2);
 	IIC_IMU1_SCL=0;
+		#endif
 }
 	
 /**************************实现函数********************************************
@@ -112,6 +172,15 @@ void IIC_IMU1_Ack(void)
 *******************************************************************************/	    
 void IIC_IMU1_NAck(void)
 {
+		#if USE_VER_4
+	IIC_IMU1_SCL4=0;
+	SDA_IMU1_OUT4();
+	IIC_IMU1_SDA4=1;
+	Delay_us_IMU1(2);
+	IIC_IMU1_SCL4=1;
+	Delay_us_IMU1(2);
+	IIC_IMU1_SCL4=0;
+	#else
 	IIC_IMU1_SCL=0;
 	SDA_IMU1_OUT();
 	IIC_IMU1_SDA=1;
@@ -119,6 +188,7 @@ void IIC_IMU1_NAck(void)
 	IIC_IMU1_SCL=1;
 	Delay_us_IMU1(2);
 	IIC_IMU1_SCL=0;
+		#endif
 }					 				     
 
 /**************************实现函数********************************************
@@ -127,7 +197,21 @@ void IIC_IMU1_NAck(void)
 *******************************************************************************/		  
 void IIC_IMU1_Send_Byte(u8 txd)
 {                        
-    u8 t;   
+    u8 t;  
+	#if USE_VER_4
+	SDA_IMU1_OUT4(); 	    
+    IIC_IMU1_SCL4=0;//拉低时钟开始数据传输
+    for(t=0;t<8;t++)
+    {              
+        IIC_IMU1_SDA4=(txd&0x80)>>7;
+        txd<<=1; 	  
+		Delay_us_IMU1(2);   
+		IIC_IMU1_SCL4=1;
+		Delay_us_IMU1(2); 
+		IIC_IMU1_SCL4=0;	
+		Delay_us_IMU1(2);
+    }	 
+	#else	
 	SDA_IMU1_OUT(); 	    
     IIC_IMU1_SCL=0;//拉低时钟开始数据传输
     for(t=0;t<8;t++)
@@ -140,6 +224,7 @@ void IIC_IMU1_Send_Byte(u8 txd)
 		IIC_IMU1_SCL=0;	
 		Delay_us_IMU1(2);
     }	 
+			#endif
 } 	 
    
 /**************************实现函数********************************************
@@ -149,6 +234,22 @@ void IIC_IMU1_Send_Byte(u8 txd)
 u8 IIC_IMU1_Read_Byte(unsigned char ack)
 {
 	unsigned char i,receive=0;
+		#if USE_VER_4
+		SDA_IMU1_IN4();//SDA设置为输入
+    for(i=0;i<8;i++ )
+	{
+        IIC_IMU1_SCL4=0; 
+        Delay_us_IMU1(2);
+		IIC_IMU1_SCL4=1;
+        receive<<=1;
+        if(READ_IMU1_SDA4)receive++;   
+		Delay_us_IMU1(2); 
+    }					 
+    if (ack)
+        IIC_IMU1_Ack(); //发送ACK 
+    else
+        IIC_IMU1_NAck();//发送nACK  
+	#else
 	SDA_IMU1_IN();//SDA设置为输入
     for(i=0;i<8;i++ )
 	{
@@ -163,6 +264,7 @@ u8 IIC_IMU1_Read_Byte(unsigned char ack)
         IIC_IMU1_Ack(); //发送ACK 
     else
         IIC_IMU1_NAck();//发送nACK  
+		#endif
     return receive;
 }
 

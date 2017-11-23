@@ -33,12 +33,23 @@
 //================传感器===================
 #define IMU_UPDATE 1
 #define NEW_IMU 1  //1使用LSD IMU
+#define USE_VER_4 0
+#if USE_VER_4
 #define USE_VER_3 1
+#else
+#define USE_VER_3 0
+#endif
 #define FLOW_USE_FLY_LAB 0 //
-#define USE_UKF_FROM_AUTOQUAD 1
-#define UKF_IN_ONE_THREAD 1  //<<------------------
+#define USE_UKF_FROM_AUTOQUAD 0
+#if USE_UKF_FROM_AUTOQUAD
+#define UKF_IN_ONE_THREAD 1 
+#else
+#define UKF_IN_ONE_THREAD 0  //<<------------------
+#endif
 #define USE_M100_IMU 0  //使用DJI SDK数据
 #define SONAR_USE_FLOW 0 //使用光流  的 超声波
+#define USE_ANO_FLOW 0
+#define FLOW_SET_ANGLE 4 
 #define USE_US100           //使用us100型号超声波 
 //#define USE_KS103					//使用ks103型号超声波
 //#define SONAR_SAMPLE1					//0-5m 32ms  no fix

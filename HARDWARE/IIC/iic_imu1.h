@@ -17,6 +17,20 @@
 #define I2C_IMU1_Pin_SDA		GPIO_Pin_7
 #define ANO_RCC_I2C_IMU1		RCC_AHB1Periph_GPIOA
 /*********************************************/
+
+#define SCL_IMU1_H4         ANO_GPIO_I2C_IMU14->BSRRL = I2C_IMU1_Pin_SCL4
+#define SCL_IMU1_L4         ANO_GPIO_I2C_IMU14->BSRRH = I2C_IMU1_Pin_SCL4
+#define SDA_IMU1_H4         ANO_GPIO_I2C_IMU14->BSRRL = I2C_IMU1_Pin_SDA4
+#define SDA_IMU1_L4         ANO_GPIO_I2C_IMU14->BSRRH = I2C_IMU1_Pin_SDA4
+#define SCL_IMU1_read4      ANO_GPIO_I2C_IMU14->IDR  & I2C_IMU1_Pin_SCL4
+#define SDA_IMU1_read4      ANO_GPIO_I2C_IMU14->IDR  & I2C_IMU1_Pin_SDA4
+
+/***************I2C GPIO∂®“Â******************/
+#define ANO_GPIO_I2C_IMU14	GPIOB
+#define I2C_IMU1_Pin_SCL4		GPIO_Pin_8
+#define I2C_IMU1_Pin_SDA4		GPIO_Pin_9
+#define ANO_RCC_I2C_IMU14		RCC_AHB1Periph_GPIOB
+/*********************************************/
 extern volatile u8 I2C_IMU1_FastMode;
 
 void I2c_IMU1_Soft_Init(void);

@@ -34,7 +34,7 @@ Cal_Cycle_OLDX acc_lsq;
 #define LPSSA0_HIGH_ADDRESS 0x5d<<	1
 #define LPSSA0_LOW_ADDRESS  0x5c<<	1
 #define LPS_IIC_ID LPSSA0_HIGH_ADDRESS
-
+float baroAlt,baro_set,for_fly_ready;
 u8 Lis3mdl_SPI_RD(u8 add,u8 sel)
 {
  u8  tmp;
@@ -239,6 +239,12 @@ void LIS3MDL_read(u8 fast)
   lis3mdl.Mag_Adc.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Mag_Adc.z = (int16_t)(buffer[4] << 8 | buffer[5]);
 	#endif
+	
+//	#if USE_VER_4
+//	lis3mdl.Mag_Adc.x /=10.;
+//	lis3mdl.Mag_Adc.y /=10.;
+//	lis3mdl.Mag_Adc.z /=10.;
+//	#endif
 }
 
 
@@ -376,6 +382,7 @@ void LP_readbmp(u8 fast)
 	}
 }
 #define CALIBRATING_MAG_CYCLES              1000  //校准时间持续20s
+int MAX_HML;
 void LIS_CalOffset_Mag(void)
 { static xyz_f_t	Mag_Reg;
 	static xyz_f_t	MagMAX = { -100 , -100 , -100 }, MagMIN = { 100 , 100 , 100 }, MagSum;
@@ -398,7 +405,12 @@ void LIS_CalOffset_Mag(void)
 			cnt1++;
 		if(cnt1>888){cnt1=0;
 			lis3mdl.Mag_CALIBRATED=0;}
-		if(ABS(lis3mdl.Mag_Adc.x)<1500&&ABS(lis3mdl.Mag_Adc.y)<1500&&ABS(lis3mdl.Mag_Adc.z)<1500&&norm>11)
+		#if USE_VER_4
+		MAX_HML=1500;	
+		#else
+		MAX_HML=1500;
+		#endif	
+		if(ABS(lis3mdl.Mag_Adc.x)<MAX_HML&&ABS(lis3mdl.Mag_Adc.y)<MAX_HML&&ABS(lis3mdl.Mag_Adc.z)<MAX_HML&&norm>11)
 		{ cnt1=0;
 			#if USE_CYCLE_HML_CAL
 			if(hml_lsq.size<350&&(fabs(Mag_Reg.x-lis3mdl.Mag_Adc.x)>25||fabs(Mag_Reg.y-lis3mdl.Mag_Adc.y)>25||fabs(Mag_Reg.z-lis3mdl.Mag_Adc.z)>25))

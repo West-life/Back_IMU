@@ -55,23 +55,7 @@ extern firstOrderFilterData_t firstOrderFilters[NUMBER_OF_FIRST_ORDER_FILTERS];
 void initFirstOrderFilter(float T);
 float firstOrderFilter(float input, struct firstOrderFilterData *filterParameters,float T);
 
-typedef struct
-{
- //volatile 
-   float Input_Butter[3];
- //volatile 
-   float Output_Butter[3];
-}Butter_BufferData;
 
-
-typedef struct
-{
-  float a[3];
-  float b[3];
-}Butter_Parameter;
-
-extern Butter_Parameter LF_20Hz;
-extern Butter_BufferData Acc_20Hz[3];
 
 // first order filter
 typedef struct {
@@ -86,6 +70,31 @@ typedef struct {
     uint8_t i;
 } utilFirFilter_t;
 
+typedef struct
+{
+ float Input_Butter[3];
+ float Output_Butter[3];
+}Butter_BufferData;
+
+typedef struct
+{
+ const float a[3];
+ const float b[3];
+}Butter_Parameter;
+float LPButterworth(float curr_input,Butter_BufferData *Buffer,Butter_Parameter *Parameter);
+//-----Butterworth±‰¡ø-----//
+extern Butter_Parameter Butter_80HZ_Parameter_Acce;
+extern Butter_Parameter Butter_60HZ_Parameter_Acce;
+extern Butter_Parameter Butter_50HZ_Parameter_Acce;
+extern Butter_Parameter Butter_30HZ_Parameter_Acce;
+extern Butter_Parameter Butter_20HZ_Parameter_Acce;
+extern Butter_Parameter Butter_15HZ_Parameter_Acce;
+extern Butter_Parameter Butter_10HZ_Parameter_Acce;
+extern Butter_Parameter Butter_5HZ_Parameter_Acce;
+extern Butter_Parameter Butter_2HZ_Parameter_Acce;
+
+extern Butter_BufferData Butter_Buffer[3];
+extern Butter_BufferData Butter_Buffer_Feedback[3];
 
 void utilFilterReset(utilFilter_t *f, float setpoint);
 void utilFilterReset3(utilFilter_t *f, float setpoint) ;

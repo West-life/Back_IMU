@@ -231,6 +231,7 @@ void ekf_task(void *pdata)
 	else{
 	if(ekf_loop_time<0.000002)ekf_loop_time=0.02;
 	static u8 ekf_gps_cnt;
+	SINS_Prepare();
   if(!lis3mdl.Mag_CALIBRATED)		
 	ukf_pos_task_qr(0,0,Yaw,flow_matlab_data[2],flow_matlab_data[3],LIMIT(flow_matlab_data[0],-3,3),LIMIT(flow_matlab_data[1],-3,3),ekf_loop_time);
   #if USE_UKF_FROM_AUTOQUAD	
@@ -259,7 +260,7 @@ void ekf_task(void *pdata)
 	#if USE_UKF_FROM_AUTOQUAD
   delay_ms(10);
  #else
-	delay_ms(10);
+	delay_ms(5);
  #endif
 	}
 }		
@@ -525,8 +526,9 @@ void flow_task1(void *pdata)
 
 
 
-u8 UART_UP_LOAD_SEL=14;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=5;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
+float px4_test[4]={0};
 void TIM3_IRQHandler(void)
 {
 	OSIntEnter();static u16 cnt,cnt1,cnt2,cnt3,cnt_init,init;
@@ -540,6 +542,10 @@ void TIM3_IRQHandler(void)
 	}
 	else{
 		
+	if(m100.control_connect)
+		m100_contrl_px4(m100.control_spd[0],m100.control_spd[1],m100.control_spd[2],m100.control_yaw,m100.px4_tar_mode);
+		//m100_contrl_px4(px4_test[0],px4_test[1],px4_test[2],px4_test[3],m100.px4_tar_mode);
+	
 	if(pi_flow.insert&&cnt2++>2){cnt2=0;
 		Send_TO_FLOW_NAV_GPS();
 		Send_TO_FLOW_PI();		
@@ -589,8 +595,8 @@ if(debug_pi_flow[0])
 								0,0*100,flow_matlab_data[1]*1000,
 								0,0,v_test[1]*1000);break;		
 								case 5://海拔速度
-								Send_BLE_DEBUG((int16_t)(0*100),X_ukf[0]*1000,X_ukf[3]*1000,
-								FLOW_VEL_X*1000,X_ukf[1]*1000,flow_matlab_data[2]*1000*K_spd_flow,
+								Send_BLE_DEBUG((int16_t)(SINS_Accel_Earth[Xr]*100),acc_neo[Xr]*100,X_ukf[3]*1000,
+								FLOW_VEL_X*1000,flow_matlab_data[2]*1000*K_spd_flow,X_ukf[1]*1000,
 								0,X_ukf[4]*1000,flow_matlab_data[3]*1000*K_spd_flow);break;	
 								case 6://海拔速度
 								Send_BLE_DEBUG((int16_t)(X_ukf_baro[3]*100),baro_matlab_data[0]*100,X_ukf_baro[0]*100,
@@ -660,6 +666,12 @@ void error_task(void *pdata)
 			pi_flow.sensor.connect=0;
 	  if(fc_loss_cnt++>3/0.2)
 			FC_CONNECT=0;
+		if(m100.cnt_m100_data_refresh++>3/0.2)
+		 m100.m100_data_refresh=0;
+		if(m100.loss_cnt++>3/0.2)
+		 m100.connect=0;
+		if(m100.control_loss++>3/0.2)
+		 m100.control_connect=0;
 		
 		flow.rate=flow.flow_cnt;
 	  flow.flow_cnt=0;

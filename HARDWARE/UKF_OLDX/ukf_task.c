@@ -11,56 +11,10 @@
 #include "nav_ukf.h"
 #include "matlib.h"
 #define DELAY_GPS 0.1//s
-
-
-
-void KF_OLDX4(float *X_f,float *P_f,float *Z_f,float *A_f
-	,float *B_f,float *H_f,float U,float *Q_f,float *R_f)
-{
-    unsigned int S31[2] = {3,1};
-    unsigned int S33[2] = {3,3};
-    float I[3][3]= {{1,0,0}, {0, 1, 0}, {0, 0, 1}};
-		float Temp31_1[3][1];
-		float Temp31_2[3][1];
-		float Temp31_3[3][1];
-		float Temp31_4[3][1];
-		
-		float Temp33_1[3][3];
-		float Temp33_2[3][3];
-		float Temp33_3[3][3];
-		float Temp33_4[3][3];
-		float Temp33_5[3][3];
-		float Temp33_6[3][3];
-		//x_pre //X_pre=A*X+B*U;
-    float X_pre[3][1] ;
-	  MatMultiplication( (float *)A_f, S33, (float *)X_f, S33, (float *)Temp31_1);
-	  MatScalarMult((float *)B_f, S31, U, (float *)Temp31_2);
-    MatAddition( (float *)Temp31_1, S31, (float *)Temp31_2,(float *)X_pre);
-		//p_pre //P_pre=A*P*A'+Q;
-		float p_pre[3][3] ;
-		MatMultiplication( (float *)A_f, S33, (float *)P_f, S33, (float *)Temp33_1);
-		MatTranspose( (float *)A_f, S33, (float *)Temp33_2);
-		MatMultiplication( (float *)Temp33_1, S33, (float *)Temp33_2, S33, (float *)Temp33_3);
-		MatAddition( (float *)Temp33_3, S33, (float *)Q_f,(float *)p_pre);
-		//cal K  K=P_pre*H'*inv(H*P_pre*H'+R);
-		float k[3][3]; 
-		MatMultiplication( (float *)p_pre, S33, (float *)H_f, S33, (float *)Temp33_1);
-		MatMultiplication( (float *)H_f, S33, (float *)p_pre, S33, (float *)Temp33_2);
-		MatMultiplication( (float *)Temp33_2, S33, (float *)H_f, S33, (float *)Temp33_3);
-		MatAddition( (float *)Temp33_3, S33, (float *)R_f,(float *)Temp33_4);
-		MatInv3by3((float *)Temp33_4, (float *)Temp33_5);
-		MatMultiplication( (float *)Temp33_1, S33, (float *)Temp33_5, S33, (float *)k);
-		//correct  X=X_pre+K*(H*Z-H*X_pre);
-		MatMultiplication( (float *)H_f, S33, (float *)Z_f, S31, (float *)Temp31_1);
-		MatMultiplication( (float *)H_f, S33, (float *)X_pre, S31, (float *)Temp31_2);
-		MatSubAddition( (float *)Temp31_1, S33, (float *)Temp31_2,(float *)Temp31_3);
-		MatMultiplication( (float *)k, S33, (float *)Temp31_3, S31, (float *)Temp31_4);
-		MatAddition( (float *)Temp31_1, S31, (float *)Temp31_4,(float *)X_f);
-		//P   //P=(I-K*H)*P_pre;
-		MatMultiplication( (float *)k, S33, (float *)H_f, S33, (float *)Temp33_1);
-		MatSubAddition( (float *)I, S33, (float *)Temp33_1,(float *)Temp33_2);
-		MatMultiplication( (float *)Temp33_2, S33, (float *)p_pre, S33, (float *)P_f);
-}
+u8 QR_DELAY=20;
+u8 FLOW_DELAY=2;
+u8 DELAY_FIX_SEL=1;
+float k_acc_f=0.86;
 float test_k[3]={0.6,1.6,0.6};
 u8 OLDX_KF3(float *measure,float tau,float *r_sensor,u8 *flag_sensor,double *state,double *state_correct,float T)
 {
@@ -190,7 +144,7 @@ float g_pos_flow= 0.0086;//0.0051;
 float g_spd_flow= 0.000368;//0.0006;
 #else
 float g_pos_flow= 0.0086*1.2;//0.0051;
-float g_spd_flow= 0.000025;//0.0006;
+float g_spd_flow= 0.000026;//0.0006;
 #endif
 float K_pos_qr=0.01;
 float K_spd_flow=0.86;//1.2;//0.86;
@@ -263,7 +217,7 @@ if(module.gps&& gpsx.pvt.PVT_numsv>=1&&gpsx.pvt.PVT_fixtype>=3)
 kf_data_sel_temp=1;	
 else if(module.flow||module.flow_iic)
 {kf_data_sel_temp=1;gps_init=0;}	
-//kf_data_sel_temp=0;
+kf_data_sel_temp=2;
 #if NAV_USE_KF
 //--------------------------------GPS_KF------------------------------------- 
 if(kf_data_sel_temp==1){
@@ -331,10 +285,10 @@ if(kf_data_sel_temp==1){
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
 	 if((gps_init&&gps_data_vaild)||force_test)//bei
-   KF_OLDX_NAV( X_KF_NAV[Yr],  P_KF_NAV[Yr],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T);
+   KF_OLDX_NAV( X_KF_NAV[Yr],  P_KF_NAV[Yr],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T,0);
 
 	 if((gps_init&&gps_data_vaild)||force_test)//dong 
-	 KF_OLDX_NAV( X_KF_NAV[Xr],  P_KF_NAV[Xr],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T);
+	 KF_OLDX_NAV( X_KF_NAV[Xr],  P_KF_NAV[Xr],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_gps,  g_spd_gps,  T,0);
 
 	 float X_KF_NAV_TEMP[2][3];//0->x->east  1->y->north
 	 X_KF_NAV_TEMP[Xr][0]=X_KF_NAV[Xr][0]+DELAY_GPS*X_KF_NAV[Xr][1]+1/2*pow(DELAY_GPS,2)*(Accx+X_KF_NAV[Xr][2]);
@@ -441,66 +395,9 @@ if(kf_data_sel_temp==1){
 		
 	 //KF	global
 	 static u8 cnt_kf;
-		float Z_x[3]={Zx_kf[0],Zx_kf[1],Accx};
-		float Z_y[3]={Zy_kf[0],Zy_kf[1],Accy};
+	 float Z_x[3]={Zx_kf[0],Zx_kf[1],Accx};
+	 float Z_y[3]={Zy_kf[0],Zy_kf[1],Accy};
 		
-//		float A_f[3][3]  = {{1, T, -pow(T,2)/2}, {0, 1, -T}, {0, 0, 1}};
-//    float B_f[3][1]  = {pow(T,2)/2,T,1};
-//		float H_f[3][3]  = {{0,0,0}, {0, 1, 0}, {0, 0, 0}};
-//		
-//		float Z_f[3][1]= {Zx_kf[0],Zx_kf[1],0};
-//		float U=Accx;
-//		float Q_f[3][3]  ={
-//{2.50011111111111e-11	,5.00016666666667e-09,	-3.33333333333333e-11},
-//{5.00016666666667e-09,	1.00002500000000e-06	,-5.00000000000000e-07},
-//{-3.33333333333333e-11,	-5.00000000000000e-09	,1.00000000000000e-06}};
-//		float R_f[3][3]  = {{g_pos_use,0,0}, {0, g_spd_use, 0}, {0, 0, 0.00001}};	
-//	//	KF_OLDX4((float *)X_f,(float *)P_f,(float *)Z_f,(float *) A_f, (float *)B_f, (float *)H_f, Z_f[2][0],(float *)Q_f,(float *)R_f);
-//    unsigned int S31[2] = {3,1};
-//    unsigned int S33[2] = {3,3};
-//    float I[3][3]= {{1,0,0}, {0, 1, 0}, {0, 0, 1}};
-//		float Temp31_1[3][1]={0};
-//		float Temp31_2[3][1]={0};
-//		float Temp31_3[3][1]={0};
-//		float Temp31_4[3][1]={0};
-//		
-//		float Temp33_1[3][3]={0};
-//		float Temp33_2[3][3]={0};
-//		float Temp33_3[3][3]={0};
-//		float Temp33_4[3][3]={0};
-//		float Temp33_5[3][3]={0};
-//		float Temp33_6[3][3]={0};
-//		//x_pre //X_pre=A*X+B*U;
-//		if(init_ukf&&U!=0){
-//    float X_pre[3][1]={0} ;
-//	  MatMultiplication( (float *)A_f, S33, (float *)X_f, S31, (float *)Temp31_1);
-//	  MatScalarMult((float *)B_f, S31, U, (float *)Temp31_2);
-//    MatAddition( (float *)Temp31_1, S31, (float *)Temp31_2,(float *)X_pre);
-//		//p_pre //P_pre=A*P*A'+Q;
-//		float P_pre[3][3]={0};
-//		MatTranspose( (float *)A_f, S33, (float *)Temp33_1);	
-//		MatMultiplication( (float *)A_f, S33, (float *)P_f, S33, (float *)Temp33_2);
-//		MatMultiplication( (float *)Temp33_2, S33, (float *)Temp33_1, S33, (float *)Temp33_3);
-//		MatAddition( (float *)Temp33_3, S33, (float *)Q_f,(float *)P_pre);
-//		//cal K  K=P_pre*H'*inv(H*P_pre*H'+R);
-//		float K[3][3]={0}; 
-//		MatMultiplication( (float *)P_pre, S33, (float *)H_f, S33, (float *)Temp33_1);
-//		MatMultiplication( (float *)H_f, S33, (float *)P_pre, S33, (float *)Temp33_2);
-//		MatMultiplication( (float *)Temp33_2, S33, (float *)H_f, S33, (float *)Temp33_3);
-//		MatAddition( (float *)Temp33_3, S33, (float *)R_f,(float *)Temp33_4);
-//		MatInv3by3((float *)Temp33_4, (float *)Temp33_5);
-//		MatMultiplication( (float *)Temp33_1, S33, (float *)Temp33_5, S33, (float *)K);
-//		//correct  X=X_pre+K*(H*Z-H*X_pre);
-//		MatMultiplication( (float *)H_f, S33, (float *)Z_f, S31, (float *)Temp31_1);
-//		MatMultiplication( (float *)H_f, S33, (float *)X_pre, S31, (float *)Temp31_2);
-//		MatSubAddition( (float *)Temp31_1, S31, (float *)Temp31_2,(float *)Temp31_3);
-//		MatMultiplication( (float *)K, S33, (float *)Temp31_3, S31, (float *)Temp31_4);
-//		MatAddition( (float *)Temp31_1, S31, (float *)Temp31_4,(float *)X_f);
-//		//P   //P=(I-K*H)*P_pre;
-//		MatMultiplication( (float *)K, S33, (float *)H_f, S33, (float *)Temp33_1);
-//		MatSubAddition( (float *)I, S33, (float *)Temp33_1,(float *)Temp33_2);
-//		MatMultiplication( (float *)Temp33_2, S33, (float *)P_pre, S33, (float *)P_f);
-//	}
 	 if(((gps_init&&gps_data_vaild)||force_test)&&init_ukf&&cnt_kf++>0){cnt_kf=0;
 	 OLDX_KF3(Z_x,r_flow_new[3],r_flow_new,flag_sensor_flow_gps,X_KF_NAV[Xr],state_correct_posx,T);
 	 OLDX_KF3(Z_y,r_flow_new[3],r_flow_new,flag_sensor_flow_gps,X_KF_NAV[Yr],state_correct_posy,T);
@@ -551,6 +448,9 @@ if(kf_data_sel_temp==1){
   }
 //--------=-----------------flow in global---------------------------------------------------------
 	else if(kf_data_sel_temp==2){	 
+		static float pos_buf[2][30],spd_buf[2][30],acc_buf[2][30],acc_bufs[2][30];
+		u8 i;
+	
 	 static int qr_yaw_init;	
 	 #if SENSOR_FORM_PI_FLOW	
 	 float Yaw_qr=To_180_degrees(Yaw);
@@ -564,15 +464,19 @@ if(kf_data_sel_temp==1){
    float SPDY=flowy*K_spd_flow;
 	 float SPDX=flowx*K_spd_flow;
 	 float acc_bias[2]={0};
-
+   //conver body flow spd to NEZ
 	 velNorth=SPDY*cos(Yaw_qr*0.0173)-SPDX*sin(Yaw_qr*0.0173);
    velEast=SPDY*sin(Yaw_qr*0.0173)+SPDX*cos(Yaw_qr*0.0173);
 	 #if SENSOR_FORM_PI_FLOW
-	 if(pi_flow.check==0&&pi_flow.connect)
-	 H[0]=0; 
+	 if(pi_flow.check&&pi_flow.connect)
+	 H[0]=1; 
+	 else
+	 H[0]=0; 	
 	 #else
-	 if(qr.check==0&&qr.connect)
-	 H[0]=0; 
+	 if(qr.check&&qr.connect)
+	 H[0]=1; 
+	 else
+	 H[0]=0; 	 
 	 #endif
 	 static float pos_reg[2];
 	 #if SENSOR_FORM_PI_FLOW
@@ -590,6 +494,10 @@ if(kf_data_sel_temp==1){
 	 Accy=accNorth*flag_kf1[1];
 	 Sdpx=velEast*K_spd_gps;
 	 Accx=accEast*flag_kf1[0];
+	 
+	 //Accy=SINS_Accel_Earth[Yr];Accx=SINS_Accel_Earth[Xr];
+	 //Accy=accNorth*0.5+0.5*SINS_Accel_Earth[Yr];Accx=accEast*0.5+0.5*SINS_Accel_Earth[Xr];
+	 //Qr first check initial
 	 static u8 state_init_flow_pos;
 	 switch(state_init_flow_pos)
 	 {
@@ -605,20 +513,82 @@ if(kf_data_sel_temp==1){
 				state_init_flow_pos=0;
 			break; 
 	 }
-	 double Zy[3]={Posy,Sdpy,acc_bias[1]};
-	 if(1)//bei 
-   KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
-	 double Zx[3]={Posx,Sdpx,acc_bias[0]};
-	 if(1)//dong
-   KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
-	 X_ukf[0]=X_KF_NAV[0][0]+X_ukf[2]*T*15;//East pos
+	  //restore
+		for(i=30;i>0;i--)
+		{
+		pos_buf[Xr][i]=pos_buf[Xr][i-1];
+		pos_buf[Yr][i]=pos_buf[Yr][i-1];
+
+		spd_buf[Xr][i]=spd_buf[Xr][i-1];
+		spd_buf[Yr][i]=spd_buf[Yr][i-1];
+			
+		acc_buf[Xr][i]=acc_buf[Xr][i-1];
+		acc_buf[Yr][i]=acc_buf[Yr][i-1];
+			
+		acc_bufs[Xr][i]=acc_bufs[Xr][i-1];
+		acc_bufs[Yr][i]=acc_bufs[Yr][i-1];
+		}
+		pos_buf[Xr][0]=X_KF_NAV[Xr][0];//存储滤波后的值
+		pos_buf[Yr][0]=X_KF_NAV[Yr][0];
+
+		spd_buf[Xr][0]=X_KF_NAV[Xr][1];
+		spd_buf[Yr][0]=X_KF_NAV[Yr][1];
+		
+		acc_bufs[Xr][0]=X_KF_NAV[Xr][2];
+		acc_bufs[Yr][0]=X_KF_NAV[Yr][2];
+		
+		acc_buf[Xr][0]=Accx;
+		acc_buf[Yr][0]=Accy;
+	 //kalman filter
+	 	
+	 double Zx[3]={Posx,Sdpx,Accx};
+	 double Zy[3]={Posy,Sdpy,Accy};
+	 double Zx_delay[4]={pos_buf[Xr][QR_DELAY],spd_buf[Xr][FLOW_DELAY],acc_bufs[Xr][FLOW_DELAY],DELAY_FIX_SEL};
+	 double Zy_delay[4]={pos_buf[Yr][QR_DELAY],spd_buf[Yr][FLOW_DELAY],acc_bufs[Yr][FLOW_DELAY],DELAY_FIX_SEL};
+	 double Zx_fix[3]={Posx,Sdpx,1};
+	 double Zy_fix[3]={Posy,Sdpy,1};
+	 float posDelta[2],spdDelta[2];
+	 if(FLOW_DELAY==0)
+		Zx_delay[3]=Zy_delay[3]=Zy_fix[2]=Zx_fix[2]=0;
+	
+	 switch(DELAY_FIX_SEL){
+		 case 0://fail
+	 Zx_fix[0]=Posx+(X_KF_NAV[Xr][0]-pos_buf[Xr][FLOW_DELAY])*Zx_fix[2];
+	 Zx_fix[1]=Sdpx+(X_KF_NAV[Xr][1]-spd_buf[Xr][FLOW_DELAY])*Zx_fix[2];
+	 Zy_fix[0]=Posy+(X_KF_NAV[Yr][0]-pos_buf[Yr][FLOW_DELAY])*Zy_fix[2];
+	 Zy_fix[1]=Sdpy+(X_KF_NAV[Yr][1]-spd_buf[Yr][FLOW_DELAY])*Zy_fix[2];
+	 break;
+		 case 1://WT
+   Zx_fix[0]=Posx+(spd_buf[Xr][FLOW_DELAY]*FLOW_DELAY*T+
+		 (acc_buf[Xr][FLOW_DELAY]-acc_bufs[Xr][FLOW_DELAY])*FLOW_DELAY*T*FLOW_DELAY*T)*Zx_fix[2];
+	 Zx_fix[1]=Sdpx+((acc_buf[Xr][FLOW_DELAY]-acc_bufs[Xr][FLOW_DELAY])*FLOW_DELAY*T)*Zx_fix[2];
+	 Zy_fix[0]=Posy+(spd_buf[Yr][FLOW_DELAY]*FLOW_DELAY*T+
+		 (acc_buf[Yr][FLOW_DELAY]-acc_bufs[Yr][FLOW_DELAY])*FLOW_DELAY*T*FLOW_DELAY*T)*Zy_fix[2];
+	 Zy_fix[1]=Sdpy+((acc_buf[Yr][FLOW_DELAY]-acc_bufs[Yr][FLOW_DELAY])*FLOW_DELAY*T)*Zy_fix[2];
+		 break;
+	 }
+	  //Filter_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
+	  //Strapdown_INS_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
+		if(flow_update==1)//更新
+		{
+		H[4]=1; 	
+		flow_update=0;
+		}else
+		H[4]=0;
+		//H[4]=1;
+	 KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy_fix,  Accy*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T ,Zy_delay);
+	 KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx_fix,  Accx*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T ,Zx_delay);
+  
+	 X_ukf[0]=X_KF_NAV[0][0];//East pos
 	 //X_ukf[1]=X_KF_NAV[0][1];//East vel
 	 X_ukf[2]=X_KF_NAV[0][2];
-	 X_ukf[3]=X_KF_NAV[1][0]+X_ukf[5]*T*15;//North  pos
+	 X_ukf[3]=X_KF_NAV[1][0];//North  pos
 	 //X_ukf[4]=X_KF_NAV[1][1];//North  vel
-	 X_ukf[5]=X_KF_NAV[1][2];							
+	 X_ukf[5]=X_KF_NAV[1][2];	
+   //spd convert to body frame 	 
 	 X_ukf[1]=-X_KF_NAV[1][1]*sin(Yaw_qr*0.0173)+X_KF_NAV[0][1]*cos(Yaw_qr*0.0173);//X
 	 X_ukf[4]= X_KF_NAV[1][1]*cos(Yaw_qr*0.0173)+X_KF_NAV[0][1]*sin(Yaw_qr*0.0173);//Y
+	 //out range fix
    if(fabs( X_ukf[0]-pos_reg[0])>1.5||fabs( X_ukf[3]-pos_reg[1])>1.5){
 		  if(qr.connect)
 			{X_KF_NAV[1][0]=Posy;X_KF_NAV[0][0]=Posx;}
@@ -639,12 +609,12 @@ if(kf_data_sel_temp==1){
 	 Sdpx=flowx*K_spd_flow;
 	 Accx=accx*acc_flag_flow[0];
 	 double Zx[3]={Posx,Sdpx,0};
-   KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
+   KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx,  Accx, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T,0);
 	 Posy=Qr_y*K_pos_qr;
    Sdpy=flowy*K_spd_flow;
 	 Accy=accy*acc_flag_flow[1];
 	 double Zy[3]={Posy,Sdpy,0};
-   KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T);
+   KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy,  Accy, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T,0);
 	 X_ukf[0]=X_KF_NAV[0][0];
 	 X_ukf[1]=X_KF_NAV[0][1];
 	 X_ukf[2]=X_KF_NAV[0][2];
@@ -659,3 +629,304 @@ if(kf_data_sel_temp==1){
 }
 
 
+
+float R_GPS[2]={0.05f,0.005f};
+float Q_GPS[2]={2,3};
+float R_Acce_bias[2]={0.0001,0.00001};
+double Pre_conv_GPS[2][4]=
+{
+  0.0001 ,    0.00001,  0.00001    , 0.003,
+  0.0001 ,    0.00001,  0.00001    , 0.003,
+};//上一次协方差
+double K_GPS[2][2]={0};//增益矩阵
+float Acce_Bias[2];
+void  KalmanFilter_Horizontal_GPS(float Position_GPS,float Vel_GPS,float Position_Last,float Vel_Last,
+                                   double *Position,double *Vel,
+                                   float *Acce,float *R,
+                                   float *Q,float dt,uint8_t Axis)
+{
+
+float Conv_Z=0;
+float Z_Delta[2]={0};
+float Conv_Temp=0;
+double Temp_conv[4]={0};//先验协方差
+uint8 Label=0;
+if(Axis=='X') Label=0;
+else Label=1;
+//先验状态 当前加速度
+*Position +=*Vel*dt+((*Acce+Acce_Bias[Label])*dt*dt)/2.0;
+*Vel+=*Acce*dt;
+//先验协方差
+Conv_Temp=Pre_conv_GPS[Label][1]+Pre_conv_GPS[Label][3]*dt;
+Temp_conv[0]=Pre_conv_GPS[Label][0]+Pre_conv_GPS[Label][2]*dt+Conv_Temp*dt+R_GPS[0];
+Temp_conv[1]=Conv_Temp;
+Temp_conv[2]=Pre_conv_GPS[Label][2]+Pre_conv_GPS[Label][3]*dt;
+//Temp_conv[1]=Conv_Temp+R_GPS[0]*0.5*0.00001;
+//Temp_conv[2]=Temp_conv[1];
+Temp_conv[3]=Pre_conv_GPS[Label][3]+R_GPS[1];
+
+//计算卡尔曼增益
+Conv_Z=1.0/(Temp_conv[0]+Q_GPS[0]*1)*(Temp_conv[3]+Q_GPS[1]*1)-Temp_conv[1]*Temp_conv[2];
+
+//K_GPS[0][0]=( Temp_conv[0]*(Temp_conv[3]+Q_GPS[1])-Temp_conv[1]*Temp_conv[2])*Conv_Z;
+//K_GPS[0][1]=(-Temp_conv[0]*Temp_conv[1]+Temp_conv[1]*(Temp_conv[0]+Q_GPS[0]))*Conv_Z;
+//K_GPS[1][0]=( Temp_conv[2]*(Temp_conv[3]+Q_GPS[1])-Temp_conv[2]*Temp_conv[3])*Conv_Z;
+//K_GPS[1][1]=(-Temp_conv[1]*Temp_conv[2]+Temp_conv[3]*(Temp_conv[0]+Q_GPS[0]))*Conv_Z;
+
+//化简如下
+K_GPS[0][0]=( Temp_conv[0]*(Temp_conv[3]+Q_GPS[1]*1)-Temp_conv[1]*Temp_conv[2])*Conv_Z;
+K_GPS[0][1]=(Temp_conv[1]*Q_GPS[0]*1)*Conv_Z;
+K_GPS[1][0]=(Temp_conv[2]*Q_GPS[1]*1)*Conv_Z;
+K_GPS[1][1]=(-Temp_conv[1]*Temp_conv[2]+Temp_conv[3]*(Temp_conv[0]+Q_GPS[0]*1))*Conv_Z;
+
+//融合数据输出
+
+//Z_Delta[0]=Position_GPS-*Position;//无延时
+//Z_Delta[1]=Vel_GPS-*Vel;
+//当前观测-过去融合
+Z_Delta[0]=Position_GPS-Position_Last;
+Z_Delta[1]=Vel_GPS-Vel_Last;
+
+
+*Position +=K_GPS[0][0]*Z_Delta[0]
+           +K_GPS[0][1]*Z_Delta[1];
+
+*Vel +=K_GPS[1][0]*Z_Delta[0]
+      +K_GPS[1][1]*Z_Delta[1];
+
+
+
+Acce_Bias[Label]=R_Acce_bias[0]*Z_Delta[0]
+                 +R_Acce_bias[1]*Z_Delta[1];
+
+
+
+//更新状态协方差矩阵
+
+Pre_conv_GPS[Label][0]=(1-K_GPS[0][0])*Temp_conv[0]-K_GPS[0][1]*Temp_conv[2];
+Pre_conv_GPS[Label][1]=(1-K_GPS[0][0])*Temp_conv[1]-K_GPS[0][1]*Temp_conv[3];
+Pre_conv_GPS[Label][2]=(1-K_GPS[1][1])*Temp_conv[2]-K_GPS[1][0]*Temp_conv[0];
+Pre_conv_GPS[Label][3]=(1-K_GPS[1][1])*Temp_conv[3]-K_GPS[1][0]*Temp_conv[1];
+
+}
+#define GPS_BUF_NUM 40
+float Position_History[2][GPS_BUF_NUM]={0};
+float Vel_History[2][GPS_BUF_NUM]={0};
+uint16 GPS_Vel_Delay_Cnt=0;//100ms
+uint16 GPS_Pos_Delay_Cnt=0;//20;//200ms
+int16 GPS_Position_Cnt=0;
+float Acce_bias[2]={0};
+void Filter_Horizontal(float posx,float spdx,float accx,float posy,float spdy,float accy,float Dt)
+{
+int16 i=0;
+
+for(i=GPS_BUF_NUM;i>0;i--)
+{
+ Position_History[Xr][i]=Position_History[Xr][i-1];
+ Position_History[Yr][i]=Position_History[Xr][i-1];
+
+ Vel_History[Xr][i]=Vel_History[Xr][i-1];
+ Vel_History[Yr][i]=Vel_History[Yr][i-1];
+}
+ Position_History[Xr][0]=X_KF_NAV[Xr][0];//存储滤波后的值
+ Position_History[Yr][0]=X_KF_NAV[Yr][0];
+
+ Vel_History[Xr][0]=X_KF_NAV[Xr][1];
+ Vel_History[Yr][0]=X_KF_NAV[Yr][1];
+
+
+
+if(flow_update==1)//如果GPS更新
+{
+KalmanFilter_Horizontal_GPS(posx,//pos gps
+                            spdx,//vel gps
+                            Position_History[Xr][GPS_Pos_Delay_Cnt],//delay pos
+                            Vel_History[Xr][GPS_Vel_Delay_Cnt],//delay vel
+                            &X_KF_NAV[Xr][0],//fuse pos
+                            &X_KF_NAV[Xr][1],//fuse vel
+                            &accx,//kalman u 
+                            R_GPS,Q_GPS,Dt,'X');
+
+
+KalmanFilter_Horizontal_GPS(posy,
+                            spdy,
+                            Position_History[Yr][GPS_Pos_Delay_Cnt],
+                            Vel_History[Yr][GPS_Vel_Delay_Cnt],
+                            &X_KF_NAV[Yr][0],
+                            &X_KF_NAV[Yr][1],
+                            &accy,
+                            R_GPS,Q_GPS,Dt,'Y');
+flow_update=0;
+}
+else//直接积分
+{
+	    X_KF_NAV[Xr][0] +=X_KF_NAV[Xr][1]*Dt
+																		+((accx)*Dt*Dt)/2.0;
+			X_KF_NAV[Xr][1]+=((accx))*Dt;
+
+			X_KF_NAV[Yr][0] +=X_KF_NAV[Yr][1]*Dt
+																		+((accy)*Dt*Dt)/2.0;
+			X_KF_NAV[Yr][1]+=((accy))*Dt;
+}
+
+}
+
+#define TIME_CONTANST_XY      2.5f
+#define K_ACC_XY	     (1.0f / (TIME_CONTANST_XY * TIME_CONTANST_XY * TIME_CONTANST_XY))
+#define K_VEL_XY             (3.0f / (TIME_CONTANST_XY * TIME_CONTANST_XY))															// XY????·′à??μêy,3.0
+#define K_POS_XY             (3.0f / TIME_CONTANST_XY)
+float X_Delta=0,Y_Delta=0;
+uint16_t GPS_Save_Period_Cnt=0;
+uint16_t GPS_SINS_Delay_Cnt=20;//10ms
+typedef struct
+{
+ float Pit;
+ float Rol;
+}Vector2_Body;
+
+
+typedef struct
+{
+ float North;
+ float East;
+}Vector2_Earth;
+Vector2_Body Pos_Err_On_Accel={0};
+Vector2_Body  Accel_Correction_BF={0};
+Vector2_Earth Accel_Correction_EF={0};
+float pos_correction[3]={0,0,0};
+float acc_correction[3]={0,0,0};
+float vel_correction[3]={0,0,0};
+float SpeedDealt[3]={0};
+void Strapdown_INS_Horizontal(float posx,float spdx,float accx,float posy,float spdy,float accy,float Dt)
+{
+      uint16 Cnt=0,i;
+    for(i=GPS_BUF_NUM;i>0;i--)
+		{
+		 Position_History[Xr][i]=Position_History[Xr][i-1];
+		 Position_History[Yr][i]=Position_History[Xr][i-1];
+
+		 Vel_History[Xr][i]=Vel_History[Xr][i-1];
+		 Vel_History[Yr][i]=Vel_History[Yr][i-1];
+		}
+		 Position_History[Xr][0]=X_KF_NAV[Xr][0];//存储滤波后的值
+		 Position_History[Yr][0]=X_KF_NAV[Yr][0];
+
+		 Vel_History[Xr][0]=X_KF_NAV[Xr][1];
+		 Vel_History[Yr][0]=X_KF_NAV[Yr][1];
+		float Sin_Yaw=sin(Yaw* 0.0173);
+    float Cos_Yaw=cos(Yaw* 0.0173);
+		float CNTLCYCLE=0.005;
+		  static float Earth_Frame_To_XYZE;
+		  static float Earth_Frame_To_XYZN;
+		  Earth_Frame_To_XYZN+=spdy*Dt;
+		  Earth_Frame_To_XYZE+=spdx*Dt;
+      //GPS导航坐标系下，正北、正东方向位置偏移与SINS估计量的差，单位cm
+      X_Delta=Earth_Frame_To_XYZE-Position_History[Xr][GPS_SINS_Delay_Cnt];
+      Y_Delta=Earth_Frame_To_XYZN-Position_History[Yr][GPS_SINS_Delay_Cnt];
+
+
+      Pos_Err_On_Accel.Rol=X_Delta*Cos_Yaw+Y_Delta*Sin_Yaw;//载体系Roll方向    X轴
+      Pos_Err_On_Accel.Pit=-X_Delta*Sin_Yaw+Y_Delta*Cos_Yaw;//载体系Pitch方向  Y轴
+
+      Accel_Correction_BF.Pit+=Pos_Err_On_Accel.Pit* K_ACC_XY*CNTLCYCLE;//在载体机头方向，加速度矫正量
+      Accel_Correction_BF.Rol+=Pos_Err_On_Accel.Rol* K_ACC_XY*CNTLCYCLE;//在载体横滚方向，加速度矫正量
+
+      Accel_Correction_EF.North=Accel_Correction_BF.Rol*Cos_Yaw+Accel_Correction_BF.Pit*Sin_Yaw;//将载体方向上加速度修正量，旋转至导航系北向  Y Axis
+      Accel_Correction_EF.East=Accel_Correction_BF.Rol*Sin_Yaw-Accel_Correction_BF.Pit*Cos_Yaw;//将载体方向上加速度修正量，旋转至导航系动向   X axis
+
+      acc_correction[Xr] += X_Delta*K_ACC_XY*CNTLCYCLE;//加速度矫正量
+      //acc_correction[Xr]  = Accel_Correction_EF.East;//加速度矫正量
+      vel_correction[Xr] += X_Delta* K_VEL_XY*CNTLCYCLE;//速度矫正量
+      pos_correction[Xr] += X_Delta* K_POS_XY*CNTLCYCLE;//位置矫正量
+
+      //acc_correction[Yr]  = Accel_Correction_EF.North;//加速度矫正量
+      acc_correction[Yr] += Y_Delta* K_ACC_XY*CNTLCYCLE;//加速度矫正量
+      vel_correction[Yr] += Y_Delta* K_VEL_XY*CNTLCYCLE;//速度矫正量
+      pos_correction[Yr] += Y_Delta* K_POS_XY*CNTLCYCLE;//位置矫正量
+
+      /*************************************************************/
+      //水平运动加速度计校正
+      X_KF_NAV[Xr][2]=accx+acc_correction[Xr];
+      //速度增量矫正后更新，用于更新位置
+      SpeedDealt[Xr]=X_KF_NAV[Xr][2]*CNTLCYCLE;
+      //原始位置更新
+      float OPositionx=posx+(X_KF_NAV[Xr][1]+0.5*SpeedDealt[Xr])*CNTLCYCLE;
+      //位置矫正后更新
+      X_KF_NAV[Xr][0]=OPositionx+pos_correction[Xr];
+      //原始速度更新
+      float OSpeedx=spdx+SpeedDealt[Xr];
+      //速度矫正后更新
+      X_KF_NAV[Xr][1]=OSpeedx+vel_correction[Xr];
+
+        /*************************************************************/
+      //水平运动加速度计校正
+      X_KF_NAV[Yr][2]=accy+acc_correction[Yr];
+      //速度增量矫正后更新，用于更新位置
+      SpeedDealt[Yr]=X_KF_NAV[Yr][2]*CNTLCYCLE;
+      //原始位置更新
+      float OPositiony=posx+(X_KF_NAV[Yr][1]+0.5*SpeedDealt[Yr])*CNTLCYCLE;
+      //位置矫正后更新
+      X_KF_NAV[Yr][0]=OPositiony+pos_correction[Yr];
+      //原始速度更新
+      float OSpeedy=spdy+SpeedDealt[Yr];
+      //速度矫正后更新
+      X_KF_NAV[Yr][1]=OSpeedy+vel_correction[Yr];
+}
+
+
+
+
+float SINS_Accel_Body[3];
+float SINS_Accel_Earth[2]={0,0};
+void  SINS_Prepare(void)
+{
+
+      float Sin_Pitch=sin(Pitch* 0.0173);
+      float Cos_Pitch=cos(Pitch* 0.0173);
+      float Sin_Roll=sin(-Roll* 0.0173);
+      float Cos_Roll=cos(-Roll* 0.0173);
+      float Sin_Yaw=sin(Yaw* 0.0173);
+      float Cos_Yaw=cos(Yaw* 0.0173);
+      float Acce_Control[3];
+			Acce_Control[0]=LPButterworth(imu_fushion.Acc.y,
+				&Butter_Buffer[0],&Butter_30HZ_Parameter_Acce);
+			Acce_Control[1]=LPButterworth(imu_fushion.Acc.x
+				,&Butter_Buffer[1],&Butter_30HZ_Parameter_Acce);
+			Acce_Control[2]=LPButterworth(imu_fushion.Acc.z
+				,&Butter_Buffer[2],&Butter_30HZ_Parameter_Acce);
+
+			float oAcceleration[3];
+      oAcceleration[2] =
+                            -Sin_Roll* Acce_Control[0]
+                              + Sin_Pitch *Cos_Roll * Acce_Control[1]
+                                 + Cos_Pitch * Cos_Roll *Acce_Control[2];
+
+      oAcceleration[Xr]=
+                         Cos_Yaw* Cos_Roll * Acce_Control[0]
+                              +(Sin_Pitch*Sin_Roll*Cos_Yaw-Cos_Pitch * Sin_Yaw) * Acce_Control[1]
+                                +(Sin_Pitch * Sin_Yaw+Cos_Pitch * Sin_Roll * Cos_Yaw)*Acce_Control[2];
+
+      oAcceleration[Yr]=
+                         Sin_Yaw* Cos_Roll * Acce_Control[0]
+                              +(Sin_Pitch * Sin_Roll * Sin_Yaw +Cos_Pitch * Cos_Yaw) * Acce_Control[1]
+                                + (Cos_Pitch * Sin_Roll * Sin_Yaw - Sin_Pitch * Cos_Yaw)*Acce_Control[2];
+																
+      oAcceleration[2]*=9.8/4096.;
+      oAcceleration[2]-=9.8;//减去重力加速度
+
+      oAcceleration[Xr]*=9.8/4096.;
+
+      oAcceleration[Yr]*=9.8/4096.;
+
+
+   /******************************************************************************/
+   //将无人机在导航坐标系下的沿着正东、正北方向的运动加速度旋转到当前航向的运动加速度:机头(俯仰)+横滚
+
+      SINS_Accel_Earth[Xr]=-oAcceleration[Xr];//沿地理坐标系，正东方向运动加速度,单位为CM
+      SINS_Accel_Earth[Yr]=oAcceleration[Yr];//沿地理坐标系，正北方向运动加速度,单位为CM
+
+
+      SINS_Accel_Body[Xr]=-(SINS_Accel_Earth[Xr]*Cos_Yaw+SINS_Accel_Earth[Yr]*Sin_Yaw);  //横滚正向运动加速度  X轴正向
+      SINS_Accel_Body[Yr]=-(-SINS_Accel_Earth[Xr]*Sin_Yaw+SINS_Accel_Earth[Yr]*Cos_Yaw); //机头正向运动加速度  Y轴正向
+      SINS_Accel_Body[Zr]= oAcceleration[2];
+}

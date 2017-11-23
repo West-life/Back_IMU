@@ -120,5 +120,9 @@ struct gps_sensor {
 	float quality;
 	u8 updated;
 };
+void Strapdown_INS_Horizontal(float posx,float spdx,float accx,float posy,float spdy,float accy,float Dt);
+void Filter_Horizontal(float posx,float spdx,float accx,float posy,float spdy,float accy,float Dt);
+extern float SINS_Accel_Body[3],SINS_Accel_Earth[2];
+void  SINS_Prepare(void);
 
 #endif

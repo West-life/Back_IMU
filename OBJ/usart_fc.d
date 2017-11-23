@@ -87,6 +87,7 @@
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\ublox.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_OLDX\nav_ukf.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\my_math.h
+..\obj\usart_fc.o: ..\HARDWARE\IIC\Ano_OF.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_OLDX\ukf_task.h
 ..\obj\usart_fc.o: ..\HARDWARE\UKF_BARO\ukf_baro.h
 ..\obj\usart_fc.o: ..\HARDWARE\IIC\sonar_avoid.h

@@ -13,6 +13,16 @@
 #define IIC_IMU1_SDA    PBout(6) //SDA	 
 #define READ_IMU1_SDA   PBin(6)  //输入SDA 
 
+
+#define SDA_IMU1_IN4()  {GPIOB->MODER&=~(3<<(9*2));GPIOB->MODER|=0<<9*2;}	//PB9输入模式
+#define SDA_IMU1_OUT4() {GPIOB->MODER&=~(3<<(9*2));GPIOB->MODER|=1<<9*2;} //PB9输出模式
+
+
+//IO操作函数	 
+#define IIC_IMU1_SCL4    PBout(8) //SCL
+#define IIC_IMU1_SDA4    PBout(9) //SDA	 
+#define READ_IMU1_SDA4  PBin(9)  //输入SDA 
+
 #else
 #define SDA_IMU1_IN()  {GPIOA->MODER&=~(3<<(7*2));GPIOA->MODER|=0<<7*2;}	//PB9输入模式
 #define SDA_IMU1_OUT() {GPIOA->MODER&=~(3<<(7*2));GPIOA->MODER|=1<<7*2;} //PB9输出模式

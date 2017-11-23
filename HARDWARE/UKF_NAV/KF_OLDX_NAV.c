@@ -172,10 +172,12 @@ static double rt_powd_snf(double u0, double u1)
  *                double T
  * Return Type  : void
  */
+#define I_Q 0
 void KF_OLDX_NAV(double X[3], double P[9], const double Z[3], double U, const
                  double A[9], const double B[3], const double H[9], double ga,
-                 double gwa, double g_pos, double g_spd, double T)
+                 double gwa, double g_pos, double g_spd, double T,const double X_delay[4])
 {
+	static char init;
   double c;
   double b_c;
   int i0;
@@ -183,19 +185,23 @@ void KF_OLDX_NAV(double X[3], double P[9], const double Z[3], double U, const
   int i1;
   double X_pre[3];
   double b_A[9];
-  double b_g_pos[9];
+  double b_g_pos[9]={0};
   int i2;
-  double b_H[9];
+  double b_H[9]={0};
   double P_pre[9];
   static const double dv0[3] = { 0.0, 0.0, 1.0E-5 };
-
+  float posDelta,spdDelta;	
   double b_P_pre[9];
   double c_H[3];
   double d_H[3];
   double e_H[3];
   double K[9];
   static const int I[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
-
+	if(!init){init=1;
+	KF_OLDX_NAV_initialize();
+	}
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/			
+  //Ô¤²â X(k|k-1)=A X(k-1|k-1)+B U(k)
   c = ga * ga;
   b_c = gwa * gwa;
   for (i0 = 0; i0 < 3; i0++) {
@@ -206,129 +212,173 @@ void KF_OLDX_NAV(double X[3], double P[9], const double Z[3], double U, const
 
     X_pre[i0] = d2 + B[i0] * U;
   }
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/			
+  //ÏÈÑéP P(k|k-1)=A P(k-1|k-1) A’+Q 
+	#if I_Q
+	       for (i0 = 0; i0 < 9; i0++) 
+			  b_g_pos[i0]  =1;
+	#else
+				b_g_pos[0] = 0.25 * rt_powd_snf(T, 4.0);
+				b_g_pos[3] = 0.5 * rt_powd_snf(T, 3.0);
+				b_g_pos[6] = 0.0;
+				b_g_pos[1] = 0.5 * rt_powd_snf(T, 3.0);
+				b_g_pos[4] = T * T;
+				b_g_pos[7] = 0.0;
+	#endif
+				for (i0 = 0; i0 < 3; i0++) {
+					for (i1 = 0; i1 < 3; i1++) {
+						b_A[i0 + 3 * i1] = 0.0;
+						for (i2 = 0; i2 < 3; i2++) {
+							b_A[i0 + 3 * i1] += A[i0 + 3 * i2] * P[i2 + 3 * i1];
+						}
+					}
 
-  b_g_pos[0] = 0.25 * rt_powd_snf(T, 4.0);
-  b_g_pos[3] = 0.5 * rt_powd_snf(T, 3.0);
-  b_g_pos[6] = 0.0;
-  b_g_pos[1] = 0.5 * rt_powd_snf(T, 3.0);
-  b_g_pos[4] = T * T;
-  b_g_pos[7] = 0.0;
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      b_A[i0 + 3 * i1] = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        b_A[i0 + 3 * i1] += A[i0 + 3 * i2] * P[i2 + 3 * i1];
-      }
-    }
+					b_g_pos[2 + 3 * i0] = 0.0;
+				}
+	#if I_Q
+				for (i0 = 0; i0 < 9; i0++) 
+			  b_H[i0] =1;
+	#else
+				b_H[0] = 0.1111111111111111 * rt_powd_snf(T, 6.0);
+				b_H[3] = 0.16666666666666666 * rt_powd_snf(T, 5.0);
+				b_H[6] = -0.33333333333333331 * rt_powd_snf(T, 4.0);
+				b_H[1] = 0.16666666666666666 * rt_powd_snf(T, 5.0);
+				b_H[4] = 0.25 * rt_powd_snf(T, 4.0);
+				b_H[7] = -0.5 * (T * T);
+				b_H[2] = -0.33333333333333331 * rt_powd_snf(T, 4.0);
+				b_H[5] = -0.5 * rt_powd_snf(T, 3.0);
+				b_H[8] = T * T;
+	#endif			
+				for (i0 = 0; i0 < 3; i0++) {
+					for (i1 = 0; i1 < 3; i1++) {
+						d2 = 0.0;
+						for (i2 = 0; i2 < 3; i2++) {
+							d2 += b_A[i0 + 3 * i2] * A[i1 + 3 * i2];
+						}
 
-    b_g_pos[2 + 3 * i0] = 0.0;
-  }
+						P_pre[i0 + 3 * i1] = d2 + (b_g_pos[i0 + 3 * i1] * c + b_H[i0 + 3 * i1] *
+							b_c);
+					}
+				}
+			 
+				b_g_pos[0] = g_pos + 1.0E-5;
+				b_g_pos[3] = 0.0;
+				b_g_pos[6] = 0.0;
+				b_g_pos[1] = 0.0;
+				b_g_pos[4] = g_spd + 1.0E-5;
+				b_g_pos[7] = 0.0;
+				for (i0 = 0; i0 < 3; i0++) {
+					for (i1 = 0; i1 < 3; i1++) {
+						b_H[i0 + 3 * i1] = 0.0;
+						for (i2 = 0; i2 < 3; i2++) {
+							b_H[i0 + 3 * i1] += H[i0 + 3 * i2] * P_pre[i2 + 3 * i1];
+						}
+					}
 
-  b_H[0] = 0.1111111111111111 * rt_powd_snf(T, 6.0);
-  b_H[3] = 0.16666666666666666 * rt_powd_snf(T, 5.0);
-  b_H[6] = -0.33333333333333331 * rt_powd_snf(T, 4.0);
-  b_H[1] = 0.16666666666666666 * rt_powd_snf(T, 5.0);
-  b_H[4] = 0.25 * rt_powd_snf(T, 4.0);
-  b_H[7] = -0.5 * (T * T);
-  b_H[2] = -0.33333333333333331 * rt_powd_snf(T, 4.0);
-  b_H[5] = -0.5 * rt_powd_snf(T, 3.0);
-  b_H[8] = T * T;
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      d2 = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        d2 += b_A[i0 + 3 * i2] * A[i1 + 3 * i2];
-      }
+					for (i1 = 0; i1 < 3; i1++) {
+						b_A[i0 + 3 * i1] = 0.0;
+						for (i2 = 0; i2 < 3; i2++) {
+							b_A[i0 + 3 * i1] += b_H[i0 + 3 * i2] * H[i1 + 3 * i2];
+						}
+					}
 
-      P_pre[i0 + 3 * i1] = d2 + (b_g_pos[i0 + 3 * i1] * c + b_H[i0 + 3 * i1] *
-        b_c);
-    }
-  }
+					b_g_pos[2 + 3 * i0] = dv0[i0];
+				}
 
-  b_g_pos[0] = g_pos + 1.0E-5;
-  b_g_pos[3] = 0.0;
-  b_g_pos[6] = 0.0;
-  b_g_pos[1] = 0.0;
-  b_g_pos[4] = g_spd + 1.0E-5;
-  b_g_pos[7] = 0.0;
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      b_H[i0 + 3 * i1] = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        b_H[i0 + 3 * i1] += H[i0 + 3 * i2] * P_pre[i2 + 3 * i1];
-      }
-    }
+				for (i0 = 0; i0 < 3; i0++) {
+					for (i1 = 0; i1 < 3; i1++) {
+						b_H[i1 + 3 * i0] = b_A[i1 + 3 * i0] + b_g_pos[i1 + 3 * i0];
+						b_P_pre[i0 + 3 * i1] = 0.0;
+						for (i2 = 0; i2 < 3; i2++) {
+							b_P_pre[i0 + 3 * i1] += P_pre[i0 + 3 * i2] * H[i1 + 3 * i2];
+						}
+					}
+				}
+	//Ã»ÓÐÆäËû´«¸ÐÆ÷Ê±Ö»×öÊ±¼ä¸üÐÂ  			
+	if(H[0]==0&&H[4]==0){		
+		for (i0 = 0; i0 < 9; i0++)
+		 P[i0]=P_pre[i0];
+   
+			for (i0 = 0; i0 < 3; i0++) 
+					X[i0] = X_pre[i0];
+  }else
+	{
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/				
+  //¼ÆËãkalmanÔöÒæ Kg(k)= P(k|k-1) H’ / (H P(k|k-1) H + R) 
+					inv(b_H, b_A);
+					for (i0 = 0; i0 < 3; i0++) {
+						for (i1 = 0; i1 < 3; i1++) {
+							K[i0 + 3 * i1] = 0.0;
+							for (i2 = 0; i2 < 3; i2++) {
+								K[i0 + 3 * i1] += b_P_pre[i0 + 3 * i2] * b_A[i2 + 3 * i1];
+							}
+						}
+					}
 
-    for (i1 = 0; i1 < 3; i1++) {
-      b_A[i0 + 3 * i1] = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        b_A[i0 + 3 * i1] += b_H[i0 + 3 * i2] * H[i1 + 3 * i2];
-      }
-    }
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/								
+  //×´Ì¬ÐÞÕý X(k|k)= X(k|k-1)+Kg(k) (Z(k)-H X(k|k-1)) 			
+			if(X_delay[3]==2){			
+			// calculate delta from current position
+			posDelta = X_pre[0] - X_delay[0];
+			spdDelta = X_pre[1] - X_delay[1];
+			// set current position state to historic data
+				if(H[0])
+				X_pre[0] = X_delay[0];
+				if(H[4])
+				X_pre[1] = X_delay[1];	
+			}			
+		
+			for (i0 = 0; i0 < 3; i0++) {
+						c_H[i0] = 0.0;
+						for (i1 = 0; i1 < 3; i1++) {
+							c_H[i0] += H[i0 + 3 * i1] * Z[i1];
+						}
+						d_H[i0] = 0.0;
+						for (i1 = 0; i1 < 3; i1++) {						
+							d_H[i0] += H[i0 + 3 * i1] * X_pre[i1];
+						}
+						e_H[i0] = c_H[i0] - d_H[i0];
+					}
+		
+				for (i0 = 0; i0 < 3; i0++) {
+					d2 = 0.0;
+					for (i1 = 0; i1 < 3; i1++) {
+						d2 += K[i0 + 3 * i1] * e_H[i1];
+					}
 
-    b_g_pos[2 + 3 * i0] = dv0[i0];
-  }
+					X[i0] = X_pre[i0] + d2;
+				}
+		// add the historic position delta back to the current state		
+				if(X_delay[3]==2){		
+					if(H[0])
+					X[0] += posDelta;
+					if(H[4])
+					X[1] += spdDelta;	
+				 } 
+				
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/				
+  //ºóÑéPÐÞÕý P(k|k)=(1-Kg(k))P(k|k-1) 
 
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      b_H[i1 + 3 * i0] = b_A[i1 + 3 * i0] + b_g_pos[i1 + 3 * i0];
-      b_P_pre[i0 + 3 * i1] = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        b_P_pre[i0 + 3 * i1] += P_pre[i0 + 3 * i2] * H[i1 + 3 * i2];
-      }
-    }
-  }
+					for (i0 = 0; i0 < 3; i0++) {
+						for (i1 = 0; i1 < 3; i1++) {
+							d2 = 0.0;
+							for (i2 = 0; i2 < 3; i2++) {
+								d2 += K[i0 + 3 * i2] * H[i2 + 3 * i1];
+							}
 
-  inv(b_H, b_A);
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      K[i0 + 3 * i1] = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        K[i0 + 3 * i1] += b_P_pre[i0 + 3 * i2] * b_A[i2 + 3 * i1];
-      }
-    }
+							b_A[i0 + 3 * i1] = (double)I[i0 + 3 * i1] - d2;
+						}
+					}
 
-    c_H[i0] = 0.0;
-    for (i1 = 0; i1 < 3; i1++) {
-      c_H[i0] += H[i0 + 3 * i1] * Z[i1];
-    }
-
-    d_H[i0] = 0.0;
-    for (i1 = 0; i1 < 3; i1++) {
-      d_H[i0] += H[i0 + 3 * i1] * X_pre[i1];
-    }
-
-    e_H[i0] = c_H[i0] - d_H[i0];
-  }
-
-  for (i0 = 0; i0 < 3; i0++) {
-    d2 = 0.0;
-    for (i1 = 0; i1 < 3; i1++) {
-      d2 += K[i0 + 3 * i1] * e_H[i1];
-    }
-
-    X[i0] = X_pre[i0] + d2;
-  }
-
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      d2 = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        d2 += K[i0 + 3 * i2] * H[i2 + 3 * i1];
-      }
-
-      b_A[i0 + 3 * i1] = (double)I[i0 + 3 * i1] - d2;
-    }
-  }
-
-  for (i0 = 0; i0 < 3; i0++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      P[i0 + 3 * i1] = 0.0;
-      for (i2 = 0; i2 < 3; i2++) {
-        P[i0 + 3 * i1] += b_A[i0 + 3 * i2] * P_pre[i2 + 3 * i1];
-      }
-    }
-  }
+					for (i0 = 0; i0 < 3; i0++) {
+						for (i1 = 0; i1 < 3; i1++) {
+							P[i0 + 3 * i1] = 0.0;
+							for (i2 = 0; i2 < 3; i2++) {
+								P[i0 + 3 * i1] += b_A[i0 + 3 * i2] * P_pre[i2 + 3 * i1];
+							}
+						}
+					}
+				}	
 }
 
 /*

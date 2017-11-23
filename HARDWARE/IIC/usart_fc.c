@@ -19,6 +19,7 @@
 #include "ublox.h"
 #include "flow.h"
 #include "nav_ukf.h"
+#include "Ano_OF.h"
 void Usart2_Init(u32 br_num)//--GOL-link
 {
 	USART_InitTypeDef USART_InitStructure;
@@ -185,7 +186,18 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 	 en_px4_mapper=*(data_buf+12);
    imu_feed_dog=*(data_buf+13);		
 	}
-  	
+  else  if(*(data_buf+2)==0x04)//
+  { m100.control_loss=0;
+		m100.control_connect=1;
+		imu_feed_dog=FC_CONNECT=1;
+		fc_loss_cnt=0;
+		module.fc=1;
+		m100.px4_tar_mode=*(data_buf+4);
+	  m100.control_spd[0]=(float)((int16_t)(*(data_buf+5)<<8)|*(data_buf+6))/1000.;
+		m100.control_spd[1]=(float)((int16_t)(*(data_buf+7)<<8)|*(data_buf+8))/1000.;
+		m100.control_spd[2]=(float)((int16_t)(*(data_buf+9)<<8)|*(data_buf+10))/1000.;
+		m100.control_yaw=(float)((int16_t)(*(data_buf+11)<<8)|*(data_buf+12))/100.;
+	}			
 }
  
 
@@ -877,8 +889,11 @@ switch(sel){
 	_temp = (vs16)( imu_fushion.Mag_Val.z);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	
+	#if USE_ANO_FLOW
+	_temp = ano_flow.h*1000;
+	#else
 	_temp = ultra_distance;
+	#endif
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	#if USE_M100_IMU
@@ -1190,6 +1205,9 @@ switch(sel){
 	#if SONAR_USE_FLOW
 	sys.sonar=1;
 	#endif
+	#if USE_ANO_FLOW
+	_temp = ano_flow.h*1000;
+	#else
 	#if SENSOR_FORM_PI_FLOW_SONAR_NOT
 	if(sys.sonar)
 	_temp = (vs16)(ALT_POS_SONAR3*1000);
@@ -1202,6 +1220,7 @@ switch(sel){
 	_temp = (vs16)(ALT_POS_SONAR3*1000);
 	else
 	_temp= 9000;
+	#endif
 	#endif
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -1227,16 +1246,24 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	//spd-----------------------------------------
+	#if USE_ANO_FLOW
+	_temp = ano_flow.spdx*1000;
+	#else
 	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.spdx*1000);
 	else
 	_temp = (vs16)( X_ukf[1]*1000);
+	#endif
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	#if USE_ANO_FLOW
+	_temp = ano_flow.spdy*1000;
+	#else
 	if(pi_flow.insert&&gpsx.pvt.PVT_fixtype==0&&module.flow==0)
 	_temp = (vs16)(	pi_flow.spdy*1000);
 	else
 	_temp = (vs16) (X_ukf[4]*1000);
+	#endif
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 
@@ -1302,6 +1329,89 @@ switch(sel){
 		sum += SendBuff2[i];
 	SendBuff2[nrf_uart_cnt++] = sum;
   break;	
+	
+	case SEND_PIX:
+	SendBuff2[nrf_uart_cnt++]=0xAA;
+	SendBuff2[nrf_uart_cnt++]=0xAF;
+	SendBuff2[nrf_uart_cnt++]=0x04;//功能字
+	SendBuff2[nrf_uart_cnt++]=0;//数据量
+	
+	_temp = (vs16)(m100.Pit*10);//Pitch;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Rol*10);//Roll;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Yaw*10);//Yaw;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	_temp = (vs16)(m100.H*1000);//altitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.H_Spd*1000);//height velocity;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs32)(m100.Lat);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((m100.Lat-(int)(m100.Lat))*1000000000);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+	
+	_temp = (vs32)(m100.Lon);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp32 = (vs32)((m100.Lon-(int)(m100.Lon))*1000000000);//latitude;
+	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
+
+	_temp = (vs16)(m100.Bat);//Bat;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+
+	_temp = (vs16)(m100.Rc_pit);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Rc_rol);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Rc_yaw);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Rc_thr);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Rc_mode);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.Rc_gear);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	_temp = (vs16)(m100.STATUS&&m100.cnt_m100_data_refresh&&m100.connect);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.GPS_STATUS);//GPS_S;
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.spd[0]*1000);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.spd[1]*1000);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(m100.spd[2]*1000);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
+	for( i=cnt_reg;i< nrf_uart_cnt;i++)
+		sum += SendBuff2[i];
+	SendBuff2[nrf_uart_cnt++] = sum;	
+	break;
 	default:break;
 }
 }
@@ -1310,6 +1420,9 @@ void GOL_LINK_TASK_DMA(void)//5ms
 {
 static u8 cnt[10];
 static u8 flag[10];
+if(m100.connect)
+data_per_uart4(SEND_PIX);	
+else
 data_per_uart4(SEND_ALL);	
 if(cnt[1]++>9){cnt[1]=0;
 sd_save_publish();	
@@ -1534,7 +1647,9 @@ static u8 state = 0;
 		#if FLOW_USE_P5A
 	  RX_FLOW_P5A(com_data);
 		#endif
-		
+		#if USE_ANO_FLOW
+		AnoOF_GetOneByte(com_data);
+		#endif
 		if(state==0&&com_data==0xAA)
 		{
 			state=1;
@@ -2179,14 +2294,16 @@ u8 Gps_data_get_VALNED(u8 in)
   { m100.rx_dt=Get_Cycle_T(GET_T_M100); 	
 		m100.loss_cnt=0;
 		m100.connect=1;
+	  if(*(data_buf+2)==0x01)//
+  { m100.loss_cnt=0;
+		m100.connect=1;
+		flag=!flag;
 	  m100.Pit=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/10.;
 		m100.Rol=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/10.;
-		m100.Yaw=-1*(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/10.;
-		float temp;
-		temp=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
-		if(temp!=0&&m100_h_off==0)
-			m100_h_off=temp;
-		m100.H=temp-m100_h_off;
+		m100.Yaw=To_180_degrees(1*(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/10.);
+		
+		m100.H=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
+		
 		if(m100.H!=m100_hr||m100_attr[0]!=m100.Pit||m100_attr[1]!=m100.Rol||m100_attr[2]!=m100.Yaw)
 		{m100.cnt_m100_data_refresh=0;
 		 m100.m100_data_refresh=1;
@@ -2196,7 +2313,7 @@ u8 Gps_data_get_VALNED(u8 in)
 		m100_attr[1]=m100.Rol;
 		m100_attr[2]=m100.Yaw;
 		
-		//m100.H_Spd=(float)((int16_t)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
+		m100.H_Spd=(float)((int16_t)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
 		zen=(*(data_buf+14)<<8)|*(data_buf+15);
 		xiao=(double)((u32)(*(data_buf+16)<<24)|(*(data_buf+17)<<16)|(*(data_buf+18)<<8)|*(data_buf+19))/1000000000.;
 		m100.Lat=zen+xiao;
@@ -2208,14 +2325,15 @@ u8 Gps_data_get_VALNED(u8 in)
 		m100.Rc_pit=(float)((int16_t)(*(data_buf+28)<<8)|*(data_buf+29));
 		m100.Rc_rol=(float)((int16_t)(*(data_buf+30)<<8)|*(data_buf+31));
 		m100.Rc_yaw=(float)((int16_t)(*(data_buf+32)<<8)|*(data_buf+33));
-		m100.Rc_thr=(float)((int16_t)(*(data_buf+34)<<8)|*(data_buf+45));
+		m100.Rc_thr=(float)((int16_t)(*(data_buf+34)<<8)|*(data_buf+35));
 		m100.Rc_mode=(float)((int16_t)(*(data_buf+36)<<8)|*(data_buf+37));
 		m100.Rc_gear=(float)((int16_t)(*(data_buf+38)<<8)|*(data_buf+39));
 		m100.STATUS=*(data_buf+40);		
 		m100.GPS_STATUS=*(data_buf+41);
 		m100.spd[0]=(float)((int16_t)(*(data_buf+42)<<8)|*(data_buf+43))/1000.;
 		m100.spd[1]=(float)((int16_t)(*(data_buf+44)<<8)|*(data_buf+45))/1000.;
-		m100.spd[2]=m100.H_Spd=(float)((int16_t)(*(data_buf+46)<<8)|*(data_buf+47))/1000.;
+		m100.spd[2]=(float)((int16_t)(*(data_buf+46)<<8)|*(data_buf+47))/1000.;
+	}
 	}	
   
 }
@@ -2289,7 +2407,7 @@ void USART1_IRQHandler(void)//-------------------GPS
 		{
 			RxState11 = 0;
 			RxBuffer11[4+_data_cnt11]=com_data;
-			//Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
+			Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
 		}
 		else
 			RxState11 = 0;
@@ -3869,5 +3987,36 @@ u8 SendBuff4[SEND_BUF_SIZE4];	//发送数据缓冲区
  FLOW_RAD flow_rad;//陀螺仪数据
 
 
+void UsartSend_M100_px4(uint8_t ch)
+{
+
+while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+USART_SendData(USART1, ch);  
+}
+
+void m100_contrl_px4(float x,float y,float z,float yaw,u8 mode)
+{
+	vs16 _temp;
+	UsartSend_M100_px4(0xFA);
+	UsartSend_M100_px4(0xFB);
+	UsartSend_M100_px4(0x04);
+	UsartSend_M100_px4(0x01);
+
+	UsartSend_M100_px4(mode);	
+	_temp=x*1000;
+	UsartSend_M100_px4(BYTE1(_temp));
+	UsartSend_M100_px4(BYTE0(_temp));
+	_temp=y*1000;
+	UsartSend_M100_px4(BYTE1(_temp));
+	UsartSend_M100_px4(BYTE0(_temp));
+	_temp=z*1000;
+	UsartSend_M100_px4(BYTE1(_temp));
+	UsartSend_M100_px4(BYTE0(_temp));
+	_temp=yaw*100;
+	UsartSend_M100_px4(BYTE1(_temp));
+	UsartSend_M100_px4(BYTE0(_temp));
+
+	UsartSend_M100_px4(0xFE);	
+}
 /******************* (C) COPYRIGHT 2014 ANO TECH *****END OF FILE************/
 

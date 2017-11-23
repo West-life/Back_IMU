@@ -307,6 +307,7 @@ void data_per_uart4(u8 sel);
 #define SEND_IMU_MEMS 7
 #define SEND_ALL 9
 #define SEND_SD 10
+#define SEND_PIX 11
 extern float sonar_fc,baroAlt_fc;
 extern float k_flow_devide;
 extern float flow_module_offset_y,flow_module_offset_x,flow_module_set_yaw;//光流安装位移 单位米
@@ -393,10 +394,16 @@ Flight status val	status name
  u16 loss_cnt,cnt_m100_data_refresh;
  float rx_dt;
  float spd[3];
+	
+ u8 control_connect;
+ u16 control_loss;
+ u8 px4_tar_mode;
+ float control_spd[3];
+ float control_yaw;
 }M100;
 extern M100 m100;
 void UsartSend_M100(uint8_t ch);
-
+void m100_contrl_px4(float x,float y,float z,float yaw,u8 mode);
 void Ublox_PVT_Mode(void);
 
 extern u8 en_px4_mapper,imu_feed_dog;
