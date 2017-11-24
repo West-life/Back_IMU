@@ -161,7 +161,7 @@ typedef struct
 }_fusion_st;
 extern _fusion_st sonar_fusion;
 extern _fusion_st baro_fusion;
-
+extern _height_st ultra;
 typedef struct
 {
 	float dis_deadzone;

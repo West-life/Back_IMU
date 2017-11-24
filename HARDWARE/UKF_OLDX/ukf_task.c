@@ -12,6 +12,8 @@
 #include "matlib.h"
 #define DELAY_GPS 0.1//s
 u8 QR_DELAY=20;
+u8 GPS_DELAY_P=20;
+u8 GPS_DELAY_V=10;
 u8 FLOW_DELAY=2;
 u8 DELAY_FIX_SEL=1;
 float k_acc_f=0.86;
@@ -497,6 +499,40 @@ if(kf_data_sel_temp==1){
 	 
 	 //Accy=SINS_Accel_Earth[Yr];Accx=SINS_Accel_Earth[Xr];
 	 //Accy=accNorth*0.5+0.5*SINS_Accel_Earth[Yr];Accx=accEast*0.5+0.5*SINS_Accel_Earth[Xr];
+	 
+	 //GPS init
+	 #if USE_M100_IMU
+	 if(m100.connect&&m100.m100_data_refresh==1&&m100.Yaw!=0)
+	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
+	 #else
+	 if(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0)
+	 {CalcEarthRadius(gpsx.pvt.PVT_latitude); gps_data_vaild=1;}
+	 #endif
+
+	 CalcGlobalDistance(gpsx.pvt.PVT_latitude,gpsx.pvt.PVT_longitude); 
+	 #if !USE_M100_IMU
+	 velEast=LIMIT(gpsx.pvt.PVT_East_speed,-6.3,6.3);
+	 velNorth=LIMIT(gpsx.pvt.PVT_North_speed,-6.3,6.3);
+	 Global_GPS_Sensor.NED_Pos[Zr]=gpsx.pvt.PVT_height-gps_h_off;
+	 #else
+	 velEast=LIMIT(m100.spd[1],-3,3);
+   velNorth=LIMIT(m100.spd[0],-3,3);
+   Global_GPS_Sensor.NED_Pos[Zr]=(float)(gpsx.altitude-gps_h_off)/10.;	 
+	 #endif
+	 Global_GPS_Sensor.NED_Vel[Zr]=gpsx.pvt.PVT_Down_speed;
+	 
+   if((module.pi_flow&&pi_flow.insert)&&
+		!(gpsx.pvt.PVT_numsv>=5&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
+   ;
+	 else{
+   Global_GPS_Sensor.NED_Pos[Yr]=Posy=posNorth;//1-> west north
+	 Global_GPS_Sensor.NED_Vel[Yr]=Sdpy=velNorth;
+	 Global_GPS_Sensor.NED_Pos[Xr]=Posx=posEast;//0->  east
+	 Global_GPS_Sensor.NED_Vel[Xr]=Sdpx=velEast;
+	 }	 
+	 Global_GPS_Sensor.NED_Acc[Yr]=Accy;
+	 Global_GPS_Sensor.NED_Acc[Xr]=Accx;
+	 
 	 //Qr first check initial
 	 static u8 state_init_flow_pos;
 	 switch(state_init_flow_pos)
@@ -540,11 +576,30 @@ if(kf_data_sel_temp==1){
 		acc_buf[Xr][0]=Accx;
 		acc_buf[Yr][0]=Accy;
 	 //kalman filter
-	 	
+	  u8 sensor_sel=0;
+	  u8 delay_sel[2]={0};	
+	  if(gps_update==1)//室外
+		{
+		H[0]=H[4]=1; 	
+		gps_update=0;
+		sensor_sel=1;	
+		delay_sel[0]=GPS_DELAY_P;delay_sel[1]=GPS_DELAY_V;		
+		}	
+		else if(flow_update==1)//室内
+		{
+		H[4]=1; 	
+		flow_update=0;
+		sensor_sel=2;	
+		delay_sel[0]=QR_DELAY;delay_sel[1]=FLOW_DELAY;			
+		}else
+		H[4]=0;
+		
+	
+   		
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
-	 double Zx_delay[4]={pos_buf[Xr][QR_DELAY],spd_buf[Xr][FLOW_DELAY],acc_bufs[Xr][FLOW_DELAY],DELAY_FIX_SEL};
-	 double Zy_delay[4]={pos_buf[Yr][QR_DELAY],spd_buf[Yr][FLOW_DELAY],acc_bufs[Yr][FLOW_DELAY],DELAY_FIX_SEL};
+	 double Zx_delay[4]={pos_buf[Xr][delay_sel[0]],spd_buf[Xr][delay_sel[1]],acc_bufs[Xr][delay_sel[1]],DELAY_FIX_SEL};
+	 double Zy_delay[4]={pos_buf[Yr][delay_sel[0]],spd_buf[Yr][delay_sel[1]],acc_bufs[Yr][delay_sel[1]],DELAY_FIX_SEL};
 	 double Zx_fix[3]={Posx,Sdpx,1};
 	 double Zy_fix[3]={Posy,Sdpy,1};
 	 float posDelta[2],spdDelta[2];
@@ -552,32 +607,29 @@ if(kf_data_sel_temp==1){
 		Zx_delay[3]=Zy_delay[3]=Zy_fix[2]=Zx_fix[2]=0;
 	
 	 switch(DELAY_FIX_SEL){
-		 case 0://fail
-	 Zx_fix[0]=Posx+(X_KF_NAV[Xr][0]-pos_buf[Xr][FLOW_DELAY])*Zx_fix[2];
-	 Zx_fix[1]=Sdpx+(X_KF_NAV[Xr][1]-spd_buf[Xr][FLOW_DELAY])*Zx_fix[2];
-	 Zy_fix[0]=Posy+(X_KF_NAV[Yr][0]-pos_buf[Yr][FLOW_DELAY])*Zy_fix[2];
-	 Zy_fix[1]=Sdpy+(X_KF_NAV[Yr][1]-spd_buf[Yr][FLOW_DELAY])*Zy_fix[2];
-	 break;
 		 case 1://WT
-   Zx_fix[0]=Posx+(spd_buf[Xr][FLOW_DELAY]*FLOW_DELAY*T+
-		 (acc_buf[Xr][FLOW_DELAY]-acc_bufs[Xr][FLOW_DELAY])*FLOW_DELAY*T*FLOW_DELAY*T)*Zx_fix[2];
-	 Zx_fix[1]=Sdpx+((acc_buf[Xr][FLOW_DELAY]-acc_bufs[Xr][FLOW_DELAY])*FLOW_DELAY*T)*Zx_fix[2];
-	 Zy_fix[0]=Posy+(spd_buf[Yr][FLOW_DELAY]*FLOW_DELAY*T+
-		 (acc_buf[Yr][FLOW_DELAY]-acc_bufs[Yr][FLOW_DELAY])*FLOW_DELAY*T*FLOW_DELAY*T)*Zy_fix[2];
-	 Zy_fix[1]=Sdpy+((acc_buf[Yr][FLOW_DELAY]-acc_bufs[Yr][FLOW_DELAY])*FLOW_DELAY*T)*Zy_fix[2];
+   Zx_fix[0]=Posx+(spd_buf[Xr][delay_sel[0]]*delay_sel[0]*T+
+		 (acc_buf[Xr][delay_sel[0]]-acc_bufs[Xr][delay_sel[0]])*delay_sel[0]*T*delay_sel[0]*T)*Zx_fix[2];
+	 Zx_fix[1]=Sdpx+((acc_buf[Xr][delay_sel[1]]-acc_bufs[Xr][delay_sel[1]])*delay_sel[1]*T)*Zx_fix[2];
+		 
+	 Zy_fix[0]=Posy+(spd_buf[Yr][delay_sel[0]]*delay_sel[0]*T+
+		 (acc_buf[Yr][delay_sel[0]]-acc_bufs[Yr][delay_sel[0]])*delay_sel[0]*T*delay_sel[0]*T)*Zy_fix[2];
+	 Zy_fix[1]=Sdpy+((acc_buf[Yr][delay_sel[1]]-acc_bufs[Yr][delay_sel[1]])*delay_sel[1]*T)*Zy_fix[2];
 		 break;
 	 }
 	  //Filter_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
 	  //Strapdown_INS_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
-		if(flow_update==1)//更新
-		{
-		H[4]=1; 	
-		flow_update=0;
-		}else
-		H[4]=0;
-		//H[4]=1;
-	 KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy_fix,  Accy*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T ,Zy_delay);
-	 KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx_fix,  Accx*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos_flow,  g_spd_flow,  T ,Zx_delay);
+	 float gps_wqv=gpsx.ubm.sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_VEL_M_N;
+	 float gps_wqp=gpsx.ubm.hAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_POS_M_N;
+	 float g_spd,g_pos;
+	 float GPS_DOP[2]={gpsx.pvt.pDOP,gpsx.pvt.vDOP};
+   switch(sensor_sel){
+		 case 1:g_spd=g_spd_gps+gps_wqv;g_pos=g_pos_gps+gps_wqp;break;
+     case 2:g_spd=g_spd_flow;g_pos=g_pos_flow;break;
+		 default:g_spd=g_spd_flow;g_pos=g_pos_flow;break; 
+	 }		 
+	 KF_OLDX_NAV( X_KF_NAV[1],  P_KF_NAV[1],  Zy_fix,  Accy*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos,  g_spd,  T ,Zy_delay);
+	 KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx_fix,  Accx*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos,  g_spd,  T ,Zx_delay);
   
 	 X_ukf[0]=X_KF_NAV[0][0];//East pos
 	 //X_ukf[1]=X_KF_NAV[0][1];//East vel

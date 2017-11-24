@@ -235,9 +235,15 @@ void LIS3MDL_read(u8 fast)
 	IIC_IMU1readBytes(LIS3MDL_IIC_ID, OUT_Z_L, 1,buffer+5);
 	
   // combine high and low bytes
+	#if USE_VER_5
+	lis3mdl.Mag_Adc.x = -(int16_t)(buffer[0] << 8 | buffer[1]);
+  lis3mdl.Mag_Adc.y = -(int16_t)(buffer[2] << 8 | buffer[3]);
+  lis3mdl.Mag_Adc.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#else
   lis3mdl.Mag_Adc.x = (int16_t)(buffer[0] << 8 | buffer[1]);
   lis3mdl.Mag_Adc.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Mag_Adc.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#endif
 	#endif
 	
 //	#if USE_VER_4
@@ -275,9 +281,15 @@ void LSM6_readAcc(u8 fast)
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTZ_H_XL, 1,buffer+4);
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTZ_L_XL, 1,buffer+5);
   // combine high and low bytes
+	#if USE_VER_5
+	lis3mdl.Acc_I16.x = -(int16_t)(buffer[0] << 8 | buffer[1]);
+  lis3mdl.Acc_I16.y = -(int16_t)(buffer[2] << 8 | buffer[3]);
+  lis3mdl.Acc_I16.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#else
   lis3mdl.Acc_I16.x = (int16_t)(buffer[0] << 8 | buffer[1]);
   lis3mdl.Acc_I16.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Acc_I16.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#endif
 	#endif
 }
 
@@ -300,9 +312,15 @@ void LSM6_readGyro(u8 fast)
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTZ_H_G, 1,buffer+4);
 	IIC_IMU1readBytes(DS33_IIC_ID, OUTZ_L_G, 1,buffer+5);
   // combine high and low bytes
+	#if USE_VER_5
+	lis3mdl.Gyro_I16.x = -(int16_t)(buffer[0] << 8 | buffer[1]);
+  lis3mdl.Gyro_I16.y = -(int16_t)(buffer[2] << 8 | buffer[3]);
+  lis3mdl.Gyro_I16.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#else
   lis3mdl.Gyro_I16.x = (int16_t)(buffer[0] << 8 | buffer[1]);
   lis3mdl.Gyro_I16.y = (int16_t)(buffer[2] << 8 | buffer[3]);
   lis3mdl.Gyro_I16.z = (int16_t)(buffer[4] << 8 | buffer[5]);
+	#endif
 	#endif
 }
 

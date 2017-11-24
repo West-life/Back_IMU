@@ -618,24 +618,9 @@
           <GroupName>HARDWARE</GroupName>
           <Files>
             <File>
-              <FileName>iic_fc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_fc.c</FilePath>
-            </File>
-            <File>
               <FileName>iic1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\iic1.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic_imu1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_imu1.c</FilePath>
-            </File>
-            <File>
-              <FileName>iic_soft.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\iic_soft.c</FilePath>
             </File>
             <File>
               <FileName>led_fc.c</FileName>
@@ -708,11 +693,6 @@
               <FilePath>..\HARDWARE\IIC\mpu6050.c</FilePath>
             </File>
             <File>
-              <FileName>ms5611_2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\ms5611_2.c</FilePath>
-            </File>
-            <File>
               <FileName>fliter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\fliter.c</FilePath>
@@ -728,25 +708,20 @@
               <FilePath>..\HARDWARE\IIC\hml_sample.c</FilePath>
             </File>
             <File>
-              <FileName>cycle_cal_oldx.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\IIC\cycle_cal_oldx.lib</FilePath>
-            </File>
-            <File>
               <FileName>flow.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
+            </File>
+            <File>
+              <FileName>cycle_cal_oldx.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\cycle_cal_oldx.lib</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>MATH&amp;FUSION</GroupName>
           <Files>
-            <File>
-              <FileName>matlib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\matlib.c</FilePath>
-            </File>
             <File>
               <FileName>FastMath.c</FileName>
               <FileType>1</FileType>

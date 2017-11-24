@@ -21,7 +21,7 @@
 void IIC_IMU1_Init(void)
 {			
  GPIO_InitTypeDef  GPIO_InitStructure;
-  #if USE_VER_4
+  #if USE_VER_5
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);//使能GPIOB时钟
 
   //GPIOB8,B9初始化设置
@@ -54,13 +54,13 @@ void IIC_IMU1_Init(void)
 *******************************************************************************/
 void IIC_IMU1_Start(void)
 {
-	#if USE_VER_4
+	#if USE_VER_5
 		SDA_IMU1_OUT4();     //sda线输出
 	IIC_IMU1_SDA4=1;	  	  
 	IIC_IMU1_SCL4=1;
-	Delay_us_IMU14(4);
+	Delay_us_IMU1(4);
  	IIC_IMU1_SDA4=0;//START:when CLK is high,DATA change form high to low 
-	Delay_us_IMU14(4);
+	Delay_us_IMU1(4);
 	IIC_IMU1_SCL4=0;//钳住I2C总线，准备发送或接收数据 
 	#else
 	SDA_IMU1_OUT();     //sda线输出
@@ -79,14 +79,14 @@ void IIC_IMU1_Start(void)
 *******************************************************************************/	  
 void IIC_IMU1_Stop(void)
 {
-		#if USE_VER_4
+		#if USE_VER_5
 	SDA_IMU1_OUT4();//sda线输出
 	IIC_IMU1_SCL4=0;
 	IIC_IMU1_SDA4=0;//STOP:when CLK is high DATA change form low to high
- 	Delay_us_IMU14(4);
+ 	Delay_us_IMU1(4);
 	IIC_IMU1_SCL4=1; 
 	IIC_IMU1_SDA4=1;//发送I2C总线结束信号
-	Delay_us_IMU14(4);				
+	Delay_us_IMU1(4);				
 	#else
 	SDA_IMU1_OUT();//sda线输出
 	IIC_IMU1_SCL=0;
@@ -107,7 +107,7 @@ void IIC_IMU1_Stop(void)
 u8 IIC_IMU1_Wait_Ack(void)
 {
 	u8 ucErrTime=0;
-		#if USE_VER_4
+		#if USE_VER_5
 	SDA_IMU1_IN4();      //SDA设置为输入  
 	IIC_IMU1_SDA4=1;Delay_us_IMU1(1);	   
 	IIC_IMU1_SCL4=1;Delay_us_IMU1(1);	 
@@ -147,7 +147,7 @@ u8 IIC_IMU1_Wait_Ack(void)
 *******************************************************************************/
 void IIC_IMU1_Ack(void)
 {
-		#if USE_VER_4
+		#if USE_VER_5
 	IIC_IMU1_SCL4=0;
 	SDA_IMU1_OUT4();
 	IIC_IMU1_SDA4=0;
@@ -172,7 +172,7 @@ void IIC_IMU1_Ack(void)
 *******************************************************************************/	    
 void IIC_IMU1_NAck(void)
 {
-		#if USE_VER_4
+		#if USE_VER_5
 	IIC_IMU1_SCL4=0;
 	SDA_IMU1_OUT4();
 	IIC_IMU1_SDA4=1;
@@ -198,7 +198,7 @@ void IIC_IMU1_NAck(void)
 void IIC_IMU1_Send_Byte(u8 txd)
 {                        
     u8 t;  
-	#if USE_VER_4
+	#if USE_VER_5
 	SDA_IMU1_OUT4(); 	    
     IIC_IMU1_SCL4=0;//拉低时钟开始数据传输
     for(t=0;t<8;t++)
@@ -234,7 +234,7 @@ void IIC_IMU1_Send_Byte(u8 txd)
 u8 IIC_IMU1_Read_Byte(unsigned char ack)
 {
 	unsigned char i,receive=0;
-		#if USE_VER_4
+		#if USE_VER_5
 		SDA_IMU1_IN4();//SDA设置为输入
     for(i=0;i<8;i++ )
 	{

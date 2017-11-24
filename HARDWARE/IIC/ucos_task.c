@@ -58,21 +58,6 @@ void inner_task(void *pdata)
 		cnt_time[1]++;
 							//获取内环准确的执行周期
 	if(inner_loop_time_time<0.000002)inner_loop_time_time=0.005;
-//	#if IMU_UPDATE	
-//	if(cnt5++>0)	
-//	#endif 
-//	{cnt5=0;
-//		if(mpu6050.good)
-//		MPU6050_Read(); 															//读取mpu6轴传感器
-//  if(cnt++>=3){cnt=0;
-//		if(mpu6050.good)
-//	  ANO_AK8975_Read();//75hz	
-//	}			//获取电子罗盘数据	
-//  if(cnt1++>=2){cnt1=0;
-//		if(mpu6050.good)
-//	MS5611_ThreadNew();//100hz
-//	}
-//  }
 	
 	#if IMU_UPDATE	
 	LSM6_readAcc(0);
@@ -82,8 +67,9 @@ void inner_task(void *pdata)
 	}
 	LIS_Data_Prepare(inner_loop_time_time)	;
 	if(cnt3++>=5){cnt3=0;
-	//if(!mpu6050.good)
-	//LP_readbmp(0);//25hz
+	#if USE_VER_5
+	LP_readbmp(0);//25hz
+	#endif
 	}
 	#endif
 	MPU6050_Data_Prepare( inner_loop_time_time );			//mpu6轴传感器数据处理
@@ -562,7 +548,7 @@ void TIM3_IRQHandler(void)
 							MYDMA_Enable(DMA1_Stream6,nrf_uart_cnt+2);     //开始一次DMA传输！	
 								}							
 					#else
-								 GOL_LINK_TASK();
+							GOL_LINK_TASK();
 					#endif
 	
 	debug_pi_flow[0]=0;  
