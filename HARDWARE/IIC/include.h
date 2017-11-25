@@ -33,7 +33,7 @@
 //================传感器===================
 #define IMU_UPDATE 1
 #define NEW_IMU 1  //1使用LSD IMU
-#define USE_VER_5 1
+#define USE_VER_5 0
 #define USE_VER_4 0
 #if USE_VER_4
 #define USE_VER_3 1

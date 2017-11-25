@@ -62,6 +62,7 @@
 "..\obj\nav_ukf.o"
 "..\obj\imu.o"
 "..\obj\imu_m.o"
+"..\obj\oldx_ekf_imu.o"
 "..\obj\ukf_task.o"
 "..\obj\alt_kf.o"
 --strict --scatter "..\OBJ\UCOSII-3.sct"

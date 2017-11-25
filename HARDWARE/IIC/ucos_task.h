@@ -49,7 +49,7 @@ void inner_task(void *pdata);
 
 //------------------------OUTER解算线程
 //设置任务堆栈大小
-#define OUTER_STK_SIZE  					64*4
+#define OUTER_STK_SIZE  					64*4*6
 //任务堆栈	
 extern OS_STK OUTER_TASK_STK[OUTER_STK_SIZE];
 //任务函数
@@ -57,7 +57,7 @@ void outer_task(void *pdata);
 
 //------------------------EKF解算线程
 //设置任务堆栈大小
-#define EKF_STK_SIZE  					64*9*9*2
+#define EKF_STK_SIZE  					64*9*9
 //任务堆栈	
 extern OS_STK EKF_TASK_STK[EKF_STK_SIZE];
 //任务函数

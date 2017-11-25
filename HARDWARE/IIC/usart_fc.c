@@ -2390,6 +2390,9 @@ u8 Gps_data_get_VALNED(u8 in)
 		m100.Rc_thr=(float)((int16_t)(*(data_buf+36)<<8)|*(data_buf+37));//thr
 		m100.Rc_pit=(float)((int16_t)(*(data_buf+38)<<8)|*(data_buf+39));//pit
 		m100.STATUS=*(data_buf+40);		
+		if(m100.Lat!=0&&m100.Lon!=0)
+		m100.GPS_STATUS=3;
+    else		
 		m100.GPS_STATUS=*(data_buf+41);
 		m100.spd[0]=(float)((int16_t)(*(data_buf+42)<<8)|*(data_buf+43))/1000.;
 		m100.spd[1]=(float)((int16_t)(*(data_buf+44)<<8)|*(data_buf+45))/1000.;

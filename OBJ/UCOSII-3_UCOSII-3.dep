@@ -1,7 +1,7 @@
 Dependencies for Project 'UCOSII-3', Target 'UCOSII-3': (DO NOT MODIFY !)
 F (..\HARDWARE\IIC\datasheet.txt)(0x59844A94)()
-F (..\HARDWARE\IIC\ucos_task.c)(0x5A1789DD)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\ucos_task.o --omf_browse ..\obj\ucos_task.crf --depend ..\obj\ucos_task.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+F (..\HARDWARE\IIC\ucos_task.c)(0x5A18F534)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\ucos_task.o --omf_browse ..\obj\ucos_task.crf --depend ..\obj\ucos_task.d)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -82,7 +82,7 @@ I (..\UCOSII\CORE\ucos_ii.h)(0x59844A94)
 I (..\UCOSII\CONFIG\includes.h)(0x59844A94)
 I (..\UCOSII\PORT\os_cpu.h)(0x59844A94)
 I (..\UCOSII\CONFIG\os_cfg.h)(0x59844A94)
-I (..\HARDWARE\IIC\ucos_task.h)(0x59A77C5A)
+I (..\HARDWARE\IIC\ucos_task.h)(0x5A18CE94)
 I (..\HARDWARE\IIC\eso.h)(0x59844A94)
 I (..\HARDWARE\IIC\neuron_pid.h)(0x59844A94)
 I (..\HARDWARE\IIC\sonar_avoid.h)(0x59844A94)
@@ -98,12 +98,15 @@ I (..\HARDWARE\IIC\LIS3MDL.h)(0x59B7A65D)
 I (..\HARDWARE\IIC\imu_oldx.h)(0x59844A94)
 I (..\HARDWARE\GPS\m100.h)(0x59844A94)
 I (..\HARDWARE\UKF_OLDX\nav_ukf.h)(0x59ACFB29)
+I (..\HARDWARE\IIC\oldx_ekf_imu.h)(0x5A18CE3B)
+I (..\HARDWARE\IIC\rtwtypes.h)(0x59844A94)
+I (..\HARDWARE\IIC\oldx_ekf_imu_types.h)(0x5A18352A)
 I (..\HARDWARE\IIC\LSM303.h)(0x59844A94)
 I (..\HARDWARE\IIC\FastMath.h)(0x59844A94)
 I (..\HARDWARE\IIC\Double.h)(0x59844A94)
 I (..\HARDWARE\IIC\Quaternion.h)(0x59844A94)
 F (.\main.c)(0x5A177246)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -184,7 +187,7 @@ I (..\UCOSII\CORE\ucos_ii.h)(0x59844A94)
 I (..\UCOSII\CONFIG\includes.h)(0x59844A94)
 I (..\UCOSII\PORT\os_cpu.h)(0x59844A94)
 I (..\UCOSII\CONFIG\os_cfg.h)(0x59844A94)
-I (..\HARDWARE\IIC\ucos_task.h)(0x59A77C5A)
+I (..\HARDWARE\IIC\ucos_task.h)(0x5A18CE94)
 I (..\HARDWARE\IIC\dog.h)(0x59844A94)
 I (..\HARDWARE\UKF_OLDX\ukf_task.h)(0x5A141413)
 I (..\HARDWARE\IIC\LSM303.h)(0x59844A94)
@@ -192,7 +195,7 @@ I (..\HARDWARE\IIC\Soft_I2C_PX4.h)(0x59844A94)
 I (..\HARDWARE\IIC\LIS3MDL.h)(0x59B7A65D)
 I (..\HARDWARE\UKF_OLDX\nav_ukf.h)(0x59ACFB29)
 F (..\HARDWARE\IIC\error.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\error.o --omf_browse ..\obj\error.crf --depend ..\obj\error.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -263,7 +266,7 @@ I (d:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x56FE42DE)
 I (..\HARDWARE\IIC\arm_math_m.h)(0x59844A94)
 I (..\HARDWARE\IIC\filter.h)(0x5A14120A)
 F (..\UCOSII\CONFIG\os_cfg.h)(0x59844A94)()
-F (..\HARDWARE\IIC\include.h)(0x5A178DDC)()
+F (..\HARDWARE\IIC\include.h)(0x5A18F534)()
 F (..\HARDWARE\UKF_OLDX\rt_nonfinite.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\rt_nonfinite.o --omf_browse ..\obj\rt_nonfinite.crf --depend ..\obj\rt_nonfinite.d)
 I (..\HARDWARE\UKF_OLDX\rt_nonfinite.h)(0x59844A94)
 I (d:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x56FE42DE)
@@ -1448,7 +1451,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
-F (..\HARDWARE\IIC\iic1.c)(0x5A1771DF)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\iic1.o --omf_browse ..\obj\iic1.crf --depend ..\obj\iic1.d)
+F (..\HARDWARE\IIC\iic1.c)(0x5A191BE6)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\iic1.o --omf_browse ..\obj\iic1.crf --depend ..\obj\iic1.d)
 I (..\HARDWARE\IIC\iic2.h)(0x5A16B619)
 I (..\USER\stm32f4xx.h)(0x59844A94)
 I (..\CORE\core_cm4.h)(0x59844A94)
@@ -1484,7 +1487,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -1553,7 +1556,7 @@ I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
 I (d:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
 I (..\HARDWARE\IIC\led_fc.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -1584,7 +1587,7 @@ I (..\HARDWARE\IIC\dma.h)(0x59844A94)
 I (..\HARDWARE\IIC\hml5833l.h)(0x59844A94)
 I (d:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
 F (..\HARDWARE\IIC\flash.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\flash.o --omf_browse ..\obj\flash.crf --depend ..\obj\flash.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -1692,7 +1695,7 @@ I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
 I (..\SYSTEM\delay\delay.h)(0x59844A94)
 I (..\SYSTEM\usart\usart.h)(0x59844A94)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
 I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
@@ -1757,7 +1760,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -1897,7 +1900,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -1929,7 +1932,7 @@ I (..\HARDWARE\IIC\flash.h)(0x59844A94)
 I (..\HARDWARE\IIC\dma.h)(0x59844A94)
 F (..\HARDWARE\GPS\gps.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\gps.o --omf_browse ..\obj\gps.crf --depend ..\obj\gps.d)
 I (..\HARDWARE\GPS\gps.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -1994,7 +1997,7 @@ I (..\HARDWARE\IIC\height_ctrl.h)(0x59844A94)
 I (..\HARDWARE\IIC\flash.h)(0x59844A94)
 I (..\HARDWARE\IIC\dma.h)(0x59844A94)
 I (..\SYSTEM\usart\usart.h)(0x59844A94)
-F (..\HARDWARE\IIC\usart_fc.c)(0x5A1789DD)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\usart_fc.o --omf_browse ..\obj\usart_fc.crf --depend ..\obj\usart_fc.d)
+F (..\HARDWARE\IIC\usart_fc.c)(0x5A18D1EB)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\usart_fc.o --omf_browse ..\obj\usart_fc.crf --depend ..\obj\usart_fc.d)
 I (..\HARDWARE\IIC\LIS3MDL.h)(0x59B7A65D)
 I (..\HARDWARE\IIC\parameter.h)(0x59844A94)
 I (..\USER\stm32f4xx.h)(0x59844A94)
@@ -2032,7 +2035,7 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
 I (d:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2083,7 +2086,7 @@ I (..\HARDWARE\UKF_OLDX\ukf_task.h)(0x5A141413)
 I (..\HARDWARE\UKF_BARO\ukf_baro.h)(0x59844A94)
 I (..\HARDWARE\IIC\sonar_avoid.h)(0x59844A94)
 F (..\HARDWARE\GPS\m100.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\m100.o --omf_browse ..\obj\m100.crf --depend ..\obj\m100.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2192,7 +2195,7 @@ I (..\HARDWARE\IIC\time.h)(0x59844A94)
 I (..\HARDWARE\flash\flash_w25.h)(0x59B75091)
 I (..\SYSTEM\sys\sys.h)(0x59844A94)
 I (..\HARDWARE\IIC\iic.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2260,7 +2263,7 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x59844A94)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2293,7 +2296,7 @@ I (..\HARDWARE\IIC\iic_soft.h)(0x59844A94)
 I (..\HARDWARE\IIC\filter.h)(0x5A14120A)
 I (..\HARDWARE\IIC\LIS3MDL.h)(0x59B7A65D)
 F (..\HARDWARE\IIC\fliter.c)(0x5A141173)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\fliter.o --omf_browse ..\obj\fliter.crf --depend ..\obj\fliter.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2359,7 +2362,7 @@ I (..\HARDWARE\IIC\flash.h)(0x59844A94)
 I (..\HARDWARE\IIC\dma.h)(0x59844A94)
 I (..\HARDWARE\IIC\filter.h)(0x5A14120A)
 F (..\HARDWARE\IIC\ultrasonic.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\ultrasonic.o --omf_browse ..\obj\ultrasonic.crf --depend ..\obj\ultrasonic.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2434,7 +2437,7 @@ I (..\UCOSII\PORT\os_cpu.h)(0x59844A94)
 I (..\UCOSII\CONFIG\os_cfg.h)(0x59844A94)
 I (..\HARDWARE\IIC\error.h)(0x59844A94)
 F (..\HARDWARE\IIC\hml_sample.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\hml_sample.o --omf_browse ..\obj\hml_sample.crf --depend ..\obj\hml_sample.d)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2592,7 +2595,7 @@ I (..\HARDWARE\UKF_NAV\KF_OLDX_NAV_types.h)(0x59844A94)
 F (..\HARDWARE\UKF_OLDX\nav_ukf.c)(0x59ACDF97)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\nav_ukf.o --omf_browse ..\obj\nav_ukf.crf --depend ..\obj\nav_ukf.d)
 I (..\HARDWARE\UKF_OLDX\nav_ukf.h)(0x59ACFB29)
 I (..\HARDWARE\IIC\alt_kf.h)(0x5A177D72)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2708,7 +2711,7 @@ I (..\HARDWARE\IIC\parameter.h)(0x59844A94)
 I (..\HARDWARE\IIC\my_math.h)(0x59844A94)
 I (..\HARDWARE\IIC\math.h)(0x59844A94)
 I (..\HARDWARE\IIC\MadgwickAHRS.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2780,7 +2783,7 @@ I (..\HARDWARE\IIC\parameter.h)(0x59844A94)
 I (..\HARDWARE\IIC\my_math.h)(0x59844A94)
 I (..\HARDWARE\IIC\math.h)(0x59844A94)
 I (..\HARDWARE\IIC\MadgwickAHRS.h)(0x59844A94)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2808,10 +2811,20 @@ I (..\HARDWARE\IIC\dma.h)(0x59844A94)
 I (..\HARDWARE\IIC\hml5833l.h)(0x59844A94)
 I (d:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
 I (..\HARDWARE\IIC\filter.h)(0x5A14120A)
-F (..\HARDWARE\UKF_OLDX\ukf_task.c)(0x5A16BFF7)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\ukf_task.o --omf_browse ..\obj\ukf_task.crf --depend ..\obj\ukf_task.d)
+F (..\HARDWARE\IIC\oldx_ekf_imu.c)(0x5A18CE3B)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\oldx_ekf_imu.o --omf_browse ..\obj\oldx_ekf_imu.crf --depend ..\obj\oldx_ekf_imu.d)
+I (..\HARDWARE\UKF_OLDX\rt_nonfinite.h)(0x59844A94)
+I (d:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x56FE42DE)
+I (..\HARDWARE\UKF_OLDX\rtwtypes.h)(0x59844A94)
+I (..\HARDWARE\IIC\oldx_ekf_imu.h)(0x5A18CE3B)
+I (d:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
+I (d:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
+I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
+I (..\HARDWARE\IIC\rtwtypes.h)(0x59844A94)
+I (..\HARDWARE\IIC\oldx_ekf_imu_types.h)(0x5A18352A)
+F (..\HARDWARE\UKF_OLDX\ukf_task.c)(0x5A18CFC6)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\ukf_task.o --omf_browse ..\obj\ukf_task.crf --depend ..\obj\ukf_task.d)
 I (..\HARDWARE\UKF_OLDX\ukf_task.h)(0x5A141413)
 I (..\HARDWARE\IIC\alt_kf.h)(0x5A177D72)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)
@@ -2895,7 +2908,7 @@ I (..\HARDWARE\IIC\LIS3MDL.h)(0x59B7A65D)
 I (..\HARDWARE\IIC\matlib.h)(0x59AA268F)
 F (..\HARDWARE\IIC\alt_kf.c)(0x59844A94)(--c99 -c --cpu Cortex-M4.fp -g -W -O0 -Otime --apcs=interwork -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\HARDWARE\LED -I ..\HARDWARE\LCD -I ..\HARDWARE\KEY -I ..\HARDWARE\IIC -I ..\HARDWARE\24CXX -I ..\FWLIB\inc -I ..\HARDWARE\TOUCH -I ..\HARDWARE\BEEP -I ..\UCOSII\CONFIG -I ..\UCOSII\CORE -I ..\UCOSII\PORT -I ..\HARDWARE\TPAD -I ..\MALLOC -I ..\HARDWARE\flash -I ..\HARDWARE\KF -I ..\HARDWARE\GPS -I ..\HARDWARE\UKF_OLDX -I ..\HARDWARE\UKF_BARO -I ..\HARDWARE\UKF_NAV -I ..\HARDWARE\AVOID -I ..\HARDWARE\AHRS -I ..\HARDWARE\kalman-clib-master-I D:\·É¿Ø\OLDX_FC2.0\Back_IMU\USER\RTE-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-I d:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o ..\obj\alt_kf.o --omf_browse ..\obj\alt_kf.crf --depend ..\obj\alt_kf.d)
 I (..\HARDWARE\IIC\alt_kf.h)(0x5A177D72)
-I (..\HARDWARE\IIC\include.h)(0x5A178DDC)
+I (..\HARDWARE\IIC\include.h)(0x5A18F534)
 I (d:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
 I (d:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x56FE42E0)

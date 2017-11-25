@@ -29,6 +29,7 @@
 #include "imu_oldx.h"
 #include "m100.h"
 #include "nav_ukf.h"
+#include "oldx_ekf_imu.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -120,6 +121,9 @@ float YawR,PitchR,RollR;
 float YawRm,PitchRm,RollRm;
 float outer_loop_time;
 float k_gyro_z=1.2;
+double X_ekf[7]={1,0,0,0}, P_ekf[49]={0};
+double n_q=0.00001,  n_w=0.01,  n_a=0.001,  n_m=0.01;
+double Att[4];
 void outer_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
@@ -139,7 +143,11 @@ void outer_task(void *pdata)
   
 
 	#else
-		
+//  oldx_ekf_imu( X_ekf,  P_ekf,  0,  outer_loop_time, 
+//  		imu_fushion.Gyro_deg.x*0.0173,imu_fushion.Gyro_deg.y*0.0173,imu_fushion.Gyro_deg.z*0.0173,
+//      imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+//   		imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,  
+//		  n_q,  n_w,  n_a,  n_m, Att)	;
 	madgwick_update_new(
 	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
 	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*k_gyro_z,
