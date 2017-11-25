@@ -521,7 +521,7 @@ if(kf_data_sel_temp==1){
 	 #endif
 	 Global_GPS_Sensor.NED_Vel[Zr]=gpsx.pvt.PVT_Down_speed;
 	 
-   if((module.pi_flow&&pi_flow.insert)&&
+   if(((module.pi_flow&&pi_flow.insert)||module.flow)&&
 		!(gpsx.pvt.PVT_numsv>=5&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
    ;
 	 else{
