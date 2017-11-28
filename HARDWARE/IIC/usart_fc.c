@@ -1513,6 +1513,46 @@ switch(sel){
 		sum += SendBuff2[i];
 	SendBuff2[nrf_uart_cnt++] = sum;
 	break;
+	case SEND_QR:
+	cnt_reg=nrf_uart_cnt;
+	SendBuff2[nrf_uart_cnt++]=0xAA;
+	SendBuff2[nrf_uart_cnt++]=0xAF;
+	SendBuff2[nrf_uart_cnt++]=0x05;//功能字
+	SendBuff2[nrf_uart_cnt++]=0;//数据量
+  if(qr.connect==0)
+	SendBuff2[nrf_uart_cnt++]=66;	
+	else
+	SendBuff2[nrf_uart_cnt++]=qr.check;
+	_temp = (vs16)(qr.x);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(qr.y);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(qr.z);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(qr.pix_x);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(qr.pix_y);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);		
+	_temp = (vs16)(qr.center_x);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(qr.center_y);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);	
+	_temp = (vs16)(qr.yaw);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
+	for( i=cnt_reg;i< nrf_uart_cnt;i++)
+		sum += SendBuff2[i];
+	SendBuff2[nrf_uart_cnt++] = sum;
+	break;
 	default:break;
 }
 }
@@ -1524,8 +1564,12 @@ static u8 flag[10]={0};
 if(m100.connect)
 flag[0]=1;	
 
-if(flag[0])
+if(flag[0]){
 data_per_uart4(SEND_PIX);	
+if(cnt[1]++>9){cnt[1]=0;
+data_per_uart4(SEND_QR);
+}		
+}	
 else{
 data_per_uart4(SEND_ALL);	
 if(cnt[1]++>9){cnt[1]=0;
@@ -2351,13 +2395,11 @@ u8 Gps_data_get_VALNED(u8 in)
 		sum += *(data_buf+i);
 	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
 	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
-  	if(*(data_buf+2)==0x01)//
-  { m100.rx_dt=Get_Cycle_T(GET_T_M100); 	
-		m100.loss_cnt=0;
-		m100.connect=1;
-	  if(*(data_buf+2)==0x01)//
+ 
+	if(*(data_buf+2)==0x01)//
   { m100.loss_cnt=0;
 		m100.connect=1;
+	 	m100.rx_dt=Get_Cycle_T(GET_T_M100); 	
 		flag=!flag;
 	  m100.Pit=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/10.;
 		m100.Rol=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/10.;
@@ -2398,6 +2440,36 @@ u8 Gps_data_get_VALNED(u8 in)
 		m100.spd[1]=(float)((int16_t)(*(data_buf+44)<<8)|*(data_buf+45))/1000.;
 		m100.spd[2]=(float)((int16_t)(*(data_buf+46)<<8)|*(data_buf+47))/1000.;
 	}
+	else if(*(data_buf+2)==0x21)//Qr land
+  {
+	//m100.rx_dt=Get_Cycle_T(GET_T_M100); 	
+	qr.connect=1;
+	qr.loss_cnt=0;
+	qr.check=(*(data_buf+4));///10.;
+	qr.x=(int16_t)(*(data_buf+5)<<8)|*(data_buf+6);
+	qr.y=(int16_t)(*(data_buf+7)<<8)|*(data_buf+8);
+	qr.z=(int16_t)(*(data_buf+9)<<8)|*(data_buf+10);
+	qr.pit=(int16_t)(*(data_buf+11)<<8)|*(data_buf+12);
+	qr.rol=(int16_t)(*(data_buf+13)<<8)|*(data_buf+14);
+	qr.yaw=(int16_t)(*(data_buf+15)<<8)|*(data_buf+16);
+	
+	if(qr.check){
+		int temp=((int16_t)(*(data_buf+17)<<8)|*(data_buf+18));
+		if(ABS(temp)<1000)
+		qr.pix_x=temp;
+		temp=((int16_t)(*(data_buf+19)<<8)|*(data_buf+20));
+		if(ABS(temp)<1000)
+		qr.pix_y=temp;	
+	}
+//	/*1  0
+//	
+//	  2  3*/
+//	avoid_color[0]=*(data_buf+21);	
+//	avoid_color[1]=*(data_buf+22);
+//	avoid_color[2]=*(data_buf+23);
+//	avoid_color[3]=*(data_buf+24);
+	qr.center_x=-((int16_t)(*(data_buf+25)<<8)|*(data_buf+26));	
+	qr.center_y=-((int16_t)(*(data_buf+27)<<8)|*(data_buf+28));
 	}	
   
 }

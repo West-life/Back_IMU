@@ -35,3 +35,5 @@
 ..\obj\my_math.o: ..\FWLIB\inc\stm32f4xx_dac.h
 ..\obj\my_math.o: ..\FWLIB\inc\stm32f4xx_dcmi.h
 ..\obj\my_math.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
+..\obj\my_math.o: ..\HARDWARE\IIC\FastMath.h
+..\obj\my_math.o: ..\HARDWARE\IIC\Double.h

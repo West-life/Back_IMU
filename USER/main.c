@@ -103,7 +103,11 @@ int main(void)
 	MYDMA_Config(DMA1_Stream4,DMA_Channel_4,(u32)&UART4->DR,(u32)SendBuff4,SEND_BUF_SIZE4+2,0);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	#endif
 	#if defined(SONAR_USE_UART)  
-	Usart3_Init(9600L);    		//SONAR
+		#if defined(URM07)
+		Usart3_Init(19200); 
+		#else
+		Usart3_Init(9600L);    		//SONAR
+		#endif
 	#else
 	Ultrasonic_Init();
 	#endif

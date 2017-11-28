@@ -110,6 +110,13 @@ void Ultra_Duty()
 				 #elif defined(SONAR_SAMPLE3)
 					Uart5_Send(temp ,0xb8);
 				 #endif
+	  #elif defined(URM07)
+			Uart5_Send(temp ,0x55);Delay_us(20);
+			Uart5_Send(temp ,0xAA);Delay_us(20);
+			Uart5_Send(temp ,0x11);Delay_us(20);
+	    Uart5_Send(temp ,0x00);Delay_us(20);
+			Uart5_Send(temp ,0x02);Delay_us(20);
+      Uart5_Send(temp ,0x12);Delay_us(20);
 		#elif defined(USE_US100)
 			temp[0] = 0x55;
 			Uart5_Send(temp ,0x55);
@@ -286,7 +293,35 @@ void Ultra_Get(u8 com_data)
 		}
 		sys.sonar=ultra_ok = 1;
 	}
-	 
+	
+	 static u8 state,cnt,buf[8];
+	 u8 sum;
+	 switch(state){
+		 case 0:
+			  if(com_data==0x55)
+		       state=1;
+		 break;
+	   case 1:
+			  if(com_data==0xAA)
+				{state=2;cnt=0;}
+				else
+					 state=0;
+		 break;
+	   case 2:
+			  buf[cnt++]=com_data;
+		    if(cnt>6)
+				{
+				sum=0x55+0xAA+buf[0]+buf[1]+buf[2]+buf[3]+buf[4];
+				   if(sum==buf[5])	
+					 {
+					  sys.sonar=ultra_ok = 1;
+						T_sonar=Get_Cycle_T(GET_T_SONAR_SAMPLE); 
+						ultra_distance= LIMIT((buf[3]<<8|buf[4])*10,0,7500);
+					 }
+        state=0;				 
+				}
+		 break;
+	 }	 
 	
 //	 ultra_delta = x_pred*1000 - ultra_distance_old;
 //	

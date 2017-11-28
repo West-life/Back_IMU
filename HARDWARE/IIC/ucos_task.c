@@ -30,6 +30,7 @@
 #include "m100.h"
 #include "nav_ukf.h"
 #include "oldx_ekf_imu.h"
+#include "oldx_ekf_imu2.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -122,8 +123,37 @@ float YawRm,PitchRm,RollRm;
 float outer_loop_time;
 float k_gyro_z=1.2;
 double X_ekf[7]={1,0,0,0}, P_ekf[49]={0};
-double n_q=0.00001,  n_w=0.01,  n_a=0.001,  n_m=0.01;
+double n_q=0.0001,  n_w=0.00001,  n_a=0.01,  n_m=1000;
 double Att[4];
+float z_k[9] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 9.81f, 0.2f, -0.2f, 0.2f};					/**< Measurement vector */
+float x_apo[12]={0};		/**< states */
+float P_apo[144] = {100.f, 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+					 0, 100.f,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+					 0,   0, 100.f,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+					 0,   0,   0, 100.f,   0,   0,   0,   0,   0,   0,   0,   0,
+					 0,   0,   0,   0,  100.f,  0,   0,   0,   0,   0,   0,   0,
+					 0,   0,   0,   0,   0, 100.f,   0,   0,   0,   0,   0,   0,
+					 0,   0,   0,   0,   0,   0, 100.f,   0,   0,   0,   0,   0,
+					 0,   0,   0,   0,   0,   0,   0, 100.f,   0,   0,   0,   0,
+					 0,   0,   0,   0,   0,   0,   0,   0, 100.f,   0,   0,   0,
+					 0,   0,   0,   0,   0,   0,   0,   0,  0.0f, 100.0f,   0,   0,
+					 0,   0,   0,   0,   0,   0,   0,   0,  0.0f,   0,   100.0f,   0,
+					 0,   0,   0,   0,   0,   0,   0,   0,  0.0f,   0,   0,   100.0f};
+float zFlag[3]={1,1,1};
+float Rot_matrix[9]={0};
+float param[7]={ 
+1e-4,
+0.08,
+0.009,
+0.005,
+0.0008,
+10000.0,
+100.0};
+float eulerAngles[3];
+float q_ekf[4];
+//#define AHRS_MAD
+//#define AHRS_EKF1
+#define AHRS_EKF2
 void outer_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
@@ -140,29 +170,54 @@ void outer_task(void *pdata)
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
 	#if AHRS_SEL
 	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
-  
-
 	#else
-//  oldx_ekf_imu( X_ekf,  P_ekf,  0,  outer_loop_time, 
-//  		imu_fushion.Gyro_deg.x*0.0173,imu_fushion.Gyro_deg.y*0.0173,imu_fushion.Gyro_deg.z*0.0173,
-//      imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-//   		imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,  
-//		  n_q,  n_w,  n_a,  n_m, Att)	;
-	madgwick_update_new(
-	imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
-	my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*k_gyro_z,
-	imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
-	&RollRm,&PitchRm,&YawRm,outer_loop_time);	
-	RollR=RollRm;
-	PitchR=PitchRm;
-	YawR=YawRm;
-	reference_vr[0]=reference_vr_imd_down[0];
-	reference_vr[1]=reference_vr_imd_down[1]; 
-	reference_vr[2]=reference_vr_imd_down[2];
-	q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
-	q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
-	q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
-	q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
+		#if defined(AHRS_EKF1)
+		oldx_ekf_imu( X_ekf,  P_ekf,  0,  outer_loop_time, 
+		imu_fushion.Gyro_deg.x*0.0173,imu_fushion.Gyro_deg.y*0.0173,imu_fushion.Gyro_deg.z*0.0173,
+		imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+		imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,  
+		n_q,  n_w,  n_a,  n_m, Att)	;
+		#endif
+		#if defined(AHRS_EKF2)
+		z_k[0]= imu_fushion.Gyro_deg.x*0.0173;
+		z_k[1]= imu_fushion.Gyro_deg.y*0.0173;
+		z_k[2]= imu_fushion.Gyro_deg.z*0.0173;
+		z_k[3]= imu_fushion.Acc.x/4096*9.8;
+		z_k[4]= imu_fushion.Acc.y/4096*9.8;
+		z_k[5]= imu_fushion.Acc.z/4096*9.8;
+		z_k[6]= -imu_fushion.Mag_Val.x;
+		z_k[7]= -imu_fushion.Mag_Val.y;
+		z_k[8]= -imu_fushion.Mag_Val.z;
+		oldx_ekf_imu2( x_apo,P_apo,zFlag,z_k,param,outer_loop_time,x_apo,P_apo,Rot_matrix, eulerAngles);
+		RollR=eulerAngles[1];
+		PitchR=eulerAngles[0];
+		YawR=eulerAngles[2];
+		Quaternion_FromRotationMatrix(Rot_matrix,q_ekf);
+		ref_q_imd_down[0]= q_ekf[2];
+		ref_q_imd_down[1]= -q_ekf[3];
+		ref_q_imd_down[2]= -q_ekf[0];
+		ref_q_imd_down[3]= q_ekf[1];
+	  reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	  reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	  reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);
+		#endif
+		#if defined(AHRS_MAD)
+		madgwick_update_new(
+		imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+		my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*k_gyro_z,
+		imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+		&RollRm,&PitchRm,&YawRm,outer_loop_time);	
+		#endif
+		RollR=RollRm;
+		PitchR=PitchRm;
+		YawR=YawRm;
+		reference_vr[0]=reference_vr_imd_down[0];
+		reference_vr[1]=reference_vr_imd_down[1]; 
+		reference_vr[2]=reference_vr_imd_down[2];
+		q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
+		q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
+		q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
+		q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
 
 //  OLDX_AHRS(my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5)*0.0173, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5)*0.0173,
 //						imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
@@ -278,35 +333,26 @@ void sonar_task(void *pdata)
  	while(1)
 	{
 		#if defined(SONAR_USE_SCL) 
-		 if(fly_ready||en_ble_debug)
-				Ultra_Duty_SCL(); 
-			else if(cnt_ground++>1/0.1){cnt_ground=0;
-				Ultra_Duty_SCL(); 
-			}
-		  delay_ms(100);
+			 if(fly_ready||en_ble_debug)
+					Ultra_Duty_SCL(); 
+				else if(cnt_ground++>1/0.1){cnt_ground=0;
+					Ultra_Duty_SCL(); 
+				}
 		#else
-			if(fly_ready||en_ble_debug)
-				Ultra_Duty(); 
-			else if(cnt_ground++>1/0.1){cnt_ground=0;
-				Ultra_Duty(); 
-			}
-		#if defined(USE_KS103)
-			 #if defined(SONAR_SAMPLE1)
-				delay_ms(40);
-			 #elif defined(SONAR_SAMPLE2)
-				delay_ms(100);
-		   #elif defined(SONAR_SAMPLE3)
-				delay_ms(70);
-			 #endif
-		#elif defined(USE_US100)
-			  #if USE_FLOW_SONAR
-			 	ultra_distance=flow.hight.originf*1000;//Moving_Median(1,5,temp);
-		    sys.sonar=ultra_ok = 1;
-			  #endif
-				delay_ms(100);
+				if(fly_ready||en_ble_debug)
+					Ultra_Duty(); 
+		#endif	  
+		#if USE_FLOW_SONAR
+		ultra_distance=flow.hight.originf*1000;//Moving_Median(1,5,temp);
+		sys.sonar=ultra_ok = 1;
 		#endif
+		#if defined(SONAR_SAMPLE1)
+		delay_ms(40);
+		#elif defined(SONAR_SAMPLE2)
+		delay_ms(100);
+		#elif defined(SONAR_SAMPLE3)
+		delay_ms(70);
 		#endif
-
 	}
 }
 
@@ -666,7 +712,9 @@ void error_task(void *pdata)
 		 m100.connect=0;
 		if(m100.control_loss++>3/0.2)
 		 m100.control_connect=0;
-		
+		if(qr.loss_cnt++>3/0.2)
+		 qr.connect=0;
+
 		flow.rate=flow.flow_cnt;
 	  flow.flow_cnt=0;
 

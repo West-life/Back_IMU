@@ -308,6 +308,7 @@ void data_per_uart4(u8 sel);
 #define SEND_ALL 9
 #define SEND_SD 10
 #define SEND_PIX 11
+#define SEND_QR 12
 extern float sonar_fc,baroAlt_fc;
 extern float k_flow_devide;
 extern float flow_module_offset_y,flow_module_offset_x,flow_module_set_yaw;//光流安装位移 单位米
@@ -347,6 +348,8 @@ float x,y,z,pit,rol,yaw;
 float spdx,spdy,spdz;
 u8 check,use_spd,connect;
 float yaw_off;
+float pix_x,pix_y;
+float center_x,center_y;
 u8 insert,update,qual;
 u32 last_update;
 u16 loss_cnt;

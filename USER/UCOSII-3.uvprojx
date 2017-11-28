@@ -712,16 +712,16 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\flow.c</FilePath>
             </File>
-            <File>
-              <FileName>cycle_cal_oldx.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>..\HARDWARE\IIC\cycle_cal_oldx.lib</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>MATH&amp;FUSION</GroupName>
           <Files>
+            <File>
+              <FileName>cycle_cal_oldx.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\HARDWARE\IIC\cycle_cal_oldx.lib</FilePath>
+            </File>
             <File>
               <FileName>FastMath.c</FileName>
               <FileType>1</FileType>
@@ -732,21 +732,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\my_math.c</FilePath>
             </File>
-            <File>
-              <FileName>KF_OLDX_NAV.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>EKF&amp;IMU</GroupName>
           <Files>
-            <File>
-              <FileName>nav_ukf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
-            </File>
             <File>
               <FileName>imu.c</FileName>
               <FileType>1</FileType>
@@ -762,11 +752,26 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\oldx_ekf_imu.c</FilePath>
             </File>
+            <File>
+              <FileName>oldx_ekf_imu2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\oldx_ekf_imu2.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>UKF&amp;POS</GroupName>
           <Files>
+            <File>
+              <FileName>KF_OLDX_NAV.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
+            </File>
+            <File>
+              <FileName>nav_ukf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
+            </File>
             <File>
               <FileName>ukf_task.c</FileName>
               <FileType>1</FileType>

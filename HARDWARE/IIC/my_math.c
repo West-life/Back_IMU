@@ -6,7 +6,7 @@
 **********************************************************************************/
 
 #include "my_math.h"
-
+#include "FastMath.h"
 int sign_flow(float in,float dead)
 {
 if (my_abs(in)>dead)
@@ -352,4 +352,96 @@ void body_to_NEZ(float *vr, float *v, float *q) {
     vr[0] = w*w*v[0] + 2.0f*y*w*v[2] - 2.0f*z*w*v[1] + x*x*v[0] + 2.0f*y*x*v[1] + 2.0f*z*x*v[2] - z*z*v[0] - y*y*v[0];
     vr[1] = 2.0f*x*y*v[0] + y*y*v[1] + 2.0f*z*y*v[2] + 2.0f*w*z*v[0] - z*z*v[1] + w*w*v[1] - 2.0f*x*w*v[2] - x*x*v[1];
     vr[2] = 2.0f*x*z*v[0] + 2.0f*y*z*v[1] + z*z*v[2] - 2.0f*w*y*v[0] - y*y*v[2] + 2.0f*w*x*v[1] - x*x*v[2] + w*w*v[2];
+}
+
+
+void Quaternion_FromRotationMatrix(float *R, float *Q)
+{
+#if 1
+	// calculate the trace of the matrix
+	float trace = R[0] + R[4] + R[8];
+	float s;
+	if(trace > 0){
+		s = 0.5f * FastSqrt(trace + 1.0f);
+		Q[0] = 0.25f / s;
+		Q[1] = (R[7] - R[5]) * s;
+		Q[2] = (R[2] - R[6]) * s;
+		Q[3] = (R[3] - R[1]) * s;
+	}
+	else{
+		if(R[0] > R[4] && R[0] > R[8] ){
+			s = 0.5f * FastSqrtI(1.0f + R[0] - R[4] - R[8]);
+			Q[0] = (R[7] - R[5]) * s;
+			Q[1] = 0.25f / s;
+			Q[2] = (R[1] + R[3]) * s;
+			Q[3] = (R[2] + R[6]) * s;
+		}
+		else if(R[4] > R[8]) {
+			s = 0.5f * FastSqrtI(1.0f + R[4] - R[0] - R[8]);
+			Q[0] = (R[2] - R[6]) * s;
+			Q[1] = (R[1] + R[3]) * s;
+			Q[2] = 0.25f / s;
+			Q[3] = (R[5] + R[7]) * s;
+		}
+		else{
+			s = 0.5f * FastSqrtI(1.0f + R[8] - R[0] - R[4]);
+			Q[0] = (R[3] - R[1]) * s;
+			Q[1] = (R[2] + R[6]) * s;
+			Q[2] = (R[5] + R[7]) * s;
+			Q[3] = 0.25f / s;
+		}
+	}
+#else
+	// get the instantaneous orientation quaternion
+	float fq0sq; // q0^2
+	float recip4q0; // 1/4q0
+	float fmag; // quaternion magnitude
+#define SMALLQ0 0.01F // limit where rounding errors may appear
+	// get q0^2 and q0
+	fq0sq = 0.25f * (1.0f + R[0] + R[4] + R[8]);
+	Q[0] = (float)FastSqrt(ABS(fq0sq));
+	// normal case when q0 is not small meaning rotation angle not near 180 deg
+	if (Q[0] > SMALLQ0){
+		// calculate q1 to q3
+		recip4q0 = 0.25F / Q[0];
+		Q[1] = recip4q0 * (R[5] - R[7]);
+		Q[2] = recip4q0 * (R[6] - R[2]);
+		Q[3] = recip4q0 * (R[1] - R[3]);
+	}
+	else{
+		// special case of near 180 deg corresponds to nearly symmetric matrix
+		// which is not numerically well conditioned for division by small q0
+		// instead get absolute values of q1 to q3 from leading diagonal
+		Q[1] = FastSqrt(fabs(0.5f * (1.0f + R[0]) - fq0sq));
+		Q[2] = FastSqrt(fabs(0.5f * (1.0f + R[4]) - fq0sq));
+		Q[3] = FastSqrt(fabs(0.5f * (1.0f + R[8]) - fq0sq));
+		// first assume q1 is positive and ensure q2 and q3 are consistent with q1
+		if ((R[1] + R[3]) < 0.0f){
+			// q1*q2 < 0 so q2 is negative
+			Q[2] = -Q[2];
+			if ((R[5] + R[7]) > 0.0f){
+				// q1*q2 < 0 and q2*q3 > 0 so q3 is also both negative
+				Q[3] = -Q[3];
+			}
+		}
+		else if ((R[1] + R[3]) > 0.0f){
+			if ((R[5] + R[7]) < 0.0f){
+				// q1*q2 > 0 and q2*q3 < 0 so q3 is negative
+				Q[3] = -Q[3];
+			}
+		}
+		// negate the vector components if q1 should be negative
+		if ((R[5] - R[7]) < 0.0f){
+			Q[1] = -Q[1];
+			Q[2] = -Q[2];
+			Q[3] = -Q[3];
+		}
+	}
+	// finally re-normalize
+	fmag = FastSqrtI(Q[0] * Q[0] + Q[1] * Q[1] + Q[2] * Q[2] + Q[3] * Q[3]);
+	Q[0] *= fmag;
+	Q[1] *= fmag;
+	Q[2] *= fmag;
+	Q[3] *= fmag;
+#endif
 }

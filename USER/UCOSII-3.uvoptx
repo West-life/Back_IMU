@@ -429,307 +429,52 @@
         <Ww>
           <count>0</count>
           <WinNumber>2</WinNumber>
-          <ItemText>H</ItemText>
+          <ItemText>lis3mdl,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>2</WinNumber>
-          <ItemText>H</ItemText>
+          <ItemText>m100,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>2</WinNumber>
-          <ItemText>H</ItemText>
+          <ItemText>px4_test</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>2</WinNumber>
-          <ItemText>MagMIN</ItemText>
+          <ItemText>eulerAngles</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>2</WinNumber>
-          <ItemText>MagMAX</ItemText>
+          <ItemText>zFlag</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>KpMag</ItemText>
+          <ItemText>q_ekf</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>2</WinNumber>
-          <ItemText>YawR</ItemText>
+          <ItemText>Rot_matrix</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>2</WinNumber>
-          <ItemText>IMU_MAG_INCL</ItemText>
+          <ItemText>reference_vr_imd_down</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>2</WinNumber>
-          <ItemText>IMU_MAG_DECL</ItemText>
+          <ItemText>acc_neo</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>2</WinNumber>
-          <ItemText>+5.2355e-01</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>UKF_MAG_N_TEMP</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>lis3mdl,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/LIS3MDL.c\lis3mdl.Gyro_deg.z</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>pi_flow</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/usart_fc.c\pi_flow.sensor</ItemText>
-        </Ww>
-        <Ww>
-          <count>15</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>Global_GPS_Sensor</ItemText>
-        </Ww>
-        <Ww>
-          <count>16</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/usart_fc.c\pi_flow.sensor</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/alt_kf.c\Global_GPS_Sensor.NED_Posf</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/usart_fc.c\pi_flow.yaw_off</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>X_KF_NAV</ItemText>
-        </Ww>
-        <Ww>
-          <count>20</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/alt_kf.c\Global_GPS_Sensor.NED_Posf</ItemText>
-        </Ww>
-        <Ww>
-          <count>21</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/alt_kf.c\Global_GPS_Sensor.NED_Velf</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>flow_matlab_data</ItemText>
-        </Ww>
-        <Ww>
-          <count>23</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>flow_per_out</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>firstOrderFilters</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>Global_GPS_Sensor</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>lis3mdl,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>ano_flow,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>flow,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>flow_rad,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>X_KF_NAV</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>QR_DELAY,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>FLOW_DELAY,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>g_spd_flow</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>GPS_Vel_Delay_Cnt,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>R_GPS</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>Q_GPS</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>Acce_Bias</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>R_Acce_bias</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>flag_kf1</ItemText>
-        </Ww>
-        <Ww>
-          <count>40</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>k_acc_f</ItemText>
-        </Ww>
-        <Ww>
-          <count>41</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/UKF_OLDX/ukf_task.c\FLOW_DELAY,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>42</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>g_spd_flow</ItemText>
-        </Ww>
-        <Ww>
-          <count>43</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>ga_nav</ItemText>
-        </Ww>
-        <Ww>
-          <count>44</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>k_acc_f</ItemText>
-        </Ww>
-        <Ww>
-          <count>45</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>m100,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>46</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>px4_test</ItemText>
-        </Ww>
-        <Ww>
-          <count>47</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>DELAY_FIX_SEL</ItemText>
-        </Ww>
-        <Ww>
-          <count>48</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>Att</ItemText>
-        </Ww>
-        <Ww>
-          <count>49</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>n_a</ItemText>
-        </Ww>
-        <Ww>
-          <count>50</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>n_q</ItemText>
-        </Ww>
-        <Ww>
-          <count>51</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\Att[0]</ItemText>
-        </Ww>
-        <Ww>
-          <count>52</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\RollRm</ItemText>
-        </Ww>
-        <Ww>
-          <count>53</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\PitchRm</ItemText>
-        </Ww>
-        <Ww>
-          <count>54</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\UCOSII_3\../HARDWARE/IIC/ucos_task.c\Att[1]</ItemText>
-        </Ww>
-        <Ww>
-          <count>55</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>n_a</ItemText>
-        </Ww>
-        <Ww>
-          <count>56</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>X_ekf</ItemText>
-        </Ww>
-        <Ww>
-          <count>57</count>
-          <WinNumber>2</WinNumber>
           <ItemText>ref_q_imd_down</ItemText>
-        </Ww>
-        <Ww>
-          <count>58</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>v</ItemText>
-        </Ww>
-        <Ww>
-          <count>59</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>RxBuffer11</ItemText>
-        </Ww>
-        <Ww>
-          <count>60</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>X_ukf</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -1566,8 +1311,16 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+  </Group>
+
+  <Group>
+    <GroupName>MATH&amp;FUSION</GroupName>
+    <tvExp>1</tvExp>
+    <tvExpOptDlg>0</tvExpOptDlg>
+    <cbSel>0</cbSel>
+    <RteFlg>0</RteFlg>
     <File>
-      <GroupNumber>8</GroupNumber>
+      <GroupNumber>9</GroupNumber>
       <FileNumber>61</FileNumber>
       <FileType>4</FileType>
       <tvExp>0</tvExp>
@@ -1578,14 +1331,6 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
-  </Group>
-
-  <Group>
-    <GroupName>MATH&amp;FUSION</GroupName>
-    <tvExp>1</tvExp>
-    <tvExpOptDlg>0</tvExpOptDlg>
-    <cbSel>0</cbSel>
-    <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>9</GroupNumber>
       <FileNumber>62</FileNumber>
@@ -1610,18 +1355,6 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>64</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</PathWithFileName>
-      <FilenameWithoutPath>KF_OLDX_NAV.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
   </Group>
 
   <Group>
@@ -1632,19 +1365,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>65</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\HARDWARE\UKF_OLDX\nav_ukf.c</PathWithFileName>
-      <FilenameWithoutPath>nav_ukf.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>10</GroupNumber>
-      <FileNumber>66</FileNumber>
+      <FileNumber>64</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1656,7 +1377,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>67</FileNumber>
+      <FileNumber>65</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1668,13 +1389,25 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>68</FileNumber>
+      <FileNumber>66</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\HARDWARE\IIC\oldx_ekf_imu.c</PathWithFileName>
       <FilenameWithoutPath>oldx_ekf_imu.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>10</GroupNumber>
+      <FileNumber>67</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\IIC\oldx_ekf_imu2.c</PathWithFileName>
+      <FilenameWithoutPath>oldx_ekf_imu2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1688,7 +1421,31 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>11</GroupNumber>
+      <FileNumber>68</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</PathWithFileName>
+      <FilenameWithoutPath>KF_OLDX_NAV.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
       <FileNumber>69</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\UKF_OLDX\nav_ukf.c</PathWithFileName>
+      <FilenameWithoutPath>nav_ukf.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>70</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1700,7 +1457,7 @@
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
-      <FileNumber>70</FileNumber>
+      <FileNumber>71</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

@@ -104,6 +104,11 @@
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\oldx_ekf_imu.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\rtwtypes.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\oldx_ekf_imu_types.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\oldx_ekf_imu2.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\rt_defines.h
+..\obj\ucos_task.o: ..\HARDWARE\UKF_OLDX\rt_nonfinite.h
+..\obj\ucos_task.o: ..\HARDWARE\UKF_OLDX\rtwtypes.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\oldx_ekf_imu2_types.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LSM303.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\FastMath.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Double.h

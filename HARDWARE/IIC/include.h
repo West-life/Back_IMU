@@ -33,7 +33,7 @@
 //================传感器===================
 #define IMU_UPDATE 1
 #define NEW_IMU 1  //1使用LSD IMU
-#define USE_VER_5 0
+#define USE_VER_5 1
 #define USE_VER_4 0
 #if USE_VER_4
 #define USE_VER_3 1
@@ -51,7 +51,9 @@
 #define SONAR_USE_FLOW 0 //使用光流  的 超声波
 #define USE_ANO_FLOW 0
 #define FLOW_SET_ANGLE 4 
-#define USE_US100           //使用us100型号超声波 
+//-------------SONAR PARAM-----------
+//#define USE_US100           //使用us100型号超声波 
+#define URM07
 //#define USE_KS103					//使用ks103型号超声波
 //#define SONAR_SAMPLE1					//0-5m 32ms  no fix
 //#define SONAR_SAMPLE2					//0-5m 100ms T fix
