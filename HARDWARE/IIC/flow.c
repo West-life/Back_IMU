@@ -127,7 +127,6 @@ unsigned char floattobyte[4];
 	 }
 }
 
-float k_flow_devide=1;
 float flow_module_offset_y=0,flow_module_offset_x=-0.05;//光流安装位移 单位米
 #define USE_FLOW_FLY_ROBOT 1
 #if USE_FLOW_FLY_ROBOT//使用飞行实验室的光流模块
@@ -139,9 +138,13 @@ static float scale_pix=0.0055*K_PIX;//0.002;//.003;//0.005;
 static float k_scale_pix=K_PIX;
 static float scale_pix=0.0055*K_PIX;//0.002;//.003;//0.005;
 #endif
-
+float k_flow_devide=1;
 static float rate_threshold = 0.15f; 
-static float flow_k=0.15f;
+//#if FLOW_USE_OPENMV
+//static float flow_k[2]={0.15f,0.15/2};
+//#else
+static float flow_k[2]={0.15f,0.15};
+//#endif
 static float k_gro_off=1;
 static float scale_px4_flow=1300;
 static float flow_rad_fix_k[2]={0.8,1},flow_rad_fix_k2=0.0;
@@ -160,21 +163,23 @@ float flow_gyrospeed[3];
 	  static  unsigned char n_flow;
 	  static float gyro_offset_filtered[3],att_gyrospeed_filtered[3],flow_gyrospeed_filtered[3];
 		float flow_ang[2];
-		if(flow_in->integration_time_us){
+
 		if (fabs(flow_gyrospeed[0]) < rate_threshold) {  
-		flow_ang[0] = (flow_in->integrated_x / (float)flow_in->integration_time_us * 1000000.0f) * flow_k;//for now the flow has to be scaled (to small)  
+		flow_ang[0] = (flow_in->integrated_x / (float)flow_in->integration_time_us * 1000000.0f) * flow_k[0];//for now the flow has to be scaled (to small)  
 		}  
 		else {  
 		//calculate flow [rad/s] and compensate for rotations (and offset of flow-gyro)  
 		flow_ang[0] = ((flow_in->integrated_x - LIMIT_FLOW(flow_in->integrated_xgyro*k_gro_off,-fabs(flow_in->integrated_x),fabs(flow_in->integrated_x))) / (float)flow_in->integration_time_us * 1000000.0f  
-		+ gyro_offset_filtered[0]*0) * flow_k;//for now the flow has to be scaled (to small)  
+		+ gyro_offset_filtered[0]*0) * flow_k[0];//for now the flow has to be scaled (to small)  
 		}  
+		
 		if (fabs(flow_gyrospeed[1]) < rate_threshold) {  
-		flow_ang[1] = (flow_in->integrated_y/ (float)flow_in->integration_time_us  * 1000000.0f) * flow_k;//for now the flow has to be scaled (to small)  
+		flow_ang[1] = (flow_in->integrated_y / (float)flow_in->integration_time_us * 1000000.0f) * flow_k[1];//for now the flow has to be scaled (to small)  
 		}  
 		else {  
-		flow_ang[1] = ((flow_in->integrated_y- LIMIT_FLOW(flow_in->integrated_ygyro*k_gro_off,-fabs(flow_in->integrated_y),fabs(flow_in->integrated_y))) / (float)flow_in->integration_time_us  * 1000000.0f  
-		+ gyro_offset_filtered[1]*0) * flow_k;//for now the flow has to be scaled (to small)  
+		//calculate flow [rad/s] and compensate for rotations (and offset of flow-gyro)  
+		flow_ang[1] = ((flow_in->integrated_y - LIMIT_FLOW(flow_in->integrated_ygyro*k_gro_off,-fabs(flow_in->integrated_y),fabs(flow_in->integrated_y))) / (float)flow_in->integration_time_us * 1000000.0f  
+		+ gyro_offset_filtered[1]*0) * flow_k[1];//for now the flow has to be scaled (to small)  
 		}  
 	
 		yaw_comp[0] = - flow_module_offset_y * (flow_gyrospeed[2] - gyro_offset_filtered[2]);  
@@ -183,7 +188,7 @@ float flow_gyrospeed[3];
 
 		x_flow_orign_temp=flow_ang[1]*scale_px4_flow;
 		y_flow_orign_temp=flow_ang[0]*scale_px4_flow;		
-		}
+	
 //		//x
 //		flow_rad_fix[0]=x_flow_orign_temp*sign_flow(mpu6050.Gyro_deg.x,dead_rad_fix[0])*flow_rad_fix_k[0];
 //		if(fabs(imu_fushion.Gyro_deg.x)<dead_rad_fix[0]*0.7)
@@ -204,10 +209,10 @@ float flow_gyrospeed[3];
     flow_per_out[2]=(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2])*flow_height*scale_pix;
 		flow_per_out[3]=(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3])*flow_height*scale_pix;
 		} else {
-		flow_per_out[2]=(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2])*flow_height*scale_pix - yaw_comp[1] * flow_k;//1
-		flow_per_out[3]=(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3])*flow_height*scale_pix - yaw_comp[0] * flow_k;//0
+		flow_per_out[2]=(x_flow_orign_temp-flow_rad_fix[0]-flow_rad_fix[2])*flow_height*scale_pix - yaw_comp[1] * flow_k[1];//1
+		flow_per_out[3]=(y_flow_orign_temp-flow_rad_fix[1]-flow_rad_fix[3])*flow_height*scale_pix - yaw_comp[0] * flow_k[0];//0
 		}
-		
+	
 		flow_per_out[0]*=k_flow_devide;
 		flow_per_out[1]*=k_flow_devide;
 		flow_per_out[2]*=k_flow_devide;

@@ -677,6 +677,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\GPS\m100.c</FilePath>
             </File>
+            <File>
+              <FileName>wifi_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\wifi_ctrl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

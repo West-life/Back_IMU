@@ -6,9 +6,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdarg.h>
-
-
-
 #include <stm32f4xx.h>	
 #include "ekf_ins.h"
 #include "time.h"
@@ -17,9 +14,9 @@
 #include "delay.h" 
 #include "malloc.h"   
 #include "usart_fc.h"   
-#include "spi_nrf.h"							//nrf24l01??spi.h??u8 Spi_RW(u8 dat)??
-#include "rc_mine.h"							//nrf24l01??spi.h??u8 Spi_RW(u8 dat)??
-#include "nrf.h"							//nrf24l01??spi.h??u8 Spi_RW(u8 dat)??
+#include "spi_nrf.h"							
+#include "rc_mine.h"						
+#include "nrf.h"							
 #include "ultrasonic.h"
 #include "rc.h"
 #include "att.h"
@@ -27,58 +24,64 @@
 #include "flash.h"
 #include "dma.h"
 
-/***************中断优先级******************/
+//================SYSTEM==================
 #define NVIC_GROUP NVIC_PriorityGroup_2		//中断分组选择
+#define EN_DMA_UART1 0  //UPLOAD
+#define EN_DMA_UART2 1  //GOL_LINK
+#define EN_DMA_UART3 0  //GPS
+#define EN_DMA_UART4 0 //SD
 /***********************************************/
-//================传感器===================
-#define IMU_UPDATE 1
-#define NEW_IMU 1  //1使用LSD IMU
-#define USE_VER_5 1
-#define USE_VER_4 0
+//================SENSORS===================
+#define IMU_UPDATE 1  //使用LSD IMU
+#define USE_MINI_BOARD 1 //使用LSD IMU
+#define NEW_IMU 1  //使用LSD IMU
+
+#define USE_VER_5 0//Final硬件
+#define USE_VER_4 0//过渡版
 #if USE_VER_4
 #define USE_VER_3 1
 #else
-#define USE_VER_3 0
+#define USE_VER_3 0//第一版
 #endif
-#define FLOW_USE_FLY_LAB 0 //
-#define USE_UKF_FROM_AUTOQUAD 0
+
+//------------FUSION PARAM----------
+#define USE_UKF_FROM_AUTOQUAD 0 //姿态位置融合使用UKF
 #if USE_UKF_FROM_AUTOQUAD
-#define UKF_IN_ONE_THREAD 1 
+#define UKF_IN_ONE_THREAD 1 //单独一个线程跑完所以融合
 #else
-#define UKF_IN_ONE_THREAD 0  //<<------------------
+#define UKF_IN_ONE_THREAD 0 
 #endif
+
 #define USE_M100_IMU 0  //使用DJI SDK数据
-#define SONAR_USE_FLOW 0 //使用光流  的 超声波
-#define USE_ANO_FLOW 0
-#define FLOW_SET_ANGLE 4 
+#define USE_LASER_AVOID 0
+#define USE_WIFI_CONTROL  //使用正点原子wifi模块
+#define USE_CYCLE_HML_CAL  1//1->使用椭球拟合
+#define GET_TIME_NUM 	(30)		//设置获取时间的数组数量
 //-------------SONAR PARAM-----------
-//#define USE_US100           //使用us100型号超声波 
-#define URM07
+#define USE_US100           //使用us100型号超声波 
+//#define URM07
 //#define USE_KS103					//使用ks103型号超声波
 //#define SONAR_SAMPLE1					//0-5m 32ms  no fix
 //#define SONAR_SAMPLE2					//0-5m 100ms T fix
 #define SONAR_SAMPLE3					//0-11m 68ms no fix
-
-#define SENSOR_FORM_PI_FLOW 0  //使用OLDX光流模块
-#define SENSOR_FORM_PI_FLOW_SONAR_NOT 1 //使用OLDX光流模块 但是超声波由IMU采集
 //#define SONAR_USE_SCL  
 //#define SONAR_USE_TIG
 #define SONAR_USE_UART 
 
 #define SONAR_HEIGHT 80
+//---------------------FLOW PARAM---------------------------------
+#define FLOW_SET_ANGLE 4 //光流安装角度
+#define SONAR_USE_FLOW 0 //使用PixFLow光流的超声波
+#define SENSOR_FORM_PI_FLOW_SONAR_NOT 1 //使用OLDX-AMF但是高度使用超声波
 
-#define FLOW_USE_IIC 0
+#define SENSOR_FORM_PI_FLOW 0  //使用OLDX-AMF 二维码SLAM模块
+#define USE_ANO_FLOW 0 //使用匿名光流
+#define FLOW_USE_IIC 0  //Px4 IIc 光流
+#define FLOW_USE_P5A 0  //P5A 光流
+#define FLOW_USE_OPENMV 1//Openmv Oldx 光流
+#define USE_FLOW_FLY_ROBOT 1//使用飞行实验室的光流模块
 
-#define FLOW_USE_P5A 0
-
-#define USE_LASER_AVOID 0
-
-#define USE_FLOW_SONAR 0
-
-#define USE_FLOW_FLY_ROBOT 1
-
-#define ACC_IS_16G 0
-//==============================================
+//===================PARAM==================
 #define PI                     3.14159265359f //圆周率
 #define RAD_DEG            		 57.2957795056f //弧度转化成角度的比例因子
 #define DEG_RAD                0.01745329252f //角度转化成弧度的比例因子
@@ -100,42 +103,6 @@
 
 #define MAX_ACC  4096.0f						//+-8G		加速度计量程
 #define TO_DEG_S 500.0f      				//T = 2ms  默认为2ms ，数值等于1/T
-//================控制=====================
-#define EN_TIM_INNER  0
-#define MAX_CTRL_ANGLE			25.0f										//遥控能达到的最大角度
-#define ANGLE_TO_MAX_AS 		30.0f										//角度误差N时，期望角速度达到最大（可以通过调整CTRL_2的P值调整）
-#define CTRL_2_INT_LIMIT 		0.5f *MAX_CTRL_ANGLE		//外环积分幅度
-#define MAX_FIX_ANGLE 6
-
-#define MAX_CTRL_ASPEED 	 	300.0f									//ROL,PIT允许的最大控制角速度
-#define MAX_CTRL_YAW_SPEED 	30.0f									//YAW允许的最大控制角速度
-#define CTRL_1_INT_LIMIT 		0.5f *MAX_CTRL_ASPEED		//内环积分幅度
-//================矢量舵机控制=======================
-#define MAX_DJ_ANGLE 30  
-#define SCALE_DJ 0.5
-extern float dj_angle_set,dj_angle_offset[3],Angle_Yun[2];
-//=================PWM========================
-#define MAX_PWM				100			///%	最大PWM输出为100%油门
-#define MAX_THR       80 			///%	油门通道最大占比80%，留20%给控制量
-#define READY_SPEED   20			///%	解锁后电机转速20%油门
-//================系统===================
-#define NEW_FLY_BOARD 0  //0—>PWM使用5678
-#define PLANE_IS_BIG  0  //0->穿越机
-#define USE_CYCLE_HML_CAL  1//1->使用椭球拟合
-#define DEBUG_WITHOUT_SB 0
-#define GET_TIME_NUM 	(30)		//设置获取时间的数组数量
-#define USE_TOE_IN_UNLOCK 0 // 0：默认解锁方式，1：外八解锁方式
-//============== DMA使能=========================
-#define EN_DMA_UART1 0  //UPLOAD
-#define EN_DMA_UART2 1  //GOL_LINK
-#define EN_DMA_UART3 0  //GPS
-#define EN_DMA_UART4 0 //SD
-
-
-#define USE_MINI_BOARD 1
-
-extern u8 fly_ready,force_Thr_low;
-
 
 #define RtA 		57.324841				
 #define AtR    	0.0174533				
@@ -259,7 +226,6 @@ typedef float          fp32;                    /* single precision floating poi
 typedef double         fp64;                    /* double precision floating point variable (64bits) 双精度浮点数（64位长度） */
 
 
-
 typedef struct 
 { u8 pi_flow;
 	u8 fc;
@@ -273,7 +239,7 @@ typedef struct
 	u8 laser;
 	u8 dji;
 }SYSTEM;
-
+extern u8 fly_ready,force_Thr_low;
 extern SYSTEM module;
 #endif
 

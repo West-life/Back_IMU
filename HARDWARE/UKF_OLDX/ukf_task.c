@@ -14,7 +14,11 @@
 u8 QR_DELAY=20;
 u8 GPS_DELAY_P=20;
 u8 GPS_DELAY_V=10;
+#if FLOW_USE_OPENMV
+u8 FLOW_DELAY=0;
+#else
 u8 FLOW_DELAY=2;
+#endif
 u8 DELAY_FIX_SEL=1;
 float k_acc_f=0.86;
 float test_k[3]={0.6,1.6,0.6};
@@ -77,7 +81,7 @@ float q_flow[3]={0.02,0.01,0.01};//{1,1,1};//0.6;///1;
 #endif
 float r_flow[3]={10,1,0.1};//{1,1,1};//0.6;///1;
 float flow_gain=1;//2;
-double X_ukf[6],X_ukf_global[6];
+double X_ukf[8],X_ukf_global[8];
 double X_ukf_baro[6];
 int acc_flag_flow[2]={1,1};
 float X_ukf_Pos[2];
@@ -450,10 +454,12 @@ if(kf_data_sel_temp==1){
   }
 //--------=-----------------flow in global---------------------------------------------------------
 	else if(kf_data_sel_temp==2){	 
-		static float pos_buf[2][30],spd_buf[2][30],acc_buf[2][30],acc_bufs[2][30];
-		u8 i;
-	
+	 static float pos_buf[2][30],spd_buf[2][30],acc_buf[2][30],acc_bufs[2][30];
+	 static u8 data_sel=0;
 	 static int qr_yaw_init;	
+	 u8 i;
+	
+	
 	 #if SENSOR_FORM_PI_FLOW	
 	 float Yaw_qr=To_180_degrees(Yaw);
 	 #else
@@ -497,8 +503,6 @@ if(kf_data_sel_temp==1){
 	 Sdpx=velEast*K_spd_gps;
 	 Accx=accEast*flag_kf1[0];
 	 
-	 //Accy=SINS_Accel_Earth[Yr];Accx=SINS_Accel_Earth[Xr];
-	 //Accy=accNorth*0.5+0.5*SINS_Accel_Earth[Yr];Accx=accEast*0.5+0.5*SINS_Accel_Earth[Xr];
 	 
 	 //GPS init
 	 #if USE_M100_IMU
@@ -525,6 +529,7 @@ if(kf_data_sel_temp==1){
 		!(gpsx.pvt.PVT_numsv>=5&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
    ;
 	 else{
+	 data_sel=1;	 
    Global_GPS_Sensor.NED_Pos[Yr]=Posy=posNorth;//1-> west north
 	 Global_GPS_Sensor.NED_Vel[Yr]=Sdpy=velNorth;
 	 Global_GPS_Sensor.NED_Pos[Xr]=Posx=posEast;//0->  east
@@ -549,7 +554,7 @@ if(kf_data_sel_temp==1){
 				state_init_flow_pos=0;
 			break; 
 	 }
-	  //restore
+	  //restore存储滤波后的值
 		for(i=30;i>0;i--)
 		{
 		pos_buf[Xr][i]=pos_buf[Xr][i-1];
@@ -564,7 +569,7 @@ if(kf_data_sel_temp==1){
 		acc_bufs[Xr][i]=acc_bufs[Xr][i-1];
 		acc_bufs[Yr][i]=acc_bufs[Yr][i-1];
 		}
-		pos_buf[Xr][0]=X_KF_NAV[Xr][0];//存储滤波后的值
+		pos_buf[Xr][0]=X_KF_NAV[Xr][0];
 		pos_buf[Yr][0]=X_KF_NAV[Yr][0];
 
 		spd_buf[Xr][0]=X_KF_NAV[Xr][1];
@@ -575,7 +580,7 @@ if(kf_data_sel_temp==1){
 		
 		acc_buf[Xr][0]=Accx;
 		acc_buf[Yr][0]=Accy;
-	 //kalman filter
+	
 	  u8 sensor_sel=0;
 	  u8 delay_sel[2]={0};	
 	  if(gps_update==1)//室外
@@ -583,19 +588,19 @@ if(kf_data_sel_temp==1){
 		H[0]=H[4]=1; 	
 		gps_update=0;
 		sensor_sel=1;	
-		delay_sel[0]=GPS_DELAY_P;delay_sel[1]=GPS_DELAY_V;		
+		delay_sel[0]=GPS_DELAY_P;
+		delay_sel[1]=GPS_DELAY_V;		
 		}	
-		else if(flow_update==1)//室内
+		else if(flow_update==1&&data_sel==0)//室内
 		{
 		H[4]=1; 	
 		flow_update=0;
 		sensor_sel=2;	
-		delay_sel[0]=QR_DELAY;delay_sel[1]=FLOW_DELAY;			
+		delay_sel[0]=QR_DELAY;
+		delay_sel[1]=FLOW_DELAY;			
 		}else
 		H[4]=0;
-		
-	
-   		
+	  //kalman filter		
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
 	 double Zx_delay[4]={pos_buf[Xr][delay_sel[0]],spd_buf[Xr][delay_sel[1]],acc_bufs[Xr][delay_sel[1]],DELAY_FIX_SEL};
@@ -617,8 +622,8 @@ if(kf_data_sel_temp==1){
 	 Zy_fix[1]=Sdpy+((acc_buf[Yr][delay_sel[1]]-acc_bufs[Yr][delay_sel[1]])*delay_sel[1]*T)*Zy_fix[2];
 		 break;
 	 }
-	  //Filter_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
-	  //Strapdown_INS_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
+	 //Filter_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
+	 //Strapdown_INS_Horizontal( Posx, Sdpx, Accx, Posy, Sdpy, Accy, T);
 	 float gps_wqv=gpsx.ubm.sAcc *0.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_VEL_M_N;
 	 float gps_wqp=gpsx.ubm.hAcc *1.001* __sqrtf(gpsx.pvt.tDOP*0.01*gpsx.pvt.tDOP*0.01 + gpsx.pvt.nDOP*0.01*gpsx.pvt.nDOP*0.01) * UKF_GPS_POS_M_N;
 	 float g_spd,g_pos;
@@ -632,10 +637,10 @@ if(kf_data_sel_temp==1){
 	 KF_OLDX_NAV( X_KF_NAV[0],  P_KF_NAV[0],  Zx_fix,  Accx*k_acc_f, A,  B,  H,  ga_nav,  gwa_nav, g_pos,  g_spd,  T ,Zx_delay);
   
 	 X_ukf[0]=X_KF_NAV[0][0];//East pos
-	 //X_ukf[1]=X_KF_NAV[0][1];//East vel
+	 X_ukf[6]=X_KF_NAV[0][1];//East vel
 	 X_ukf[2]=X_KF_NAV[0][2];
 	 X_ukf[3]=X_KF_NAV[1][0];//North  pos
-	 //X_ukf[4]=X_KF_NAV[1][1];//North  vel
+	 X_ukf[7]=X_KF_NAV[1][1];//North  vel
 	 X_ukf[5]=X_KF_NAV[1][2];	
    //spd convert to body frame 	 
 	 X_ukf[1]=-X_KF_NAV[1][1]*sin(Yaw_qr*0.0173)+X_KF_NAV[0][1]*cos(Yaw_qr*0.0173);//X
@@ -651,6 +656,9 @@ if(kf_data_sel_temp==1){
 	 pos_reg[1]=X_ukf[3];	
  	 X_ukf_Pos[0]=X_ukf[0];//East Pos
    X_ukf_Pos[1]=X_ukf[3];//North Pos
+	 //global
+	 X_ukf_global[1]=X_ukf[6];//East   vel
+	 X_ukf_global[4]=X_ukf[7];//North  vel
 	}else{
 //-------------------------------------------flow in body-------------------------------------------------------------------------	
 	 if(qr.check==0)

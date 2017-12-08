@@ -20,6 +20,7 @@
 #include "flow.h"
 #include "nav_ukf.h"
 #include "Ano_OF.h"
+#include "wifi_ctrl.h"
 void Usart2_Init(u32 br_num)//--GOL-link
 {
 	USART_InitTypeDef USART_InitStructure;
@@ -1553,6 +1554,31 @@ switch(sel){
 		sum += SendBuff2[i];
 	SendBuff2[nrf_uart_cnt++] = sum;
 	break;
+	case SEND_WIFI:
+	cnt_reg=nrf_uart_cnt;
+	SendBuff2[nrf_uart_cnt++]=0xAA;
+	SendBuff2[nrf_uart_cnt++]=0xAF;
+	SendBuff2[nrf_uart_cnt++]=0x98;//功能字
+	SendBuff2[nrf_uart_cnt++]=0;//数据量
+	SendBuff2[nrf_uart_cnt++]=wifiCtrl.connect;
+  _temp = (vs16)(wifiCtrl.pitch);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(wifiCtrl.roll);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(wifiCtrl.thrust);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(wifiCtrl.yaw);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
+	for( i=cnt_reg;i< nrf_uart_cnt;i++)
+		sum += SendBuff2[i];
+	SendBuff2[nrf_uart_cnt++] = sum;
+	break;
 	default:break;
 }
 }
@@ -1576,7 +1602,12 @@ if(cnt[1]++>9){cnt[1]=0;
 sd_save_publish();	
 data_per_uart4(SEND_SD);
 }	
+}
+#if defined(USE_WIFI_CONTROL)
+if(cnt[2]++>3){cnt[3]=0;
+data_per_uart4(SEND_WIFI);
 }	
+#endif
 /*	
 //传感器值
 //data_per_uart4(SEND_IMU_MEMS);
@@ -1770,6 +1801,42 @@ void RX_FLOW_P5A(u8 in)
  }	 
 }	
 
+void RX_FLOW_OPENMV(u8 in)
+{
+ static u8 state;
+ static u8 cnt;
+ static u8 buf[30];
+ switch(state)
+ {
+	 case 0:
+		if(in==0xBA)
+		state=1;
+		break;	  
+	case 1:
+		if(in==0xAF)
+		{state=2;cnt=0;}
+		else
+		state=0;
+	 break;	  
+  case 2:
+		 if(in==0x0D&&cnt==6)
+		   {
+				flow_5a.flow_x_integral=(int16_t)((*(buf+0)<<8)|*(buf+1));
+				flow_5a.flow_y_integral=(int16_t)((*(buf+2)<<8)|*(buf+3));
+				flow_5a.quality=(int16_t)((*(buf+4)<<8)|*(buf+5));
+				flow_5a.integration_timespan=0;
+				flow_5a.ground_distance=0;
+				flow_5a.version=0;
+				flow_update=1;
+				state=0;	
+			 }
+		 else if(cnt>7)
+			 state=0;
+		 else
+			 buf[cnt++]=in;
+   break;
+ }	 
+}	
 u8 Tx5Buffer[256];
 u8 Tx5Counter=0;
 u8 count5=0; 
@@ -1793,6 +1860,9 @@ static u8 state = 0;
 		USART_ClearITPendingBit(UART5,USART_IT_RXNE);//清除中断标志
 
 		com_data = UART5->DR;
+		#if FLOW_USE_OPENMV
+		RX_FLOW_OPENMV(com_data);
+		#endif
 		#if FLOW_USE_P5A
 	  RX_FLOW_P5A(com_data);
 		#endif
@@ -2807,6 +2877,7 @@ void UART4_IRQHandler(void)
 		USART_ClearITPendingBit(UART4,USART_IT_RXNE);//清除中断标志
 
 		com_data = UART4->DR;
+		wifiLinkTask(com_data);
 		RxBuffer4_test[RxBuffer4_test_cnt++]=com_data;
 		if(RxBuffer4_test_cnt>24)
 			RxBuffer4_test_cnt=0;

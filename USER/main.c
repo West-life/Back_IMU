@@ -40,9 +40,7 @@ void * MsgGrp[256];			//消息队列存储地址,最大支持256个消息
 SYSTEM module;
 uint16_t cpuGetFlashSize(void)
 {
-
    return (*(__IO u16*)(0x1FFF7A22));
-   // return (*(__IO u32*)(0x1FFF7A20))>>16;
 }
 
 //读取ChipID
@@ -82,23 +80,27 @@ int main(void)
 //------------------------Uart Init-------------------------------------
 	Usart1_Init(115200L);			//GPS_LINK
 	
-//	TIM7_Int_Init(100-1,8400-1);		//100ms中断
-//	#if EN_DMA_UART1 
-//	MYDMA_Config(DMA2_Stream7,DMA_Channel_4,(u32)&USART1->DR,(u32)SendBuff1,SEND_BUF_SIZE1+2,1);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
-//	#endif
+	#if EN_DMA_UART1 
+	MYDMA_Config(DMA2_Stream7,DMA_Channel_4,(u32)&USART1->DR,(u32)SendBuff1,SEND_BUF_SIZE1+2,1);
+	#endif
 	Usart2_Init(576000L);			//IMU_LINK
 	#if EN_DMA_UART2
-	MYDMA_Config(DMA1_Stream6,DMA_Channel_4,(u32)&USART2->DR,(u32)SendBuff2,SEND_BUF_SIZE2+2,1);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
+	MYDMA_Config(DMA1_Stream6,DMA_Channel_4,(u32)&USART2->DR,(u32)SendBuff2,SEND_BUF_SIZE2+2,1);
 	#endif
-	#if USE_LASER_AVOID
-	Usart4_Init(576000L);     //AVOID BOARD
+	#if defined(USE_WIFI_CONTROL)
+	Usart4_Init(19200);
 	#else
-		#if USE_M100_IMU
-		Usart4_Init(115200L);     //IMU2 Link
+		#if USE_LASER_AVOID
+		Usart4_Init(576000L);     //AVOID BOARD
 		#else
-		Usart4_Init(576000L);     //PI FLOW
+			#if USE_M100_IMU
+			Usart4_Init(115200L);     //IMU2 Link
+			#else
+			Usart4_Init(576000L);     //PI FLOW
+			#endif
 		#endif
 	#endif
+	
 	#if EN_DMA_UART4 
 	MYDMA_Config(DMA1_Stream4,DMA_Channel_4,(u32)&UART4->DR,(u32)SendBuff4,SEND_BUF_SIZE4+2,0);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
 	#endif
@@ -106,19 +108,19 @@ int main(void)
 		#if defined(URM07)
 		Usart3_Init(19200); 
 		#else
-		Usart3_Init(9600L);    		//SONAR
+		Usart3_Init(9600L);    	
 		#endif
 	#else
 	Ultrasonic_Init();
 	#endif
-	//#if EN_DMA_UART3
-	//MYDMA_Config(DMA1_Stream3,DMA_Channel_4,(u32)&USART3->DR,(u32)SendBuff3,SEND_BUF_SIZE3+2,2);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
-	// #endif
+	#if EN_DMA_UART3
+	MYDMA_Config(DMA1_Stream3,DMA_Channel_4,(u32)&USART3->DR,(u32)SendBuff3,SEND_BUF_SIZE3+2,2);
+	#endif
 	#if FLOW_USE_P5A
 	Uart5_Init(19200);	
 	#else
 	#if USE_ANO_FLOW
-	Uart5_Init(500000L);			//
+	Uart5_Init(500000L);			
 	#else
 	#if FLOW_USE_IIC
 	Soft_I2C_Init_PX4();      //FLOW PX4 IIC
@@ -132,30 +134,28 @@ int main(void)
 //--system
 	fly_ready=0;
 	mode.en_imu_ekf=0;
-
-
 	//-----------------DMA Init--------------------------
 #if EN_DMA_UART4 
-	USART_DMACmd(UART4,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送     
-	MYDMA_Enable(DMA1_Stream4,SEND_BUF_SIZE4+2);     //开始一次DMA传输！
+	USART_DMACmd(UART4,USART_DMAReq_Tx,ENABLE);    
+	MYDMA_Enable(DMA1_Stream4,SEND_BUF_SIZE4+2);     
 #endif
 #if EN_DMA_UART2
-	USART_DMACmd(USART2,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送     
-	MYDMA_Enable(DMA1_Stream6,SEND_BUF_SIZE2+2);     //开始一次DMA传输！	
+	USART_DMACmd(USART2,USART_DMAReq_Tx,ENABLE); 
+	MYDMA_Enable(DMA1_Stream6,SEND_BUF_SIZE2+2);    
 #endif
 #if EN_DMA_UART3
-	USART_DMACmd(USART3,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送     
-	MYDMA_Enable(DMA1_Stream3,SEND_BUF_SIZE3+2);     //开始一次DMA传输！	
+	USART_DMACmd(USART3,USART_DMAReq_Tx,ENABLE);   
+	MYDMA_Enable(DMA1_Stream3,SEND_BUF_SIZE3+2);    
 #endif
 #if EN_DMA_UART1 
-	USART_DMACmd(USART1,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送     
-	MYDMA_Enable(DMA2_Stream7,SEND_BUF_SIZE1+2);     //开始一次DMA传输！	 
+	USART_DMACmd(USART1,USART_DMAReq_Tx,ENABLE);   
+	MYDMA_Enable(DMA2_Stream7,SEND_BUF_SIZE1+2);    
 #endif	
 #if EN_TIM_INNER
-  TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms    
+  TIM3_Int_Init(50-1,8400-1);
 #endif	
-  TIM3_Int_Init(50-1,8400-1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数5000次为500ms   
-	Delay_ms(20);//上电延时
+  TIM3_Int_Init(50-1,8400-1);	
+	Delay_ms(20);
 	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
 	#if !USE_UKF_FROM_AUTOQUAD
 	#define NO_UCOS 0
@@ -305,16 +305,14 @@ FLOW_RAD flow_rad_use;
     #else
 		flow_matlab_data[2]=firstOrderFilter(LIMIT(flow_per_out[2]*k_flow_devide,-6,6),&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
 		flow_matlab_data[3]=firstOrderFilter(LIMIT(flow_per_out[3]*k_flow_devide,-6,6),&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
-		//	flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;
-		//	flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
 		#endif
 		}
 		#endif
 		static float a_br[3]={0};	
 		static float acc_temp[3]={0};
-		a_br[0] =(float) imu_fushion.Acc.x/4096.;//16438.;
-		a_br[1] =(float) imu_fushion.Acc.y/4096.;//16438.;
-		a_br[2] =(float) imu_fushion.Acc.z/4096.;//16438.;
+		a_br[0] =(float) imu_fushion.Acc.x/4096.;
+		a_br[1] =(float) imu_fushion.Acc.y/4096.;
+		a_br[2] =(float) imu_fushion.Acc.z/4096.;
 		// acc
 	  if(fabs(a_br[0])<1.5&&fabs(a_br[1])<1.5){
 		acc_temp[0] = a_br[1]*reference_vr[2]  - a_br[2]*reference_vr[1] ;
@@ -359,9 +357,6 @@ FLOW_RAD flow_rad_use;
 		float temp_spd[2];
 		imu_nav.flow.speed.x=Moving_Median(16,5,FLOW_VEL_X);
 		imu_nav.flow.speed.y=Moving_Median(17,5,FLOW_VEL_Y);
-
-
-	//delay_ms(10);
 	}
 	#endif
 	OSInit();  	 				
