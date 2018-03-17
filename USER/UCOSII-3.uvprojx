@@ -378,6 +378,11 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
+              <FileName>include.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\HARDWARE\IIC\include.h</FilePath>
+            </File>
+            <File>
               <FileName>datasheet.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\HARDWARE\IIC\datasheet.txt</FilePath>
@@ -401,11 +406,6 @@
               <FileName>os_cfg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\UCOSII\CONFIG\os_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>include.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HARDWARE\IIC\include.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -751,11 +751,6 @@
               <FileName>imu_m.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\imu_m.c</FilePath>
-            </File>
-            <File>
-              <FileName>oldx_ekf_imu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\IIC\oldx_ekf_imu.c</FilePath>
             </File>
             <File>
               <FileName>oldx_ekf_imu2.c</FileName>

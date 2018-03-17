@@ -146,9 +146,10 @@ float param[7]={
 100.0};
 float eulerAngles[3];
 float q_ekf[4];
-//#define AHRS_MAD
-#define AHRS_EKF2
+#define AHRS_MAD
+//#define AHRS_EKF2
 //#define AHRS_OLDX2
+//#define AHRS_ANO 
 void outer_task(void *pdata)
 {	static u8 cnt,cnt1,cnt2;			
   static u8 init,cnt_init;	
@@ -161,9 +162,8 @@ void outer_task(void *pdata)
 	outer_loop_time=0.01;
 	}
 	else{
-  #define AHRS_SEL 0
 	if(outer_loop_time<=0.00002)outer_loop_time=0.01;	
-	#if AHRS_SEL
+	#if defined(AHRS_ANO)
 	IMUupdate(0.5f *outer_loop_time,my_deathzoom_2(imu_fushion.Gyro_deg.x,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.y,0.5), my_deathzoom_2(imu_fushion.Gyro_deg.z,0.5),imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,&RollR,&PitchR,&YawR);	
 	#else
 		#if defined(AHRS_EKF1)
@@ -177,9 +177,9 @@ void outer_task(void *pdata)
 		z_k[0]= imu_fushion.Gyro_deg.x*0.0173;
 		z_k[1]= imu_fushion.Gyro_deg.y*0.0173;
 		z_k[2]= imu_fushion.Gyro_deg.z*0.0173;
-		z_k[3]= imu_fushion.Acc.x/4096*9.8;
-		z_k[4]= imu_fushion.Acc.y/4096*9.8;
-		z_k[5]= imu_fushion.Acc.z/4096*9.8;
+		z_k[3]= imu_fushion.Acc.x/4096.*9.8;
+		z_k[4]= imu_fushion.Acc.y/4096.*9.8;
+		z_k[5]= imu_fushion.Acc.z/4096.*9.8;
 		z_k[6]= -imu_fushion.Mag_Val.x;
 		z_k[7]= -imu_fushion.Mag_Val.y;
 		z_k[8]= -imu_fushion.Mag_Val.z;
@@ -216,18 +216,48 @@ void outer_task(void *pdata)
 		q_nav[2]=ref_q[2]=ref_q_m1[2];
 		q_nav[3]=ref_q[3]=ref_q_m1[3];	
     #endif
-		RollR=RollRm;
-		PitchR=PitchRm;
-		YawR=YawRm;
-		reference_vr[0]=reference_vr_imd_down[0];
-		reference_vr[1]=reference_vr_imd_down[1]; 
-		reference_vr[2]=reference_vr_imd_down[2];
-		q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
-		q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
-		q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
-		q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	   
+		#if YAW_USE_MAD_BUT_ATT_USE_EKF
+			z_k[0]= imu_fushion.Gyro_deg.x*0.0173;
+			z_k[1]= imu_fushion.Gyro_deg.y*0.0173;
+			z_k[2]= imu_fushion.Gyro_deg.z*0.0173;
+			z_k[3]= imu_fushion.Acc.x/4096*9.8;
+			z_k[4]= imu_fushion.Acc.y/4096*9.8;
+			z_k[5]= imu_fushion.Acc.z/4096*9.8;
+			z_k[6]= -imu_fushion.Mag_Val.x;
+			z_k[7]= -imu_fushion.Mag_Val.y;
+			z_k[8]= -imu_fushion.Mag_Val.z;
+			oldx_ekf_imu2( x_apo,P_apo,zFlag,z_k,param,outer_loop_time,x_apo,P_apo,Rot_matrix, eulerAngles);
+			RollR=eulerAngles[1];
+			PitchR=eulerAngles[0];
+			YawR=eulerAngles[2];
+			Quaternion_FromRotationMatrix(Rot_matrix,q_ekf);
+			q_nav[0]=ref_q[0]=ref_q_imd_down[0]= q_ekf[2];
+			q_nav[1]=ref_q[1]=ref_q_imd_down[1]= -q_ekf[3];
+			q_nav[2]=ref_q[2]=ref_q_imd_down[2]= -q_ekf[0];
+			q_nav[3]=ref_q[3]=ref_q_imd_down[3]= q_ekf[1];
+			reference_vr[0]=reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+			reference_vr[1]=reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+			reference_vr[2]=reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);
+			
+			madgwick_update_new(
+			imu_fushion.Acc.x, imu_fushion.Acc.y, imu_fushion.Acc.z,
+			my_deathzoom_2(imu_fushion.Gyro_deg.x,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.y,0.0)*DEG_RAD, my_deathzoom_2(imu_fushion.Gyro_deg.z,0.0)*DEG_RAD*k_gyro_z,
+			imu_fushion.Mag_Val.x, imu_fushion.Mag_Val.y, imu_fushion.Mag_Val.z,
+			&RollRm,&PitchRm,&YawRm,outer_loop_time);	
+    #else
+			RollR=RollRm;
+			PitchR=PitchRm;
+			YawR=YawRm;
+			reference_vr[0]=reference_vr_imd_down[0];
+			reference_vr[1]=reference_vr_imd_down[1]; 
+			reference_vr[2]=reference_vr_imd_down[2];
+			q_nav[0]=ref_q[0]=ref_q_imd_down[0]; 		
+			q_nav[1]=ref_q[1]=ref_q_imd_down[1]; 
+			q_nav[2]=ref_q[2]=ref_q_imd_down[2]; 
+			q_nav[3]=ref_q[3]=ref_q_imd_down[3]; 	
+    #endif		
 	#endif	
-		
+	
 		static float off_yaw; 
 		if (pi_flow.insert==1&&module.pi_flow==1){
 		if(pi_flow.connect==1&&pi_flow.check==1&&gpsx.pvt.PVT_fixtype==0)
@@ -282,13 +312,13 @@ void ekf_task(void *pdata)
 	PitchR=PitchRm=AQ_PITCH;
 	YawR=YawRm=AQ_YAW;
 
-	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=UKF_Q1; 		
-	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q2; 
-	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=UKF_Q3; 
-	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q4; 
-	reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
-	reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
-	reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);	
+	q_nav[0]=ref_q[0]=ref_q_imd_down[0]=-UKF_Q2; 		
+	q_nav[1]=ref_q[1]=ref_q_imd_down[1]=UKF_Q1; 
+	q_nav[2]=ref_q[2]=ref_q_imd_down[2]=-UKF_Q4; 
+	q_nav[3]=ref_q[3]=ref_q_imd_down[3]=UKF_Q3; 
+	reference_vr[0]=reference_vr_imd_down[0] = 2*(ref_q_imd_down[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2]);
+	reference_vr[1]=reference_vr_imd_down[1] = 2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]);
+	reference_vr[2]=reference_vr_imd_down[2] = 1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2]);
 	reference_vr[0]=reference_vr_imd_down[0];
 	reference_vr[1]=reference_vr_imd_down[1]; 
 	reference_vr[2]=reference_vr_imd_down[2];
@@ -302,7 +332,7 @@ void ekf_task(void *pdata)
 	#if USE_UKF_FROM_AUTOQUAD
   delay_ms(10);
  #else
-	delay_ms(5);
+	delay_ms(10);
  #endif
 	}
 }		
@@ -359,7 +389,13 @@ float k_flow_acc[2]={0.1,0.1};
 #else
 float k_flow_acc[2]={0.0231,0.0231};
 #endif
+#if FLOW_USE_OPENMV
+float k_gro_acc[3]={0.0018,0.0018,0};
+float off_flow_origin[2]={-0.001,0.01};
+#else
 float k_gro_acc=0.1;
+float off_flow_origin[2]={0,0};
+#endif
 #if FLOW_USE_P5A
 float flt_gro=0.066;//1;
 #else
@@ -379,21 +415,21 @@ float z_rate = -imu_fushion.Gyro_deg.z; // z is correct
 
 integration_timespan = deltatime*k_time_use;
 #if FLOW_USE_P5A
-accumulated_flow_x = -flow_5a.flow_x_integral  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
-accumulated_flow_y = -flow_5a.flow_y_integral / focal_length_px * 1.0f*k_flow_acc[1];//rad	
+accumulated_flow_x = -flow_5a.flow_x_integral  / focal_length_px * 1.0f*k_flow_acc[0]-off_flow_origin[0]; //rad axis swapped to align x flow around y axis
+accumulated_flow_y = -flow_5a.flow_y_integral / focal_length_px * 1.0f*k_flow_acc[1]-off_flow_origin[1];//rad	
 #else	
-accumulated_flow_x = qr.spdx  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
-accumulated_flow_y = qr.spdy / focal_length_px * 1.0f*k_flow_acc[1];//rad
+accumulated_flow_x = qr.spdx  / focal_length_px * 1.0f*k_flow_acc[0]-off_flow_origin[0]; //rad axis swapped to align x flow around y axis
+accumulated_flow_y = qr.spdy / focal_length_px * 1.0f*k_flow_acc[1]-off_flow_origin[1];//rad
 #endif
 #if FLOW_USE_OPENMV
-accumulated_flow_x = -flow_5a.flow_x_integral  / focal_length_px * 1.0f*k_flow_acc[0]; //rad axis swapped to align x flow around y axis
-accumulated_flow_y = flow_5a.flow_y_integral / focal_length_px * 1.0f*k_flow_acc[1];//rad
+accumulated_flow_x = flow_5a.flow_y_integral  / focal_length_px * 1.0f*k_flow_acc[0]-off_flow_origin[0]; //rad axis swapped to align x flow around y axis
+accumulated_flow_y = flow_5a.flow_x_integral / focal_length_px * 1.0f*k_flow_acc[1]-off_flow_origin[1];//rad
 #endif	
 //accumulated_gyro_x = LIMIT(x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro),-fabs(accumulated_flow_x*8),fabs(accumulated_flow_x*8));	//rad
 //accumulated_gyro_y = LIMIT(y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro),-fabs(accumulated_flow_y*8),fabs(accumulated_flow_y*8));	//rad
-accumulated_gyro_x = x_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_x*(1-flt_gro);
-accumulated_gyro_y = y_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_y*(1-flt_gro);
-accumulated_gyro_z = z_rate * deltatime / 1000000.0f*k_gro_acc*flt_gro+accumulated_gyro_z*(1-flt_gro);	
+accumulated_gyro_x = x_rate * k_gro_acc[0]*flt_gro+accumulated_gyro_x*(1-flt_gro);
+accumulated_gyro_y = y_rate * k_gro_acc[1]*flt_gro+accumulated_gyro_y*(1-flt_gro);
+accumulated_gyro_z = z_rate * k_gro_acc[2]*flt_gro+accumulated_gyro_z*(1-flt_gro);	
 }
 
 
@@ -491,7 +527,7 @@ void flow_task1(void *pdata)
     #else
 		flow_matlab_data[2]=firstOrderFilter(LIMIT(flow_per_out[2]*k_flow_devide,-1,1),&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
 		flow_matlab_data[3]=firstOrderFilter(LIMIT(flow_per_out[3]*k_flow_devide,-1,1),&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
-		//flow_ground_temp[2]=flow_per_out[2]*k_flow_devide;flow_ground_temp[3]=flow_per_out[3]*k_flow_devide;
+		//flow_matlab_data[2]=flow_per_out[2]*k_flow_devide;flow_matlab_data[3]=flow_per_out[3]*k_flow_devide;
 		#endif
 		#if FLOW_USE_OPENMV
 		flow_matlab_data[2]*=-1;
@@ -569,7 +605,7 @@ void flow_task1(void *pdata)
 #define BLE_FLOW_F 5
 #define BLE_GPS  15
 
-u8 UART_UP_LOAD_SEL=BLE_GPS;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=BLE_FLOW_F;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 float px4_test[4]={0};
 void TIM3_IRQHandler(void)
@@ -635,10 +671,10 @@ if(debug_pi_flow[0])
 								0,acc_z_view[1],acc_z_view[0]);break;		
 								case 4://海拔速度
 								Send_BLE_DEBUG((int16_t)(0),flow_rad_use.integrated_x*1000,flow_rad_use.integrated_y*1000,
-								0,flow_rad_use.integrated_xgyro*1000,flow_rad_use.integrated_ygyro*1000,
-								0,flow_matlab_data[2]*1000,flow_matlab_data[3]*1000);break;		
+								(flow_rad_use.integrated_y-flow_rad_use.integrated_ygyro)*1000,flow_rad_use.integrated_xgyro*1000,flow_rad_use.integrated_ygyro*1000,
+								0,flow_matlab_data[2]*100,flow_matlab_data[3]*100);break;		
 								case 5://海拔速度
-								Send_BLE_DEBUG((int16_t)(acc_neo[Yr]*100),acc_neo[Xr]*100,X_ukf[3]*1000,
+								Send_BLE_DEBUG((int16_t)(acc_neo[Yr]*1000),acc_neo[Xr]*1000,X_ukf[3]*1000,
 								FLOW_VEL_X*1000,flow_matlab_data[2]*1000*K_spd_flow,X_ukf[1]*1000,
 								flow_5a.quality,flow_matlab_data[3]*1000*K_spd_flow,X_ukf[4]*1000);break;	
 								case 6://海拔速度
@@ -675,8 +711,8 @@ if(debug_pi_flow[0])
 								X_ukf[0]*100,Global_GPS_Sensor.NED_Posf_reg[Yr]*100,0);break;
 								case 15:
 								Send_BLE_DEBUG(X_ukf_global[1]*100,X_ukf_global[4]*100,UKF_VELD_F*100,
-								Global_GPS_Sensor.NED_Vel[1]*100,Global_GPS_Sensor.NED_Vel[0]*100,gpsx.pvt.PVT_Down_speed*100,
-								UKF_POSE*100, Global_GPS_Sensor.NED_Pos[0]*100, gpsx.pvt.PVT_height*100);break;
+								Global_GPS_Sensor.NED_Vel[Xr]*100,Global_GPS_Sensor.NED_Vel[Yr]*100,Global_GPS_Sensor.NED_Acc[Yr]*100,
+								UKF_POSE*100, Global_GPS_Sensor.NED_Pos[0]*100, Global_GPS_Sensor.NED_Acc[Xr]*100);break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
 								UKF_PRES_ALT*100,UKF_VELD_F*100,UKF_POSD*100,

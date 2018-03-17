@@ -116,24 +116,26 @@ int main(void)
 	#if EN_DMA_UART3
 	MYDMA_Config(DMA1_Stream3,DMA_Channel_4,(u32)&USART3->DR,(u32)SendBuff3,SEND_BUF_SIZE3+2,2);
 	#endif
-	#if FLOW_USE_P5A
-	Uart5_Init(19200);	
-	#else
-	#if USE_ANO_FLOW
-	Uart5_Init(500000L);			
-	#else
 	#if FLOW_USE_IIC
 	Soft_I2C_Init_PX4();      //FLOW PX4 IIC
 	#else
   Uart5_Init(115200L);			//FLOW PX4
 	#endif
+	#if FLOW_USE_P5A
+	Uart5_Init(19200);	
 	#endif
+	#if FLOW_USE_OPENMV
+  Uart5_Init(576000L);			//FLOW PX4
+  #endif
+	#if USE_ANO_FLOW
+	Uart5_Init(500000L);			
 	#endif
-	Delay_ms(10);
 //-----------------------Mode &  Flag init--------------------	
 //--system
 	fly_ready=0;
 	mode.en_imu_ekf=0;
+	flow_5a.offx=300;
+	flow_5a.offy=-150;
 	//-----------------DMA Init--------------------------
 #if EN_DMA_UART4 
 	USART_DMACmd(UART4,USART_DMAReq_Tx,ENABLE);    
@@ -157,10 +159,10 @@ int main(void)
   TIM3_Int_Init(50-1,8400-1);	
 	Delay_ms(20);
 	IWDG_Init(4,500*3); //与分频数为64,重载值为500,溢出时间为1s	
-	#if !USE_UKF_FROM_AUTOQUAD
+	#if USE_UKF_FROM_AUTOQUAD
 	#define NO_UCOS 0
 	#else
-	#define NO_UCOS 1
+	#define NO_UCOS 0
 	#endif
 	#if NO_UCOS
 	while(1)

@@ -74,7 +74,7 @@ void pos_task(void *pdata);
 
 //------------------------NRF算线程
 //设置任务堆栈大小
-#define NRF_STK_SIZE  					64*4
+#define NRF_STK_SIZE  					64*2
 //任务堆栈	
 extern OS_STK NRF_TASK_STK[NRF_STK_SIZE];
 //任务函数
@@ -82,7 +82,7 @@ void nrf_task(void *pdata);
 
 //------------------------BARO线程
 //设置任务堆栈大小
-#define BARO_STK_SIZE  					64*4*3
+#define BARO_STK_SIZE  					64*8
 //任务堆栈	
 extern OS_STK BARO_TASK_STK[BARO_STK_SIZE];
 //任务函数
@@ -107,7 +107,7 @@ void uart_task(void *pdata);
 
 //-----------------------FLOW线程
 //设置任务堆栈大小
-#define FLOW_STK_SIZE  					64*5
+#define FLOW_STK_SIZE  					64*3
 //任务堆栈	
 extern OS_STK FLOW_TASK_STK[FLOW_STK_SIZE];
 //任务函数

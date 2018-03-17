@@ -529,6 +529,7 @@ static u8 init;
 			lis3mdl.Temprea_Offset = sum_temp[TEM]/OFFSET_AV_NUM;
 			acc_sum_cnt =0;
 			lis3mdl.Acc_CALIBRATE = 0;
+			WRITE_PARM();
 			sum_temp[A_X] = sum_temp[A_Y] = sum_temp[A_Z] = sum_temp[TEM] = 0;
 		}	
 	}

@@ -42,7 +42,7 @@
 #define IMU_MAGY   imu_fushion.Mag_Val.y//855.0
 #define IMU_MAGZ   imu_fushion.Mag_Val.z//855.0
 
-
+extern float acc_ukf_neo[3];
 extern u32 dImuData_lastUpdate;
 #define IMU_LASTUPD		dImuData_lastUpdate
 
@@ -119,7 +119,7 @@ extern u32 dImuData_lastUpdate;
 #define UKF_ALTITUDE	UKF_POSD
 #endif
 
-#define UKF_HIST		80
+#define UKF_HIST		40
 #define UKF_P0			101325.0f			    // standard static pressure at sea level
 
 #define UKF_FLOW_ROT		-90.0f				    // optical flow mounting rotation in degrees

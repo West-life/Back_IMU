@@ -252,7 +252,11 @@ int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, 
     q1 *= recip_norm;
     q2 *= recip_norm;
     q3 *= recip_norm;
-
+  #if YAW_USE_MAD_BUT_ATT_USE_EKF
+	*rol = fast_atan2(2*(q0*q1 + q2*q3),1 - 2*(q1*q1 + q2*q2)) *57.3f;
+	*pit = asin(2*(q1*q3 - q0*q2)) *57.3f;
+	*yaw = fast_atan2(2*(-q1*q2 - q0*q3), 2*(q0*q0 + q1*q1) - 1) *57.3f  ;// 
+	#else	
 	ref_q_imd_down[0]=q0;
 	ref_q_imd_down[1]=q1;
 	ref_q_imd_down[2]=q2;
@@ -263,7 +267,7 @@ int madgwick_update_new(float ax,float ay,float az, float wx,float wy,float wz, 
 	*rol = fast_atan2(2*(ref_q_imd_down[0]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[3]),1 - 2*(ref_q_imd_down[1]*ref_q_imd_down[1] + ref_q_imd_down[2]*ref_q_imd_down[2])) *57.3f;
 	*pit = asin(2*(ref_q[1]*ref_q_imd_down[3] - ref_q_imd_down[0]*ref_q_imd_down[2])) *57.3f;
 	*yaw = fast_atan2(2*(-ref_q_imd_down[1]*ref_q_imd_down[2] - ref_q_imd_down[0]*ref_q_imd_down[3]), 2*(ref_q_imd_down[0]*ref_q_imd_down[0] + ref_q_imd_down[1]*ref_q_imd_down[1]) - 1) *57.3f  ;// 
-
+  #endif
     return 1;
 }
 //====================================================================================================

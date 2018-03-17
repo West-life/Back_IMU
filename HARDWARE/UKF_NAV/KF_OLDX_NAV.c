@@ -299,8 +299,8 @@ void KF_OLDX_NAV(double X[3], double P[9], const double Z[3], double U, const
 		for (i0 = 0; i0 < 9; i0++)
 		 P[i0]=P_pre[i0];
    
-			for (i0 = 0; i0 < 3; i0++) 
-					X[i0] = X_pre[i0];
+		for (i0 = 0; i0 < 3; i0++) 
+				X[i0] = X_pre[i0];
   }else
 	{
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/				

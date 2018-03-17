@@ -21,6 +21,7 @@
 #include "nav_ukf.h"
 #include "Ano_OF.h"
 #include "wifi_ctrl.h"
+ void Data_Receive_Anl11(u8 *data_buf,u8 num);
 void Usart2_Init(u32 br_num)//--GOL-link
 {
 	USART_InitTypeDef USART_InitStructure;
@@ -34,7 +35,7 @@ void Usart2_Init(u32 br_num)//--GOL-link
 	//串口中断优先级
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);	
 
@@ -119,7 +120,7 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 		sum += *(data_buf+i);
 	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
 	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
-   if(*(data_buf+2)==0x01)//IMU_FRAME  QR
+   if(*(data_buf+2)==0x81)//IMU_FRAME  QR
   { FC_CONNECT=1;
 		fc_loss_cnt=0;
 		module.fc=1;
@@ -202,12 +203,6 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 }
  
 
-
-u8 TxBuffer[256];
-u8 TxCounter=0;
-u8 count=0; 
-
-u8 Rx_Buf[256];	//串口接收缓存
 u8 RxBuffer[50];
 u8 RxState = 0;
 u8 RxBufferNum = 0;
@@ -264,24 +259,13 @@ void USART2_IRQHandler(void)
 			RxState = 0;
 			RxBuffer[4+_data_cnt]=com_data;
 			Data_Receive_Anl(RxBuffer,_data_cnt+5);
+			Data_Receive_Anl11(RxBuffer,_data_cnt+5);//px4 from fc
 		}
 		else
 			RxState = 0;
 	
 	}
-	//发送（进入移位）中断
-	if( USART_GetITStatus(USART2,USART_IT_TXE ) )
-	{
-				
-		USART2->DR = TxBuffer[TxCounter++]; //写DR清除中断标志          
-		if(TxCounter == count)
-		{
-			USART2->CR1 &= ~USART_CR1_TXEIE;		//关闭TXE（发送中断）中断
-		}
-
-
-		USART_ClearITPendingBit(USART2,USART_IT_TXE);
-	}
+	
 
    OSIntExit(); 
 
@@ -1038,7 +1022,17 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=0xAF;
 	SendBuff2[nrf_uart_cnt++]=0x11;//功能字
 	SendBuff2[nrf_uart_cnt++]=0;//数据量
-
+  #if YAW_USE_MAD_BUT_ATT_USE_EKF
+	_temp = (vs16)(PitchRm*10);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+ 	_temp = (vs16)(RollRm*10);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(YawRm*10);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	#else
 	_temp = (vs16)(Pitch*10);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -1048,7 +1042,7 @@ switch(sel){
 	_temp = (vs16)(Yaw*10);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	
+	#endif
 	_temp = (vs16)( ref_q[0]*1000);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -1285,7 +1279,17 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=0xAF;
 	SendBuff2[nrf_uart_cnt++]=0x88;//功能字
 	SendBuff2[nrf_uart_cnt++]=0;//数据量
- 
+  #if YAW_USE_MAD_BUT_ATT_USE_EKF
+	_temp = (vs16)(PitchRm*10);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+ 	_temp = (vs16)(RollRm*10);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(YawRm*10);
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	#else
 	_temp = (vs16)(Pitch*10);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
@@ -1295,6 +1299,7 @@ switch(sel){
 	_temp = (vs16)(Yaw*10);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	#endif
 	//-------------------
 	if(pi_flow.insert&&module.sonar==0)
 	_temp = (vs16)(	pi_flow.spdz*1000);
@@ -1453,19 +1458,29 @@ switch(sel){
 	_temp = (vs16)(ultra.relative_height*10);//height velocity;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp = (vs32)(m100.Lat);//latitude;
+	float temp_pos;
+	#if USE_M100_IMU
+	temp_pos=GPS_W_F;
+	#else
+	temp_pos=m100.Lat;
+	#endif
+	_temp = (vs32)(temp_pos);//latitude;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp32 = (vs32)((m100.Lat-(int)(m100.Lat))*1000000000);//latitude;
+	_temp32 = (vs32)((temp_pos-(int)(temp_pos))*1000000000);//latitude;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp32);
-	
-	_temp = (vs32)(m100.Lon);//latitude;
+	#if USE_M100_IMU
+	temp_pos=GPS_J_F;
+	#else
+	temp_pos=m100.Lon;
+	#endif
+	_temp = (vs32)(temp_pos);//latitude;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
-	_temp32 = (vs32)((m100.Lon-(int)(m100.Lon))*1000000000);//latitude;
+	_temp32 = (vs32)((temp_pos-(int)(temp_pos))*1000000000);//latitude;
 	SendBuff2[nrf_uart_cnt++]=BYTE3(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE2(_temp32);
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp32);
@@ -1673,7 +1688,7 @@ void Uart5_Init(u32 br_num)//-----video sonar Flow
 	//串口中断优先级
 	NVIC_InitStructure.NVIC_IRQChannel = UART5_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority =1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);	
 
@@ -1821,8 +1836,8 @@ void RX_FLOW_OPENMV(u8 in)
   case 2:
 		 if(in==0x0D&&cnt==6)
 		   {
-				flow_5a.flow_x_integral=(int16_t)((*(buf+0)<<8)|*(buf+1));
-				flow_5a.flow_y_integral=(int16_t)((*(buf+2)<<8)|*(buf+3));
+				flow_5a.flow_x_integral=(int16_t)((*(buf+0)<<8)|*(buf+1))+flow_5a.offx;
+				flow_5a.flow_y_integral=(int16_t)((*(buf+2)<<8)|*(buf+3))+flow_5a.offy;
 				flow_5a.quality=(int16_t)((*(buf+4)<<8)|*(buf+5));
 				flow_5a.integration_timespan=0;
 				flow_5a.ground_distance=0;
@@ -1837,9 +1852,7 @@ void RX_FLOW_OPENMV(u8 in)
    break;
  }	 
 }	
-u8 Tx5Buffer[256];
-u8 Tx5Counter=0;
-u8 count5=0; 
+
 
 void UART5_IRQHandler(void)
 {
@@ -1911,20 +1924,6 @@ static u8 state = 0;
 		module.flow=1;
 	}
 
-	//发送（进入移位）中断
-	if( USART_GetITStatus(UART5,USART_IT_TXE ) )
-	{
-				
-		UART5->DR = Tx5Buffer[Tx5Counter++]; //写DR清除中断标志
-          
-		if(Tx5Counter == count5)
-		{
-			UART5->CR1 &= ~USART_CR1_TXEIE;		//关闭TXE（发送中断）中断
-		}
-
-
-		USART_ClearITPendingBit(UART5,USART_IT_TXE);
-	}
      OSIntExit();    
 }
 
@@ -2029,11 +2028,6 @@ float dlf_odroid=0.5;
 	}
 }
 
-u8 TxBuffer_u1[256];
-u8 TxCounter_u1=0;
-u8 count_u1=0; 
-
-u8 Rx_Buf_u1[256];	//串口接收缓存
 u8 RxBuffer_u1[50];
 u8 RxState_u1 = 0;
 u8 RxBufferNum_u1 = 0;
@@ -2139,7 +2133,7 @@ USART_SendData(USART1, TX_BUF[i]);
 }
 }
 float k_gps_dow_spd=2;
-uint32_t gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update;
+uint32_t gpsData_lastPosUpdate,gpsData_lastVelUpdate,gps_update[2];
 u8 Gps_data_get_PVT(u8 in)
 {
 	static u8 buf[100],state;	
@@ -2199,7 +2193,7 @@ u8 Gps_data_get_PVT(u8 in)
 					{
 					 module.gps=1;
 					 gpsx.pvt.rx_cnt++;	
-					 gps_update=1;
+					 gps_update[0]=gps_update[1]=1;
 					 gpsData_lastVelUpdate=gpsData_lastPosUpdate = micros() - GPS_LATENCY;	
 					 gpsx.pvt.rx_dt=Get_Cycle_T(GET_T_PVT); 	
 					 gpsx.pvt.PVT_fixtype=buf[20+6];
@@ -2453,7 +2447,7 @@ u8 Gps_data_get_VALNED(u8 in)
 	}
 }
 ///--
- void Data_Receive_Anl11(u8 *data_buf,u8 num)
+ void Data_Receive_Anl11(u8 *data_buf,u8 num)//rx px4
 { static u8 flag;
 	double zen,xiao;
 	static float m100_h_off;
@@ -2463,9 +2457,12 @@ u8 Gps_data_get_VALNED(u8 in)
 	u8 i;
 	for( i=0;i<(num-1);i++)
 		sum += *(data_buf+i);
-	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
-	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
- 
+	if(!(sum==*(data_buf+num-1)))		
+	{i=0;
+		return;}		//判断sum
+	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))				//判断帧头
+ {i=0;
+		return;}
 	if(*(data_buf+2)==0x01)//
   { m100.loss_cnt=0;
 		m100.connect=1;
@@ -2613,24 +2610,11 @@ void USART1_IRQHandler(void)//-------------------GPS
 		{
 			RxState11 = 0;
 			RxBuffer11[4+_data_cnt11]=com_data;
-			Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
+			//Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
 		}
 		else
 			RxState11 = 0;
 		
-	}
-	//发送（进入移位）中断
-	if( USART_GetITStatus(USART1,USART_IT_TXE ) )
-	{
-				
-		USART1->DR = TxBuffer_u1[TxCounter_u1++]; //写DR清除中断标志          
-		if(TxCounter_u1 == count_u1)
-		{
-			USART1->CR1 &= ~USART_CR1_TXEIE;		//关闭TXE（发送中断）中断
-		}
-
-
-		USART_ClearITPendingBit(USART1,USART_IT_TXE);
 	}
 
    OSIntExit(); 
@@ -3698,7 +3682,6 @@ float rate_gps_board;
 
 
 
-u8 Rx_Buf3[256];	//串口接收缓存
 u8 RxBuffer3[50];
 u8 RxState3 = 0;
 u8 RxBufferNum3 = 0;
@@ -3760,18 +3743,7 @@ void USART3_IRQHandler(void)
 			RxState3 = 0;
 	
 	}
-	//发送（进入移位）中断
-	if( USART_GetITStatus(USART3,USART_IT_TXE ) )
-	{
-				
-		USART3->DR = TxBuffer[TxCounter++]; //写DR清除中断标志          
-		if(TxCounter == count)
-		{
-			USART3->CR1 &= ~USART_CR1_TXEIE;		//关闭TXE（发送中断）中断
-		}
 
-		USART_ClearITPendingBit(USART3,USART_IT_TXE);
-	}
  OSIntExit();        
 }
 
@@ -4225,5 +4197,4 @@ void m100_contrl_px4(float x,float y,float z,float yaw,u8 mode)
 
 	UsartSend_M100_px4(0xFE);	
 }
-/******************* (C) COPYRIGHT 2014 ANO TECH *****END OF FILE************/
 

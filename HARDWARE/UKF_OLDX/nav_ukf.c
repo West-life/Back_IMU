@@ -23,7 +23,7 @@
 #include "time.h"
 
 #define TIME_UP_FL 1
-#define RATE_SET 20
+#define RATE_SET 10
 
 float UKF_VEL_DELAY   =        -1.0182e+05;
 float UKF_POS_DELAY_UBM   =    -1.0182e+05;
@@ -31,6 +31,9 @@ float UKF_POS_DELAY       =    -1.0182e+05;
 
 float k_acc_ukf1=1;
 float k_m_ukf=0.666;
+
+u8 en_dop_gps=1;
+u8 en_z_bais=1,en_bias_gz=1;
 
 float IMU_MAG_DECL	=0.0;//
 float IMU_MAG_INCL	=-65.0;//65
@@ -46,8 +49,8 @@ float UKF_GPS_VD_N_TEMP=1;
 float UKF_GPS_VEL_N_TEMP_FLOW=0.00035*4;
 float UKF_GPS_VD_N_TEMP_FLOW=1; 
 #else
-float UKF_GPS_VEL_N_TEMP=0.000326;
-float UKF_GPS_VD_N_TEMP=0.0035;
+float UKF_GPS_VEL_N_TEMP=0.0362;//0.000326;
+float UKF_GPS_VD_N_TEMP=UKF_GPS_VD_N;//0.0035;
 
 float UKF_GPS_VEL_N_TEMP_FLOW=0.00035*4;
 float UKF_GPS_VD_N_TEMP_FLOW=1;
@@ -56,8 +59,6 @@ float UKF_GPS_VD_N_TEMP_FLOW=1;
 float UKF_MAG_N_TEMP=UKF_MAG_N;
 
 
-u8 en_dop_gps=1;
-u8 en_z_bais=1,en_bias_gz=1;
 
 navUkfStruct_t navUkfData;
 u32 dImuData_lastUpdate;
@@ -295,7 +296,7 @@ static double a_IIR_acc_ukf[IIR_ORDER_ACC_UKF+1] ={
 };
 static double InPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
 static double OutPut_IIR_acc_ukf[3][IIR_ORDER_ACC_UKF+1] = {0};
-
+float acc_ukf_neo[3];
 float time_update;
 void navUkfTimeUpdate(float *in, float *noise, float *out, float *u, float dt, int n) {
     float tmp[3], acc[3];
@@ -387,6 +388,9 @@ time_update = Get_Cycle_T(TIME_UPDATE);
 	acc_temp[1]=acc[1];
 	acc_temp[2]=acc[2];
 	#endif
+	acc_ukf_neo[Xr]=acc_temp[1];
+	acc_ukf_neo[Yr]=acc_temp[0];
+	acc_ukf_neo[Zr]=acc_temp[2];
 // vel
 	out[UKF_STATE_VELN*n + i] = in[UKF_STATE_VELN*n + i] + acc_temp[0] * dt + noise[UKF_V_NOISE_VELN*n + i];
 	out[UKF_STATE_VELE*n + i] = in[UKF_STATE_VELE*n + i] + acc_temp[1] * dt + noise[UKF_V_NOISE_VELE*n + i];
@@ -736,11 +740,11 @@ void navUkfGpsVelUpdate(uint32_t gpsMicros, float velN, float velE, float velD, 
 	else
     histIndex = (micros() - (gpsMicros + UKF_VEL_DELAY)) / (int)(1e6f * T);
     histIndex = navUkfData.navHistIndex - histIndex;
-    if (histIndex < 0)
-	histIndex += UKF_HIST;
-    if (histIndex < 0 || histIndex >= UKF_HIST)
-	histIndex = 0;
-
+		if (histIndex < 0)
+		histIndex += UKF_HIST;
+		if (histIndex < 0 || histIndex >= UKF_HIST)
+		histIndex = 0;
+   //	histIndex = 0;
     // calculate delta from current position
     velDelta[0] = UKF_VELN - navUkfData.velN[histIndex];
     velDelta[1] = UKF_VELE - navUkfData.velE[histIndex];
@@ -953,13 +957,14 @@ if(!init){init=1;
 }
 
 	// soft start GPS accuracy
-  if(gpsx.pvt.PVT_numsv>=5&&gpsx.pvt.PVT_fixtype>=1)
+  if(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1)
 	{runData.accMask -= 1000/(4.6/AQ_OUTER_TIMESTEP);loss_cnt=0;}
 	else 
 	loss_cnt++;	
-	runData.accMask=LIMIT(runData.accMask,0,1000);
+	
 	if(loss_cnt>333)
   runData.accMask =1000;
+	runData.accMask=LIMIT(runData.accMask,0,1000);
 	navUkfInertialUpdate(AQ_OUTER_TIMESTEP);//200 hz 5ms
 
 	// record history for acc & mag & pressure readings for smoothing purposes
@@ -1001,7 +1006,7 @@ if(!init){init=1;
 	   simDoAccUpdate(runData.sumAcc[0]*(1.0f / (float)RUN_SENSOR_HIST), runData.sumAcc[1]*(1.0f / (float)RUN_SENSOR_HIST), runData.sumAcc[2]*(1.0f / (float)RUN_SENSOR_HIST));
 	  //#endif 
 	}
-	else if (!((loops+7) % RATE_SET)) {
+	else if (!((loops+7) % RATE_SET)&&0) {
 	   simDoPresUpdate(runData.sumPres*(1.0f / (float)RUN_SENSOR_HIST));
 	}
 //#ifndef USE_DIGITAL_IMU
@@ -1013,7 +1018,7 @@ if(!init){init=1;
 //#endif
 	#if GPS_FROM_UBM//--------------------ubm
 	// only accept GPS updates if there is no optical flow
-	else if (1&&gpsx.pvt.PVT_numsv>=5&&gpsx.pvt.PVT_fixtype>=1&&gpsx.ubm.lat!=0&&gpsx.ubm.gpsPosFlag == 1  && gpsx.ubm.hAcc < NAV_MIN_GPS_ACC ) {
+	else if (1&&gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.ubm.lat!=0&&gpsx.ubm.gpsPosFlag == 1  && gpsx.ubm.hAcc < NAV_MIN_GPS_ACC ) {
 	   float dt = Get_Cycle_T(GET_T_UKF_GPS);  
    		navUkfGpsPosUpdate(gpsx.ubm.lastPosUpdate, gpsx.ubm.lat, gpsx.ubm.lon, gpsx.ubm.height, gpsx.ubm.hAcc + runData.accMask, gpsx.ubm.vAcc , runData.accMask,dt,PosN,PosE,PosZ,1);
 	    gpsx.ubm.gpsPosFlag=0;
@@ -1023,18 +1028,18 @@ if(!init){init=1;
 		runData.bestHacc = gpsx.ubm.hAcc;
 	    }
 	}
-	else if (gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.ubm.lat!=0&&gpsx.ubm.gpsVelFlag == 1 &&  gpsx.ubm.sAcc < NAV_MIN_GPS_ACC/2) {
+	else if (gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.ubm.lat!=0&&gpsx.ubm.gpsVelFlag == 1 &&  gpsx.ubm.sAcc < NAV_MIN_GPS_ACC/2) {
 	   
   		navUkfGpsVelUpdate(gpsx.ubm.lastVelUpdate, gpsx.ubm.velN, gpsx.ubm.velE, gpsx.ubm.velD, gpsx.ubm.sAcc , runData.accMask,0,1);
 	    gpsx.ubm.gpsVelFlag=0;
 	}
 	#else//----------------pvt
 	// only accept GPS updates if there is no optical flow
-	else if ((gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update&&((gps_init&&gps_data_vaild)))||force_test) {
-		  gps_update=0;
+	else if ((gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&gps_update[0]&&((gps_init&&gps_data_vaild)))||force_test) {
+		  gps_update[0]=0;
 		  float dt = Get_Cycle_T(GET_T_UKF_GPS);
 		
-		if ( gpsx.pvt.PVT_Hacc*0.001< NAV_MIN_GPS_ACC &&1) 
+		if ( gpsx.pvt.PVT_Hacc*0.001< NAV_MIN_GPS_ACC &&0) 
 	  navUkfGpsPosUpdate(gpsData_lastPosUpdate, gpsx.pvt.PVT_latitude, gpsx.pvt.PVT_longitude, gpsx.pvt.PVT_height, gpsx.pvt.PVT_Hacc+ runData.accMask,gpsx.pvt.PVT_Vacc , runData.accMask,dt,PosN,PosE,PosZ,1);
 		//else			
     //navUkfZeroPos();		
@@ -1047,11 +1052,13 @@ if(!init){init=1;
 	    if (gpsx.pvt.PVT_Hacc < runData.bestHacc && gpsx.pvt.PVT_Hacc*0.001 < NAV_MIN_GPS_ACC) {
                 navPressureAdjust(gpsx.pvt.PVT_height);
 		  runData.bestHacc =gpsx.pvt.PVT_Hacc;}
-
+     
+		UKF_VELN=LIMIT(UKF_VELN,-3,3);
+		UKF_VELE=LIMIT(UKF_VELE,-3,3);	
 	}
 	#endif
 	else if(0&&(module.pi_flow&&pi_flow.insert)&&pi_flow.sensor.update&&
-		!(gpsx.pvt.PVT_numsv>=6&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
+		!(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild)))) 
 	{
 	 float dt = Get_Cycle_T(GET_T_UKF_FLOW);	
 	 float velNorth,velEast;	

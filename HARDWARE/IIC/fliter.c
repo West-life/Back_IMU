@@ -239,15 +239,16 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ð¡·¶Î§ÄÚÕýÈ·¡
 #define ACC_LOWPASS_GX1       (1.0f / (1.0f + ACC_LOWPASS_A))
 #define ACC_LOWPASS_GX2       (1.0f / (1.0f + ACC_LOWPASS_A))
 #define ACC_LOWPASS_GX3       ((1.0f - ACC_LOWPASS_A) / (1.0f + ACC_LOWPASS_A))
-
+//---------------------------------------------------------------------------------
 #define ACC_UKF_LOWPASS_TAU        0.05f
 #define ACC_UKF_LOWPASS_SAMPLE_TIME 0.01f
 #define ACC_UKF_LOWPASS_A          (2.0f * ACC_UKF_LOWPASS_TAU / ACC_UKF_LOWPASS_SAMPLE_TIME )
 #define ACC_UKF_LOWPASS_GX1        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
 #define ACC_UKF_LOWPASS_GX2        (1.0f / (1.0f + ACC_UKF_LOWPASS_A))
 #define ACC_UKF_LOWPASS_GX3       ((1.0f - ACC_UKF_LOWPASS_A) / (1.0f + ACC_UKF_LOWPASS_A))
+//---------------------------------------------------------------------------------
 #if FLOW_USE_OPENMV
-#define FLOW_LOWPASS_TAU        0.051//0.025f
+#define FLOW_LOWPASS_TAU        0.01//0.025f
 #else
 #define FLOW_LOWPASS_TAU        0.0051//0.025f
 #endif
@@ -256,7 +257,7 @@ void simple_3d_trans(_xyz_f_t *ref, _xyz_f_t *in, _xyz_f_t *out) //Ð¡·¶Î§ÄÚÕýÈ·¡
 #define FLOW_LOWPASS_GX1        (1.0f / (1.0f + FLOW_LOWPASS_A))
 #define FLOW_LOWPASS_GX2        (1.0f / (1.0f + FLOW_LOWPASS_A))
 #define FLOW_LOWPASS_GX3       ((1.0f - FLOW_LOWPASS_A) / (1.0f + FLOW_LOWPASS_A))
-
+//---------------------------------------------------------------------------------
 #define HML_LOWPASS_TAU        0.025f
 #define HML_LOWPASS_SAMPLE_TIME 0.02f
 #define	HML_LOWPASS_A           2.0f * 0.05 * 500.0f

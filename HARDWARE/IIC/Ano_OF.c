@@ -11,7 +11,7 @@ int16_t		OF_ACC_X,OF_ACC_Y,OF_ACC_Z;
 int16_t		OF_ACC_X2,OF_ACC_Y2,OF_ACC_Z2;
 float		OF_ATT_ROL,OF_ATT_PIT,OF_ATT_YAW;
 float		OF_ATT_S1,OF_ATT_S2,OF_ATT_S3,OF_ATT_S4;
-
+#if USE_ANO_FLOW
 void AnoOF_DataAnl(uint8_t *data_buf,uint8_t num);
 	
 void AnoOF_GetOneByte(uint8_t data)
@@ -150,3 +150,4 @@ void AnoOF_DataAnl(uint8_t *data_buf,uint8_t num)
 	}
 }
 
+#endif

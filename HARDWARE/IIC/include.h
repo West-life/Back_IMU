@@ -36,21 +36,24 @@
 #define USE_MINI_BOARD 1 //使用LSD IMU
 #define NEW_IMU 1  //使用LSD IMU
 
-#define USE_VER_5 0//Final硬件
-#define USE_VER_4 0//过渡版
+#define USE_VER_5 0//Finalv1硬件 IIC mems
+#define USE_VER_4 1//过渡版 SPI mems
 #if USE_VER_4
-#define USE_VER_3 1
+#define USE_VER_3 1//SPI mems
 #else
-#define USE_VER_3 0//第一版
+#define USE_VER_3 0//第一版 IIC mems
 #endif
 
 //------------FUSION PARAM----------
-#define USE_UKF_FROM_AUTOQUAD 0 //姿态位置融合使用UKF
+#define USE_UKF_FROM_AUTOQUAD 0
+//姿态位置融合使用UKF
 #if USE_UKF_FROM_AUTOQUAD
-#define UKF_IN_ONE_THREAD 1 //单独一个线程跑完所以融合
+#define UKF_IN_ONE_THREAD 0
+//单独一个线程跑完所以融合
 #else
 #define UKF_IN_ONE_THREAD 0 
 #endif
+#define YAW_USE_MAD_BUT_ATT_USE_EKF 0 //EKF使用加速度 航向发送MAD
 
 #define USE_M100_IMU 0  //使用DJI SDK数据
 #define USE_LASER_AVOID 0

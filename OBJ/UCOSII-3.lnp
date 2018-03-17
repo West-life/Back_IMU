@@ -61,7 +61,6 @@
 "..\obj\my_math.o"
 "..\obj\imu.o"
 "..\obj\imu_m.o"
-"..\obj\oldx_ekf_imu.o"
 "..\obj\oldx_ekf_imu2.o"
 "..\obj\kf_oldx_nav.o"
 "..\obj\nav_ukf.o"
