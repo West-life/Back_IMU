@@ -81,6 +81,8 @@
 ..\obj\ukf_task.o: ..\HARDWARE\UKF_NAV\rt_nonfinite.h
 ..\obj\ukf_task.o: ..\HARDWARE\UKF_NAV\rtwtypes.h
 ..\obj\ukf_task.o: ..\HARDWARE\UKF_NAV\KF_OLDX_NAV_types.h
+..\obj\ukf_task.o: ..\HARDWARE\UKF_OLDX\OLDX_MMKF.h
+..\obj\ukf_task.o: ..\HARDWARE\UKF_OLDX\OLDX_MMKF_types.h
 ..\obj\ukf_task.o: ..\HARDWARE\IIC\hml5833l.h
 ..\obj\ukf_task.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 ..\obj\ukf_task.o: ..\HARDWARE\AHRS\insgps.h

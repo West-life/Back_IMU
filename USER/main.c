@@ -100,6 +100,9 @@ int main(void)
 			#endif
 		#endif
 	#endif
+	#if USE_IMU_BACK_IO_AS_SONAR
+   	Usart4_Init(115200L); 
+	#endif
 	
 	#if EN_DMA_UART4 
 	MYDMA_Config(DMA1_Stream4,DMA_Channel_4,(u32)&UART4->DR,(u32)SendBuff4,SEND_BUF_SIZE4+2,0);//DMA2,STEAM7,CH4,外设为串口1,存储器为SendBuff,长度为:SEND_BUF_SIZE.
@@ -109,6 +112,9 @@ int main(void)
 		Usart3_Init(19200); 
 		#else
 		Usart3_Init(9600L);    	
+		#endif
+		#if defined(USE_LIDAR)
+		  Usart3_Init(115200);
 		#endif
 	#else
 	Ultrasonic_Init();

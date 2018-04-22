@@ -261,6 +261,7 @@ void EXTI15_10_IRQHandler(void)
 
 int ultra_distance,ultra_distance_r;
 float ultra_delta;
+u16 laser_sonar_buf[20];
 void Ultra_Get(u8 com_data)
 {
 	static u8 ultra_tmp;
@@ -314,7 +315,7 @@ void Ultra_Get(u8 com_data)
 				sum=0x55+0xAA+buf[0]+buf[1]+buf[2]+buf[3]+buf[4];
 				   if(sum==buf[5])	
 					 {
-					  sys.sonar=ultra_ok = 1;
+					 module.sonar=sys.sonar=ultra_ok = 1;
 						T_sonar=Get_Cycle_T(GET_T_SONAR_SAMPLE); 
 						ultra_distance= LIMIT((buf[3]<<8|buf[4])*10,0,7500);
 					 }
@@ -323,10 +324,49 @@ void Ultra_Get(u8 com_data)
 		 break;
 	 }	 
 	
-//	 ultra_delta = x_pred*1000 - ultra_distance_old;
-//	
-//	 ultra_distance_old = x_pred*1000;
+	 
+	static u8 state_laser;
+  static u8 cnt_laser;
+	u8 check,i;
+  u16 Strength,dis;
 	
+	switch(state_laser)
+	{
+		case 0:
+			if(com_data==0x59)
+			{state_laser=1;laser_sonar_buf[cnt_laser++]=com_data;}
+		break;
+		case 1:
+			if(com_data==0x59)
+			{state_laser=2;laser_sonar_buf[cnt_laser++]=com_data;}
+			else 
+			 state_laser=0;
+		break	;
+		case 2:
+			 if(cnt_laser<=8)
+			  laser_sonar_buf[cnt_laser++]=com_data;
+			 else
+			 {state_laser=0;
+				cnt_laser=0;
+				 check=laser_sonar_buf[0]+laser_sonar_buf[1]+laser_sonar_buf[2]+laser_sonar_buf[3]
+				 +laser_sonar_buf[4]+laser_sonar_buf[5]+laser_sonar_buf[6]+laser_sonar_buf[7];
+				 if(check==laser_sonar_buf[8])
+				 {
+				
+				 dis=(laser_sonar_buf[3]<<8|laser_sonar_buf[2]); 
+				 Strength=laser_sonar_buf[5]<<8|laser_sonar_buf[4];
+			    if(Strength>20){
+					   module.sonar=sys.sonar=ultra_ok = 1;
+						T_sonar=Get_Cycle_T(GET_T_SONAR_SAMPLE); 
+						ultra_distance= LIMIT(dis*10,0,7500);
+					}
+				 }
+				 for(i=0;i<9;i++)
+				  laser_sonar_buf[i]=0;
+			 }
+			 break;
+	}
+
 }
 
 

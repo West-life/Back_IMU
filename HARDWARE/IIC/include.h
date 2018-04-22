@@ -37,7 +37,7 @@
 #define NEW_IMU 1  //使用LSD IMU
 
 #define USE_VER_5 0//Finalv1硬件 IIC mems
-#define USE_VER_4 1//过渡版 SPI mems
+#define USE_VER_4 1//过渡版 SPI mems  FinalV2
 #if USE_VER_4
 #define USE_VER_3 1//SPI mems
 #else
@@ -57,11 +57,12 @@
 
 #define USE_M100_IMU 0  //使用DJI SDK数据
 #define USE_LASER_AVOID 0
-#define USE_WIFI_CONTROL  //使用正点原子wifi模块
+//#define USE_WIFI_CONTROL  //使用正点原子wifi模块
 #define USE_CYCLE_HML_CAL  1//1->使用椭球拟合
 #define GET_TIME_NUM 	(30)		//设置获取时间的数组数量
 //-------------SONAR PARAM-----------
-#define USE_US100           //使用us100型号超声波 
+#define USE_LIDAR 1
+//#define USE_US100           //使用us100型号超声波 
 //#define URM07
 //#define USE_KS103					//使用ks103型号超声波
 //#define SONAR_SAMPLE1					//0-5m 32ms  no fix
@@ -72,8 +73,10 @@
 #define SONAR_USE_UART 
 
 #define SONAR_HEIGHT 80
+#define USE_IMU_BACK_IO_AS_SONAR 1 //SONAR口故障下超声波采集
 //---------------------FLOW PARAM---------------------------------
-#define FLOW_SET_ANGLE 4 //光流安装角度
+#define FLOW_SET_ANGLE 4 //光流安装角度ANO
+#define FLOW_SET_ANGLE1 180*0.0173 //全局光流旋转角度
 #define SONAR_USE_FLOW 0 //使用PixFLow光流的超声波
 #define SENSOR_FORM_PI_FLOW_SONAR_NOT 1 //使用OLDX-AMF但是高度使用超声波
 
@@ -81,7 +84,7 @@
 #define USE_ANO_FLOW 0 //使用匿名光流
 #define FLOW_USE_IIC 0  //Px4 IIc 光流
 #define FLOW_USE_P5A 0  //P5A 光流
-#define FLOW_USE_OPENMV 1//Openmv Oldx 光流
+#define FLOW_USE_OPENMV 0//Openmv Oldx 光流
 #define USE_FLOW_FLY_ROBOT 1//使用飞行实验室的光流模块
 
 //===================PARAM==================

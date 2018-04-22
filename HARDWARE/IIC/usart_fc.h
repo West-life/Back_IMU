@@ -310,6 +310,8 @@ void data_per_uart4(u8 sel);
 #define SEND_PIX 11
 #define SEND_QR 12
 #define SEND_WIFI 13
+
+extern int16_t DEBUG_BUF[10];
 extern float sonar_fc,baroAlt_fc;
 extern float k_flow_devide;
 extern float flow_module_offset_y,flow_module_offset_x,flow_module_set_yaw;//光流安装位移 单位米
@@ -405,7 +407,7 @@ Flight status val	status name
  float control_spd[3];
  float control_yaw;
 }M100;
-extern M100 m100;
+extern M100 m100,px4;
 void UsartSend_M100(uint8_t ch);
 void m100_contrl_px4(float x,float y,float z,float yaw,u8 mode);
 void Ublox_PVT_Mode(void);

@@ -36,7 +36,7 @@ void W25QXX_Init(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//输出
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
+  //GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
   GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化
 
 	W25QXX_CS=1;			//SPI FLASH不选中
@@ -57,6 +57,7 @@ void SPI_CS(u8 sel,u8 set)
 	GPIO_SetBits(GPIOB, GPIO_Pin_12);//flash
 	GPIO_SetBits(GPIOB, GPIO_Pin_9);//DS33  acc+gro
 	GPIO_SetBits(GPIOB, GPIO_Pin_8);//LIS   hml
+	delay_us(10);
 switch(sel)
 {
 	case CS_FLASH:
@@ -64,18 +65,21 @@ switch(sel)
 	GPIO_SetBits(GPIOB, GPIO_Pin_12);
 	else
 	GPIO_ResetBits(GPIOB, GPIO_Pin_12);
+	delay_us(10);
 	break;
 	case CS_DS33:
 	if(set)	
 	GPIO_SetBits(GPIOB, GPIO_Pin_9);
 	else
 	GPIO_ResetBits(GPIOB, GPIO_Pin_9);
+	delay_us(10);
 	break;
 	case CS_LIS:
 	if(set)	
 	GPIO_SetBits(GPIOB, GPIO_Pin_8);
 	else
 	GPIO_ResetBits(GPIOB, GPIO_Pin_8);
+	delay_us(10);
 	break;	
 }
 }	
@@ -349,7 +353,7 @@ void SPI1_Init(void)
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low; //????,????? 
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge; //?1?????,???????? 
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft; //NSS??????? 
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8; //8??,9MHz 
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64; //8??,9MHz 
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB; //???? 
 	SPI_InitStructure.SPI_CRCPolynomial = 7; 
 	SPI_Init(SPI2, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器

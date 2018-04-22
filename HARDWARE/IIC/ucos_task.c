@@ -362,8 +362,11 @@ void sonar_task(void *pdata)
 					Ultra_Duty_SCL(); 
 				}
 		#else
+				#if defined(USE_LIDAR)
+				#else
 				if(fly_ready||en_ble_debug)
-					Ultra_Duty(); 
+					Ultra_Duty();
+				#endif
 		#endif	  
 		#if defined(SONAR_SAMPLE1)
 		delay_ms(40);
@@ -393,7 +396,7 @@ float k_flow_acc[2]={0.0231,0.0231};
 float k_gro_acc[3]={0.0018,0.0018,0};
 float off_flow_origin[2]={-0.001,0.01};
 #else
-float k_gro_acc=0.1;
+float k_gro_acc[3]={0.1,0.1,0.1};
 float off_flow_origin[2]={0,0};
 #endif
 #if FLOW_USE_P5A
@@ -461,7 +464,7 @@ FLOW_RAD flow_rad_use;
 void flow_task1(void *pdata)
 {float flow_height_fliter;		
  static float acc_neo_off[3];
- 
+ float flow_temp[2];
  	while(1)
 	{
 	 #if FLOW_USE_IIC
@@ -516,23 +519,26 @@ void flow_task1(void *pdata)
 		if(module.pi_flow&&!module.flow&&!module.flow_iic){
 		flow_ground_temp[0]=pi_flow.sensor.spdy*k_flow_devide_pi;
 		flow_ground_temp[1]=-pi_flow.sensor.spdx*k_flow_devide_pi;
-		flow_matlab_data[2]=pi_flow.sensor.spdy*k_flow_devide_pi;
-		flow_matlab_data[3]=-pi_flow.sensor.spdx*k_flow_devide_pi;
+		flow_temp[0]=pi_flow.sensor.spdy*k_flow_devide_pi;
+		flow_temp[1]=-pi_flow.sensor.spdx*k_flow_devide_pi;
 		}else{
 		flow_ground_temp[0]=flow_per_out[0];
 		flow_ground_temp[1]=flow_per_out[1];
 		#if FLOW_USE_P5A
-		flow_matlab_data[2]=firstOrderFilter(-flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
-		flow_matlab_data[3]=firstOrderFilter(-flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		flow_temp[0]=firstOrderFilter(-flow_per_out[2]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_temp[1]=firstOrderFilter(-flow_per_out[3]*k_flow_devide,&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
     #else
-		flow_matlab_data[2]=firstOrderFilter(LIMIT(flow_per_out[2]*k_flow_devide,-1,1),&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
-		flow_matlab_data[3]=firstOrderFilter(LIMIT(flow_per_out[3]*k_flow_devide,-1,1),&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
+		flow_temp[0]=firstOrderFilter(LIMIT(flow_per_out[2]*k_flow_devide,-1,1),&firstOrderFilters[FLOW_LOWPASS_X],flow_loop_time);
+		flow_temp[1]=firstOrderFilter(LIMIT(flow_per_out[3]*k_flow_devide,-1,1),&firstOrderFilters[FLOW_LOWPASS_Y],flow_loop_time);
 		//flow_matlab_data[2]=flow_per_out[2]*k_flow_devide;flow_matlab_data[3]=flow_per_out[3]*k_flow_devide;
 		#endif
 		#if FLOW_USE_OPENMV
-		flow_matlab_data[2]*=-1;
-		flow_matlab_data[3]*=-1;
-    #endif			
+		flow_temp[0]*=-1;
+		flow_temp[1]*=-1;
+    #endif		
+
+    flow_matlab_data[2]=flow_temp[0]*cos(FLOW_SET_ANGLE1)+flow_temp[1]*sin(FLOW_SET_ANGLE1);//x;//x
+    flow_matlab_data[3]=flow_temp[1]*cos(FLOW_SET_ANGLE1)-flow_temp[0]*sin(FLOW_SET_ANGLE1);//x;//y 			
 		}
 		#endif
 		static float a_br[3]={0};	
@@ -541,7 +547,7 @@ void flow_task1(void *pdata)
 		a_br[1] =(float) imu_fushion.Acc.y/4096.;
 		a_br[2] =(float) imu_fushion.Acc.z/4096.;
 		// acc
-	  if(fabs(a_br[0])<1.5&&fabs(a_br[1])<1.5){
+	  if(fabs(a_br[0])<3.5&&fabs(a_br[1])<3.5){
 		acc_temp[0] = a_br[1]*reference_vr[2]  - a_br[2]*reference_vr[1] ;
 		acc_temp[1] = a_br[2]*reference_vr[0]  - a_br[0]*reference_vr[2] ;
 	  acc_temp[2] =(reference_vr[2] *a_br[2] + reference_vr[0] *a_br[0] + reference_vr[1] *a_br[1]);
@@ -605,7 +611,7 @@ void flow_task1(void *pdata)
 #define BLE_FLOW_F 5
 #define BLE_GPS  15
 
-u8 UART_UP_LOAD_SEL=BLE_FLOW_F;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=BLE_GPS;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 float px4_test[4]={0};
 void TIM3_IRQHandler(void)
@@ -646,8 +652,8 @@ void TIM3_IRQHandler(void)
 	
 	debug_pi_flow[0]=0;  
 	en_ble_debug=1;								
-if(debug_pi_flow[0])									
-  en_ble_debug=1;
+	if(debug_pi_flow[0])									
+		en_ble_debug=1;
 	if(cnt++>2-1){cnt=0;	
 								if(en_ble_debug){
 								GOL_LINK_BUSY[1]=1;
@@ -712,7 +718,7 @@ if(debug_pi_flow[0])
 								case 15:
 								Send_BLE_DEBUG(X_ukf_global[1]*100,X_ukf_global[4]*100,UKF_VELD_F*100,
 								Global_GPS_Sensor.NED_Vel[Xr]*100,Global_GPS_Sensor.NED_Vel[Yr]*100,Global_GPS_Sensor.NED_Acc[Yr]*100,
-								UKF_POSE*100, Global_GPS_Sensor.NED_Pos[0]*100, Global_GPS_Sensor.NED_Acc[Xr]*100);break;
+								X_ukf_Pos[0]*100, Global_GPS_Sensor.NED_Pos[0]*100, px4.Yaw    );break;
 								case 16:
 								Send_BLE_DEBUG(flow_rad.integrated_x,flow_rad.integrated_y,0,
 								UKF_PRES_ALT*100,UKF_VELD_F*100,UKF_POSD*100,

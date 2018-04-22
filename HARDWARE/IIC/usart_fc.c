@@ -596,6 +596,7 @@ void Send_ATT(void)
 	Send_Data_GOL_LINK(data_to_send, _cnt);
 }  
 
+int16_t DEBUG_BUF[10];
 void Send_BLE_DEBUG(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,int16_t gz,
 					int16_t hx,int16_t hy,int16_t hz)
 {
@@ -617,55 +618,55 @@ u8 i;	u8 sum = 0;
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[1];	
 	else	
-	_temp =  ax;
+	DEBUG_BUF[0]=_temp =  ax;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[2];	
 	else	
-	_temp =  ay;
+	DEBUG_BUF[1]=_temp =  ay;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[3];	
 	else	
-	_temp =  az;//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
+	DEBUG_BUF[2]=_temp =  az;//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[4];	
 	else	
-	_temp =  gx;//navUkfData.posE[0]*1000;
+	DEBUG_BUF[3]=_temp =  gx;//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[5];	
 	else	
-	_temp =  gy;//navUkfData.posE[0]*1000;
+	DEBUG_BUF[4]=_temp =  gy;//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[6];	
 	else	
-	_temp =  gz;//navUkfData.posE[0]*1000;
+	DEBUG_BUF[5]=_temp =  gz;//navUkfData.posE[0]*1000;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[7];	
 	else	
-	_temp =  hx;
+	DEBUG_BUF[6]=_temp =  hx;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[8];	
 	else	
-	_temp =  hy;
+	DEBUG_BUF[7]=_temp =  hy;
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	if(debug_pi_flow[0])
 	_temp =  debug_pi_flow[9];	
 	else	
-	_temp =  hz;//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
+	DEBUG_BUF[8]=_temp =  hz;//navUkfData.posN[0]*1000;//acc_v[1]*1000;//
 	data_to_send[_cnt++]=BYTE1(_temp);
 	data_to_send[_cnt++]=BYTE0(_temp);
 	
@@ -692,7 +693,9 @@ u8 i;	u8 sum = 0;
 	for( i=0;i<_cnt;i++)
 		sum += data_to_send[i];
 	data_to_send[_cnt++] = sum;
+	#if !EN_DMA_UART2
 	Send_Data_GOL_LINK(data_to_send, _cnt);
+	#endif
 }
 
 
@@ -1594,6 +1597,97 @@ switch(sel){
 		sum += SendBuff2[i];
 	SendBuff2[nrf_uart_cnt++] = sum;
 	break;
+	case SEND_IMU_DEBUG:
+	cnt_reg=nrf_uart_cnt;
+	SendBuff2[nrf_uart_cnt++]=0xAA;
+	SendBuff2[nrf_uart_cnt++]=0xAF;
+	SendBuff2[nrf_uart_cnt++]=0x01;//功能字
+	SendBuff2[nrf_uart_cnt++]=0;//数据量
+  
+	if(debug_pi_flow[0])
+	_temp =  1;	
+	else	
+	_temp =  en_ble_debug;
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[1];	
+	else	
+	_temp =  DEBUG_BUF[0];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[2];	
+	else	
+	_temp =  DEBUG_BUF[1];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[3];	
+	else	
+	_temp =  DEBUG_BUF[2];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[4];	
+	else	
+	_temp =  DEBUG_BUF[3];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[5];	
+	else	
+	_temp =  DEBUG_BUF[4];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[6];	
+	else	
+	_temp =  DEBUG_BUF[5];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[7];	
+	else	
+	_temp =  DEBUG_BUF[6];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[8];	
+	else	
+	_temp =  DEBUG_BUF[7];
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	if(debug_pi_flow[0])
+	_temp =  debug_pi_flow[9];	
+	else	
+	_temp =  DEBUG_BUF[8];//
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	_temp=  ( pi_flow.sensor.x);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp=  ( pi_flow.sensor.y);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp=  ( pi_flow.sensor.z);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	
+	SendBuff2[nrf_uart_cnt++]=module.sonar;
+	SendBuff2[nrf_uart_cnt++]=module.gps;
+	SendBuff2[nrf_uart_cnt++]=module.flow||module.flow_iic;
+	SendBuff2[nrf_uart_cnt++]=module.laser;
+	SendBuff2[nrf_uart_cnt++]=module.pi_flow;
+	SendBuff2[nrf_uart_cnt++]=module.acc;
+	SendBuff2[nrf_uart_cnt++]=module.gyro;
+	SendBuff2[nrf_uart_cnt++]=module.hml;
+	SendBuff2[3] = nrf_uart_cnt-4;
+
+	for( i=0;i<nrf_uart_cnt;i++)
+		sum += SendBuff2[i];
+	SendBuff2[nrf_uart_cnt++] = sum;
+	break;
 	default:break;
 }
 }
@@ -1605,24 +1699,31 @@ static u8 flag[10]={0};
 if(m100.connect)
 flag[0]=1;	
 
+if(cnt[4]++>2){cnt[4]=0;
+ data_per_uart4(SEND_IMU_DEBUG);
+}
+
 if(flag[0]){
-data_per_uart4(SEND_PIX);	
-if(cnt[1]++>9){cnt[1]=0;
-data_per_uart4(SEND_QR);
-}		
+	data_per_uart4(SEND_PIX);	
+	if(cnt[1]++>9){cnt[1]=0;
+	data_per_uart4(SEND_QR);
+	}		
 }	
 else{
-data_per_uart4(SEND_ALL);	
-if(cnt[1]++>9){cnt[1]=0;
-sd_save_publish();	
-data_per_uart4(SEND_SD);
-}	
+	data_per_uart4(SEND_ALL);	
+	if(cnt[1]++>9){cnt[1]=0;
+	sd_save_publish();	
+	data_per_uart4(SEND_SD);
+	}	
 }
+
 #if defined(USE_WIFI_CONTROL)
 if(cnt[2]++>3){cnt[3]=0;
 data_per_uart4(SEND_WIFI);
 }	
 #endif
+
+
 /*	
 //传感器值
 //data_per_uart4(SEND_IMU_MEMS);
@@ -2464,48 +2565,50 @@ u8 Gps_data_get_VALNED(u8 in)
  {i=0;
 		return;}
 	if(*(data_buf+2)==0x01)//
-  { m100.loss_cnt=0;
-		m100.connect=1;
-	 	m100.rx_dt=Get_Cycle_T(GET_T_M100); 	
+  { 
+		imu_feed_dog=FC_CONNECT=1;
+		px4.loss_cnt=0;
+		px4.connect=1;
+	 	px4.rx_dt=Get_Cycle_T(GET_T_M100); 	
 		flag=!flag;
-	  m100.Pit=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/10.;
-		m100.Rol=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/10.;
-		m100.Yaw=To_180_degrees(1*(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/10.);
+	  px4.Pit=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/10.;
+		px4.Rol=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/10.;
+		px4.Yaw=To_180_degrees(1*(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9))/10.);
 		
-		m100.H=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
+		px4.H=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11))/1000.;
 		
-		if(m100.H!=m100_hr||m100_attr[0]!=m100.Pit||m100_attr[1]!=m100.Rol||m100_attr[2]!=m100.Yaw)
-		{m100.cnt_m100_data_refresh=0;
-		 m100.m100_data_refresh=1;
+		if(m100.H!=m100_hr||m100_attr[0]!=px4.Pit||m100_attr[1]!=px4.Rol||m100_attr[2]!=px4.Yaw)
+		{px4.cnt_m100_data_refresh=0;
+		 px4.m100_data_refresh=1;
 		}
-		m100_hr=m100.H;
-		m100_attr[0]=m100.Pit;
-		m100_attr[1]=m100.Rol;
-		m100_attr[2]=m100.Yaw;
+		m100_hr=px4.H;
+		m100_attr[0]=px4.Pit;
+		m100_attr[1]=px4.Rol;
+		m100_attr[2]=px4.Yaw;
 		
-		m100.H_Spd=(float)((int16_t)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
+		px4.H_Spd=(float)((int16_t)(*(data_buf+12)<<8)|*(data_buf+13))/1000.;
 		zen=(*(data_buf+14)<<8)|*(data_buf+15);
 		xiao=(double)((u32)(*(data_buf+16)<<24)|(*(data_buf+17)<<16)|(*(data_buf+18)<<8)|*(data_buf+19))/1000000000.;
-		m100.Lat=zen+xiao;
+		px4.Lat=zen+xiao;
 		zen=(*(data_buf+20)<<8)|*(data_buf+21);
 		xiao=(double)((u32)(*(data_buf+22)<<24)|(*(data_buf+23)<<16)|(*(data_buf+24)<<8)|*(data_buf+25))/1000000000.;
-		m100.Lon=zen+xiao;
+		px4.Lon=zen+xiao;
 		
-		m100.Bat=(float)((int16_t)(*(data_buf+26)<<8)|*(data_buf+27));
-		m100.Rc_rol=(float)((int16_t)(*(data_buf+28)<<8)|*(data_buf+29));//rol
-		m100.Rc_yaw=(float)((int16_t)(*(data_buf+30)<<8)|*(data_buf+31));//yaw
-		m100.Rc_gear=(float)((int16_t)(*(data_buf+32)<<8)|*(data_buf+33));//gear
-		m100.Rc_mode=(float)((int16_t)(*(data_buf+34)<<8)|*(data_buf+35));//mode
-		m100.Rc_thr=(float)((int16_t)(*(data_buf+36)<<8)|*(data_buf+37));//thr
-		m100.Rc_pit=(float)((int16_t)(*(data_buf+38)<<8)|*(data_buf+39));//pit
-		m100.STATUS=*(data_buf+40);		
-		if(m100.Lat!=0&&m100.Lon!=0)
-		m100.GPS_STATUS=3;
+		px4.Bat=(float)((int16_t)(*(data_buf+26)<<8)|*(data_buf+27));
+		px4.Rc_rol=(float)((int16_t)(*(data_buf+28)<<8)|*(data_buf+29));//rol
+		px4.Rc_yaw=(float)((int16_t)(*(data_buf+30)<<8)|*(data_buf+31));//yaw
+		px4.Rc_gear=(float)((int16_t)(*(data_buf+32)<<8)|*(data_buf+33));//gear
+		px4.Rc_mode=(float)((int16_t)(*(data_buf+34)<<8)|*(data_buf+35));//mode
+		px4.Rc_thr=(float)((int16_t)(*(data_buf+36)<<8)|*(data_buf+37));//thr
+		px4.Rc_pit=(float)((int16_t)(*(data_buf+38)<<8)|*(data_buf+39));//pit
+		px4.STATUS=*(data_buf+40);		
+		if(px4.Lat!=0&&px4.Lon!=0)
+		px4.GPS_STATUS=3;
     else		
-		m100.GPS_STATUS=*(data_buf+41);
-		m100.spd[0]=(float)((int16_t)(*(data_buf+42)<<8)|*(data_buf+43))/1000.;
-		m100.spd[1]=(float)((int16_t)(*(data_buf+44)<<8)|*(data_buf+45))/1000.;
-		m100.spd[2]=(float)((int16_t)(*(data_buf+46)<<8)|*(data_buf+47))/1000.;
+		px4.GPS_STATUS=*(data_buf+41);
+		px4.spd[0]=(float)((int16_t)(*(data_buf+42)<<8)|*(data_buf+43))/1000.;
+		px4.spd[1]=(float)((int16_t)(*(data_buf+44)<<8)|*(data_buf+45))/1000.;
+		px4.spd[2]=(float)((int16_t)(*(data_buf+46)<<8)|*(data_buf+47))/1000.;
 	}
 	else if(*(data_buf+2)==0x21)//Qr land
   {
@@ -2747,7 +2850,7 @@ void Laser_Get(u8 com_data)
 	}
 }
 
-M100 m100;
+M100 m100,px4;
 int debug_pi_flow[20];
 struct _FLOW_PI pi_flow;
 void Data_Receive_Anl4(u8 *data_buf,u8 num)
@@ -2861,6 +2964,9 @@ void UART4_IRQHandler(void)
 		USART_ClearITPendingBit(UART4,USART_IT_RXNE);//清除中断标志
 
 		com_data = UART4->DR;
+		#if USE_IMU_BACK_IO_AS_SONAR
+		Ultra_Get(com_data);
+		#endif
 		wifiLinkTask(com_data);
 		RxBuffer4_test[RxBuffer4_test_cnt++]=com_data;
 		if(RxBuffer4_test_cnt>24)

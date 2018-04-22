@@ -62,10 +62,11 @@
 "..\obj\imu.o"
 "..\obj\imu_m.o"
 "..\obj\oldx_ekf_imu2.o"
+"..\obj\ukf_task.o"
 "..\obj\kf_oldx_nav.o"
 "..\obj\nav_ukf.o"
-"..\obj\ukf_task.o"
 "..\obj\alt_kf.o"
+"..\obj\oldx_mmkf.o"
 --strict --scatter "..\OBJ\UCOSII-3.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

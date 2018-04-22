@@ -763,6 +763,11 @@
           <GroupName>UKF&amp;POS</GroupName>
           <Files>
             <File>
+              <FileName>ukf_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\ukf_task.c</FilePath>
+            </File>
+            <File>
               <FileName>KF_OLDX_NAV.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\UKF_NAV\KF_OLDX_NAV.c</FilePath>
@@ -773,14 +778,14 @@
               <FilePath>..\HARDWARE\UKF_OLDX\nav_ukf.c</FilePath>
             </File>
             <File>
-              <FileName>ukf_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\UKF_OLDX\ukf_task.c</FilePath>
-            </File>
-            <File>
               <FileName>alt_kf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IIC\alt_kf.c</FilePath>
+            </File>
+            <File>
+              <FileName>OLDX_MMKF.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\UKF_OLDX\OLDX_MMKF.c</FilePath>
             </File>
           </Files>
         </Group>
