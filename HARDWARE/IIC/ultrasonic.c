@@ -119,7 +119,13 @@ void Ultra_Duty()
       Uart5_Send(temp ,0x12);Delay_us(20);
 		#elif defined(USE_US100)
 			temp[0] = 0x55;
-			Uart5_Send(temp ,0x55);
+			#if USE_IMU_BACK_IO_AS_SONAR
+			while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET);
+			USART_SendData(UART4, temp[0]); 
+			#else
+			while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET);
+			USART_SendData(USART3, temp[0]); 
+			#endif
 		#endif
 #else
 	GPIO_SET_SONAR(0);

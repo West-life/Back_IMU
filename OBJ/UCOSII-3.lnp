@@ -50,6 +50,7 @@
 "..\obj\usart_fc.o"
 "..\obj\m100.o"
 "..\obj\wifi_ctrl.o"
+"..\obj\uwb.o"
 "..\obj\lis3mdl.o"
 "..\obj\mpu6050.o"
 "..\obj\fliter.o"

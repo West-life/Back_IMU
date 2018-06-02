@@ -110,6 +110,7 @@
 ..\obj\ucos_task.o: ..\HARDWARE\UKF_OLDX\rt_nonfinite.h
 ..\obj\ucos_task.o: ..\HARDWARE\UKF_OLDX\rtwtypes.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\oldx_ekf_imu2_types.h
+..\obj\ucos_task.o: ..\HARDWARE\IIC\uwb.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\LSM303.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\FastMath.h
 ..\obj\ucos_task.o: ..\HARDWARE\IIC\Double.h

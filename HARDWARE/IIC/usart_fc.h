@@ -15,7 +15,7 @@ void Usart2_Send(unsigned char *DataToSend ,u8 data_num);
 void Uart5_Init(u32 br_num);
 void Uart5_IRQ(void);
 void Uart5_Send(unsigned char *DataToSend ,u8 data_num);
-extern float k_scale_pix;
+extern float k_scale_pix,spd_car[3];;
 typedef struct PID_STA{u16 OP,OI,OD,IP,II,ID,YP,YI,YD;}PID_STA;
 extern PID_STA HPID,SPID,FIX_PID,NAV_PID;
 extern float flow_matlab_data[4], baro_matlab_data[2];
@@ -437,4 +437,34 @@ extern float accumulated_gyro_y ;
 extern float accumulated_gyro_z ;
 extern uint32_t integration_timespan ;
 void flow_sample(void);	
+extern float dis_uwb[4];
+	
+//car
+extern u8 car_mode;
+extern float car_auto_k;
+extern float car_spd[3];
+void Send_TO_CAR(void);
+	
+	
+	
+//amf
+typedef struct  { 
+	float att[3];
+	float spd[3];
+	float pos[3];
+	float pos_o[4];
+	float spd_o[3];
+	int maker[4];//x y z yaw
+	int flow_x_integral; //X ?????????????,??:[-500 ~ =< value <= +500] 
+	int flow_y_integral; //Y ?????????????,??:[-500 ~ =< value <= +500] 
+	int offx,offy;
+	u16 integration_timespan; //???????????????????????(us).
+	u16 ground_distance; //??? 
+	u8 quality; //???????,????????. [ 0 <value < 250 ] 
+	u8 version,connect; //????????? 
+	u16 loss_cnt;
+	float yaw_off;
+	float spd_body[3];
+	}_AMF ;
+extern _AMF amf;
 #endif

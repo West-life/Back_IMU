@@ -481,7 +481,7 @@ if(kf_data_sel_temp==1){
 	 #else
 	 float Yaw_qr=To_180_degrees(Yaw+yaw_qr_off);	
    #endif		
-	 
+	 //Yaw_qr=0;
 	 if (px4.connect&&px4.m100_data_refresh)	
 	   	 Yaw_qr=px4.Yaw;
 		 
@@ -492,6 +492,12 @@ if(kf_data_sel_temp==1){
    float SPDY=flowy*K_spd_flow;
 	 float SPDX=flowx*K_spd_flow;
 	 float acc_bias[2]={0};
+	 if(amf.connect)
+	 {
+	  SPDY=amf.spd_body[1];
+		SPDX=amf.spd_body[0];
+	 }
+	 
    //conver body flow spd to NEZ
 	 velNorth=SPDY*cos(Yaw_qr*0.0173)-SPDX*sin(Yaw_qr*0.0173);
    velEast=SPDY*sin(Yaw_qr*0.0173)+SPDX*cos(Yaw_qr*0.0173);
@@ -547,8 +553,13 @@ if(kf_data_sel_temp==1){
 	 
 	 if (px4.connect&&px4.m100_data_refresh)	
 	 {
-	 velNorth=px4.spd[1]*cos(Yaw_qr*0.0173)-px4.spd[0]*sin(Yaw_qr*0.0173);
-   velEast=px4.spd[1]*sin(Yaw_qr*0.0173)+px4.spd[0]*cos(Yaw_qr*0.0173);	 
+	 #if PX4_USE_FLOW
+		velNorth=SPDY*cos(Yaw_qr*0.0173)-SPDX*sin(Yaw_qr*0.0173);
+		velEast=SPDY*sin(Yaw_qr*0.0173)+SPDX*cos(Yaw_qr*0.0173);
+   #else		 
+		velNorth=px4.spd[1]*cos(Yaw_qr*0.0173)-px4.spd[0]*sin(Yaw_qr*0.0173);
+		velEast=px4.spd[1]*sin(Yaw_qr*0.0173)+px4.spd[0]*cos(Yaw_qr*0.0173);	
+	 #endif
 	 velEast=LIMIT(velEast,-6.3,6.3);
 	 velNorth=LIMIT(velNorth,-6.3,6.3);
 	 Global_GPS_Sensor.NED_Vel[Zr]=px4.spd[2];
@@ -624,33 +635,46 @@ if(kf_data_sel_temp==1){
 
 	  if((gps_update[0]==1&&ABS(Sdpx)<6.66&&ABS(Sdpy)<6.66&&1)||USE_M100_IMU)//室外
 		{
-		H[0]=H[4]=1; 	
-		gps_update[0]=0;
-		sensor_sel=1;	
+			#if !PX4_USE_FLOW
+			H[0]=H[4]=1; 	
+			gps_update[0]=0;
+			sensor_sel=1;		
 			if(px4.connect){
 			delay_sel[0]=0;
 			delay_sel[1]=0;
 			}else{
 			delay_sel[0]=GPS_DELAY_P;
 			delay_sel[1]=GPS_DELAY_V;	
-			}				
+			}			
+      #endif			
 		}	
 		#if !FORCE_GPS_OUT
-		#if FLOW_USE_OPENMV
-		else if((flow_update==1&&data_sel==0&&flow_5a.quality>25)||0)//室内
-		#else
-		else if(flow_update==1&&data_sel==0)//室内
-		#endif
-		{
-		H[4]=1; 	
-		flow_update=0;
-		sensor_sel=2;	
-		delay_sel[0]=QR_DELAY;
-		delay_sel[1]=FLOW_DELAY;			
-		}
+				#if FLOW_USE_OPENMV
+				else if((flow_update==1&&data_sel==0&&flow_5a.quality>25)||0)//室内
+				#else
+				else if(flow_update==1&&data_sel==0)//室内
+				#endif
+			{
+			H[4]=1; 	
+			flow_update=0;
+			sensor_sel=2;	
+			delay_sel[0]=QR_DELAY;
+			delay_sel[1]=FLOW_DELAY;			
+			}
 		#endif
 		else
-		H[4]=0;
+			H[4]=0;
+		
+	 #if PX4_USE_FLOW
+		if(flow_update==1&&data_sel==0)//室内
+			{
+			H[4]=1; 	
+			flow_update=0;
+			sensor_sel=2;	
+			delay_sel[0]=QR_DELAY;
+			delay_sel[1]=FLOW_DELAY;			
+			}
+	 #endif
 	  //kalman filter		
 	 double Zx[3]={Posx,Sdpx,Accx};
 	 double Zy[3]={Posy,Sdpy,Accy};
@@ -688,8 +712,10 @@ if(kf_data_sel_temp==1){
 	 }
 	
 	 float g_w[2]={1,1};//gps to flow weight
-	 if(px4.connect)
-	 {g_w[0]=0.33;g_w[1]=0.33;}
+	 #if !PX4_USE_FLOW
+	 if(px4.connect||amf.connect)
+	 {g_w[0]=0.1;g_w[1]=0.1;}
+	 #endif
 	  /*
 	 if(gpsx.pvt.PVT_numsv>=4&&gpsx.pvt.PVT_fixtype>=1&&gpsx.pvt.PVT_latitude!=0&&((gps_init&&gps_data_vaild))){
      gps_init_kf[0]=1;		

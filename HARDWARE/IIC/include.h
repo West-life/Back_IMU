@@ -45,6 +45,7 @@
 #endif
 
 //------------FUSION PARAM----------
+#define PX4_USE_FLOW 1 //px4连接下用光流
 #define USE_UKF_FROM_AUTOQUAD 0
 //姿态位置融合使用UKF
 #if USE_UKF_FROM_AUTOQUAD
@@ -61,7 +62,7 @@
 #define USE_CYCLE_HML_CAL  1//1->使用椭球拟合
 #define GET_TIME_NUM 	(30)		//设置获取时间的数组数量
 //-------------SONAR PARAM-----------
-#define USE_LIDAR 1
+#define USE_LIDAR             //使用北xing雷达
 //#define USE_US100           //使用us100型号超声波 
 //#define URM07
 //#define USE_KS103					//使用ks103型号超声波
@@ -73,7 +74,9 @@
 #define SONAR_USE_UART 
 
 #define SONAR_HEIGHT 80
+#if !defined(USE_WIFI_CONTROL)
 #define USE_IMU_BACK_IO_AS_SONAR 1 //SONAR口故障下超声波采集
+#endif
 //---------------------FLOW PARAM---------------------------------
 #define FLOW_SET_ANGLE 4 //光流安装角度ANO
 #define FLOW_SET_ANGLE1 180*0.0173 //全局光流旋转角度
@@ -87,6 +90,7 @@
 #define FLOW_USE_OPENMV 0//Openmv Oldx 光流
 #define USE_FLOW_FLY_ROBOT 1//使用飞行实验室的光流模块
 
+#define USE_OUTER_LINK 1 //使用串口1作为外部2号数传
 //===================PARAM==================
 #define PI                     3.14159265359f //圆周率
 #define RAD_DEG            		 57.2957795056f //弧度转化成角度的比例因子

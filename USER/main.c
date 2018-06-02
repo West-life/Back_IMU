@@ -54,7 +54,7 @@ void cpuidGetId(void)
 
 float ekf_loop_time1;
 int main(void)
-{ 
+ { 
 	NVIC_PriorityGroupConfig(NVIC_GROUP);//设置系统中断优先级分组2
 	delay_init(168);  //初始化延时函数
 	Initial_Timer_SYS();
@@ -62,12 +62,12 @@ int main(void)
 	Delay_ms(100);
 	//-------------------------Para Init------------------------------------	
 	W25QXX_Init();			//W25QXX初始化
-	while(W25QXX_ReadID()!=W25Q32&&W25QXX_ReadID()!=W25Q16)								//检测不到W25Q128
-	{	LEDRGB_COLOR(RED);
-		Delay_ms(100);
-		LEDRGB_COLOR(BLACK);
-		Delay_ms(100);
-	}
+//	while(W25QXX_ReadID()!=W25Q32&&W25QXX_ReadID()!=W25Q16)								//检测不到W25Q128
+//	{	LEDRGB_COLOR(RED);
+//		Delay_ms(100);
+//		LEDRGB_COLOR(BLACK);
+//		Delay_ms(100);
+//	}
 	READ_PARM();//读取参数
 	Delay_ms(4000);
   IIC_IMU1_Init();
@@ -78,7 +78,11 @@ int main(void)
 	altUkfInit();
 	Delay_ms(500);
 //------------------------Uart Init-------------------------------------
+	#if USE_OUTER_LINK
+	Usart1_Init(57600);			//Outer Linker
+	#else
 	Usart1_Init(115200L);			//GPS_LINK
+	#endif
 	
 	#if EN_DMA_UART1 
 	MYDMA_Config(DMA2_Stream7,DMA_Channel_4,(u32)&USART1->DR,(u32)SendBuff1,SEND_BUF_SIZE1+2,1);
@@ -101,7 +105,11 @@ int main(void)
 		#endif
 	#endif
 	#if USE_IMU_BACK_IO_AS_SONAR
+	 #if defined (USE_LIDAR)
    	Usart4_Init(115200L); 
+	 #else
+	 	Usart4_Init(9600);
+	#endif
 	#endif
 	
 	#if EN_DMA_UART4 
@@ -125,7 +133,7 @@ int main(void)
 	#if FLOW_USE_IIC
 	Soft_I2C_Init_PX4();      //FLOW PX4 IIC
 	#else
-  Uart5_Init(115200L);			//FLOW PX4
+  Uart5_Init(576000);			//FLOW PX4
 	#endif
 	#if FLOW_USE_P5A
 	Uart5_Init(19200);	

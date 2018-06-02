@@ -424,7 +424,7 @@ void LIS_CalOffset_Mag(void)
 		if(cnt1>888){cnt1=0;
 			lis3mdl.Mag_CALIBRATED=0;}
 		#if USE_VER_4
-		MAX_HML=1500;	
+		MAX_HML=2500;	
 		#else
 		MAX_HML=1500;
 		#endif	
@@ -578,7 +578,7 @@ static u8 init;
 					lis3mdl.Gain_3d.z =  (acc_lsq.Gain[2]);	
           WRITE_PARM();					
           init_hml_norm=1;
-					if(fabs(lis3mdl.Off_3d.x)<400&&fabs(lis3mdl.Off_3d.y)<400&&fabs(lis3mdl.Off_3d.z)<400)
+					if((fabs(lis3mdl.Off_3d.x)<400&&fabs(lis3mdl.Off_3d.y)<400&&fabs(lis3mdl.Off_3d.z)<400)||lis3mdl.Cali_3d==0)
 					module.acc=2;
 					else
 					module.acc=1;

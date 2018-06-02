@@ -1364,7 +1364,10 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		double Z_kf[3]={(float)oldx_sonar+X_kf_sonar[1]*T,0,0};
 	  // kf_oldx( X_kf_sonar,  P_kf_sonar,  Z_kf,  acc_temp1, gh_sonar,  ga,  gwa,dt);
 		
+				
 		 float ultra_dis_tmp1=oldx_sonar;//(float)sonar.displacement/1000;		
+			if(amf.connect)
+				ultra_dis_tmp1=amf.pos_o[2];
 		if( fabs(ultra_dis_tmp1 - ALT_POS_SONAR3) < 0.1 )
 		{
 			
@@ -1389,6 +1392,8 @@ static void altDoPresUpdate(float measuredPres,float dt) {
 		ALT_POS_SONAR2=sonar_fc;
 		else
 	  ALT_POS_SONAR2=ALT_POS_SONAR3;
+	
+			
 		#endif
 }
 

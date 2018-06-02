@@ -86,7 +86,7 @@ unsigned char floattobyte[4];
 		 }
 	 else if(FLOW_STATE[3]==106)
 	 {  flow_update=1;
-	 	flow_rad->time_usec=(flow_buf_rad[7]<<64)|(flow_buf_rad[6]<<56)|(flow_buf_rad[5]<<48)|(flow_buf_rad[4]<<40)
+	 	  flow_rad->time_usec=(flow_buf_rad[7]<<64)|(flow_buf_rad[6]<<56)|(flow_buf_rad[5]<<48)|(flow_buf_rad[4]<<40)
 		 |(flow_buf_rad[3]<<32)|(flow_buf_rad[2]<<16)|(flow_buf_rad[1]<<8)|(flow_buf_rad[0]);
   	 flow_rad->integration_time_us=(flow_buf_rad[11]<<32)|(flow_buf_rad[10]<<16)|(flow_buf_rad[9]<<8)|(flow_buf_rad[8]);
 		 floattobyte[0]=flow_buf_rad[12];

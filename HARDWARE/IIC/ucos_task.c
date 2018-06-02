@@ -32,6 +32,7 @@
 #include "wifi_ctrl.h"
 #include "oldx_ekf_imu.h"
 #include "oldx_ekf_imu2.h"
+#include "uwb.h"
 //==============================传感器 任务函数==========================
 u8 fly_ready;
 float inner_loop_time_time;
@@ -346,6 +347,7 @@ void baro_task(void *pdata)
 	{ static u8 cnt;
 		altUkfProcess(0);
 		delay_ms(20);  
+		uwb_pos_cal(dis_uwb);
 	}
 }	
 
@@ -611,7 +613,7 @@ void flow_task1(void *pdata)
 #define BLE_FLOW_F 5
 #define BLE_GPS  15
 
-u8 UART_UP_LOAD_SEL=BLE_GPS;//<------------------------------UART UPLOAD DATA SEL
+u8 UART_UP_LOAD_SEL=19;//<------------------------------UART UPLOAD DATA SEL
 float time_uart;
 float px4_test[4]={0};
 void TIM3_IRQHandler(void)
@@ -626,11 +628,13 @@ void TIM3_IRQHandler(void)
 	time_uart=0.0025;
 	}
 	else{
-		
+	#if USE_OUTER_LINK
+  Send_TO_CAR();	
+	#else
 	if(m100.control_connect)
 		m100_contrl_px4(m100.control_spd[0],m100.control_spd[1],m100.control_spd[2],m100.control_yaw,m100.px4_tar_mode);
 		//m100_contrl_px4(px4_test[0],px4_test[1],px4_test[2],px4_test[3],m100.px4_tar_mode);
-	
+	#endif
 	if(pi_flow.insert&&cnt2++>2){cnt2=0;
 		Send_TO_FLOW_NAV_GPS();
 		Send_TO_FLOW_PI();		
@@ -727,6 +731,14 @@ void TIM3_IRQHandler(void)
 								Send_BLE_DEBUG(0,0,flow_5a.flow_x_integral,
 								0,0,flow_5a.flow_y_integral,
 								ALT_POS*100,-ALT_VEL*100,AQ_PRESSURE*100);break;
+								case 18:
+								Send_BLE_DEBUG(uwb_pos[0]*100,uwb_pos[1]*100,uwb_pos[2]*100,
+								X_ukf_Pos[0]*100,X_ukf_Pos[1]*100,0,
+								ALT_POS*100,-ALT_VEL*100,AQ_PRESSURE*100);break;
+								case 19:
+								Send_BLE_DEBUG(amf.spd_body[0]*100,amf.spd_body[1]*100,X_ukf_Pos[0]*100,
+								X_ukf[1]*100,X_ukf[4]*100,amf.pos[2]*100,
+								amf.pos[0]*100,amf.pos[1]*100,X_ukf_Pos[1]*100);break;
 							 }
 								GOL_LINK_BUSY[1]=0;		
 								} 

@@ -203,7 +203,7 @@ void Data_Receive_Anl(u8 *data_buf,u8 num)
 }
  
 
-u8 RxBuffer[50];
+u8 RxBuffer[60];
 u8 RxState = 0;
 u8 RxBufferNum = 0;
 u8 RxBufferCnt = 0;
@@ -240,7 +240,7 @@ void USART2_IRQHandler(void)
 			RxState=3;
 			RxBuffer[2]=com_data;
 		}
-		else if(RxState==3&&com_data<50)
+		else if(RxState==3&&com_data<60)
 		{
 			RxState = 4;
 			RxBuffer[3]=com_data;
@@ -1411,7 +1411,15 @@ switch(sel){
 	_temp = (gpsx.pvt.PVT_numsv);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 
-
+  _temp = (vs16)(spd_car[0]);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(spd_car[1]);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(spd_car[2]);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	
 	SendBuff2[cnt_reg+3] = nrf_uart_cnt-cnt_reg-4;
 	for( i=cnt_reg;i< nrf_uart_cnt;i++)
@@ -1523,6 +1531,15 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	_temp = (vs16)(m100.spd[2]*1000);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(car_spd[0]);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(car_spd[1]);//ultra_distance;
+	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
+	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
+	_temp = (vs16)(car_spd[2]);//ultra_distance;
 	SendBuff2[nrf_uart_cnt++]=BYTE1(_temp);
 	SendBuff2[nrf_uart_cnt++]=BYTE0(_temp);
 	
@@ -1681,6 +1698,9 @@ switch(sel){
 	SendBuff2[nrf_uart_cnt++]=module.pi_flow;
 	SendBuff2[nrf_uart_cnt++]=module.acc;
 	SendBuff2[nrf_uart_cnt++]=module.gyro;
+	if(lis3mdl.Mag_CALIBRATED)
+	SendBuff2[nrf_uart_cnt++]=99;	
+	else
 	SendBuff2[nrf_uart_cnt++]=module.hml;
 	SendBuff2[3] = nrf_uart_cnt-4;
 
@@ -1837,7 +1857,7 @@ void Uart5_Init(u32 br_num)//-----video sonar Flow
 }
 
 
-
+_AMF amf;
 //数据解析
 void Data_Receive_Anl_FLOW(u8 *data_buf,u8 num)
 {
@@ -1873,7 +1893,37 @@ void Data_Receive_Anl_FLOW(u8 *data_buf,u8 num)
 		flow_rad.temperature = (*(data_buf+26)<<8)|*(data_buf+27);
 		flow_rad.quality = *(data_buf+28);
 	}
-
+	if(*(data_buf+2)==0X69)
+	{ amf.connect=1;
+		amf.loss_cnt=0;
+		amf.yaw_off=90;
+		flow_update=1;
+		sys.sonar=ultra_ok = 1;
+		amf.att[0] =(float)(int16_t)((*(data_buf+4)<<8)|*(data_buf+5))/10.;
+		amf.att[1] =(float)(int16_t)((*(data_buf+6)<<8)|*(data_buf+7))/10.;
+		amf.att[2] =(float)(int16_t)((*(data_buf+8)<<8)|*(data_buf+9))/10.;
+		
+		amf.spd[0] =(float)(int16_t)((*(data_buf+10)<<8)|*(data_buf+11))/1000.;
+		amf.spd[1] =(float)(int16_t)((*(data_buf+12)<<8)|*(data_buf+13))/1000.;
+		amf.spd[2] =(float)(int16_t)((*(data_buf+14)<<8)|*(data_buf+15))/1000.;
+		
+		amf.pos[0] =(float)(int16_t)((*(data_buf+16)<<8)|*(data_buf+17))/100.;
+		amf.pos[1] =(float)(int16_t)((*(data_buf+18)<<8)|*(data_buf+19))/100.;
+		amf.pos[2] =(float)(int16_t)((*(data_buf+20)<<8)|*(data_buf+21))/100.;
+		
+		amf.spd_o[0] =(float)(int16_t)((*(data_buf+22)<<8)|*(data_buf+23))/1000.;
+		amf.spd_o[1] =(float)(int16_t)((*(data_buf+24)<<8)|*(data_buf+25))/1000.;
+		amf.pos_o[2] =(float)(int16_t)((*(data_buf+26)<<8)|*(data_buf+27))/100.;
+		
+		amf.maker[0] =(float)(int16_t)((*(data_buf+28)<<8)|*(data_buf+29))/1.;//x
+		amf.maker[1] =(float)(int16_t)((*(data_buf+30)<<8)|*(data_buf+31))/1.;//y
+		amf.maker[2] =(float)(int16_t)((*(data_buf+32)<<8)|*(data_buf+33))/1.;//z
+		amf.maker[3] =(float)(int16_t)((*(data_buf+34)<<8)|*(data_buf+35))/1.;//yaw
+				
+		amf.spd_body[0]=(amf.spd[0]*cos(amf.yaw_off*0.0173)+amf.spd[1]*sin(amf.yaw_off*0.0173));//x
+	  amf.spd_body[1]=(amf.spd[1]*cos(amf.yaw_off*0.0173)-amf.spd[0]*sin(amf.yaw_off*0.0173));//y
+    amf.spd_body[2]=amf.spd[2];//z
+	}
 }
 
 
@@ -2640,9 +2690,90 @@ u8 Gps_data_get_VALNED(u8 in)
 //	avoid_color[3]=*(data_buf+24);
 	qr.center_x=-((int16_t)(*(data_buf+25)<<8)|*(data_buf+26));	
 	qr.center_y=-((int16_t)(*(data_buf+27)<<8)|*(data_buf+28));
-	}	
+	}		
+	else if(*(data_buf+2)==0x67)//UWB
+  {
+		dis_uwb[0]=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5));
+		dis_uwb[1]=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7));
+		dis_uwb[2]=(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9));
+		dis_uwb[3]=(float)((int16_t)(*(data_buf+10)<<8)|*(data_buf+11));
+		
+	}
   
 }
+
+
+float spd_car[3];
+float laser_nav[2];
+ void Data_Receive_Anl_Outer_Linker(u8 *data_buf,u8 num)//rx px4
+{ static u8 flag;
+	u8 sum = 0;
+	u8 i;
+	for( i=0;i<(num-1);i++)
+		sum += *(data_buf+i);
+	if(!(sum==*(data_buf+num-1)))		
+	{i=0;
+		return;}		//判断sum
+	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))				//判断帧头
+ {i=0;
+		return;}
+	if(*(data_buf+2)==0x78)//
+  {
+		spd_car[0]=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5));
+		spd_car[1]=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7));
+		spd_car[2]=(float)((int16_t)(*(data_buf+8)<<8)|*(data_buf+9));
+		
+	}else if(*(data_buf+2)==0x06)//
+  {
+		laser_nav[0]=(float)((int16_t)(*(data_buf+4)<<8)|*(data_buf+5))/1000.;
+		laser_nav[1]=(float)((int16_t)(*(data_buf+6)<<8)|*(data_buf+7))/1000.;
+	}
+  
+}
+
+u8 car_mode=3;
+float car_auto_k=1.68;
+float car_spd[3]={0,0,0};
+void Send_TO_CAR(void)
+{u8 i;	u8 sum = 0;
+	u8 data_to_send[50]={0};
+	u8 _cnt=0;
+	vs16 _temp;
+	vs32 _temp32;
+	data_to_send[_cnt++]=0xAA;
+	data_to_send[_cnt++]=0xAF;
+	data_to_send[_cnt++]=0x78;//功能字
+	data_to_send[_cnt++]=0;//数据量
+	_temp = car_mode;
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (vs16)((car_auto_k)*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (vs16)((car_spd[0])*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (vs16)((car_spd[1])*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	_temp = (vs16)((car_spd[2])*10);
+	data_to_send[_cnt++]=BYTE1(_temp);
+	data_to_send[_cnt++]=BYTE0(_temp);
+	
+
+	data_to_send[3] = _cnt-4;
+
+	for( i=0;i<_cnt;i++)
+		sum += data_to_send[i];
+	data_to_send[_cnt++] = sum;
+	
+  for(i=0;i<_cnt;i++)
+    {
+		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+		USART_SendData(USART1, data_to_send[i]); 
+		}
+}
+
+
 u8 RxBuffer11[50];
 u8 RxState11 = 0;
 u8 RxBufferNum11 = 0;
@@ -2713,7 +2844,7 @@ void USART1_IRQHandler(void)//-------------------GPS
 		{
 			RxState11 = 0;
 			RxBuffer11[4+_data_cnt11]=com_data;
-			//Data_Receive_Anl11(RxBuffer11,_data_cnt11+5);
+			Data_Receive_Anl_Outer_Linker(RxBuffer11,_data_cnt11+5);
 		}
 		else
 			RxState11 = 0;
@@ -2737,8 +2868,8 @@ void Usart4_Init(u32 br_num)//-------SD_board
 	
 	//串口中断优先级
 	NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);	
 
@@ -2939,6 +3070,55 @@ void Data_Receive_Anl4(u8 *data_buf,u8 num)
  	
 }
  
+u8 uwb_buf[126];
+float dis_uwb[4];
+
+int numtrans(int num)
+{
+      int dist;
+      for (size_t i = num; i < num+8; i++)
+            {
+                if (uwb_buf[i]>'9')
+                {
+                    dist = dist*16+ (unsigned int)(uwb_buf[i]-'a'+10);
+                }
+                else
+                {
+                    dist= dist *16+ (unsigned int)(uwb_buf[i]-'0');
+                }
+            }
+    return dist;
+}    
+
+void UWB_GET(u8 data)
+{
+ static u8 state,cnt;
+ switch(state)
+ {
+	 case 0:
+		   if(data=='m')
+	       state=1;
+	 break;
+	 case 1:
+		   if(data=='a')
+			 {state=2;cnt=2;}
+			 else
+				 state=0;
+	 break;	 
+	 case 2:
+      uwb_buf[cnt++]=data;
+      if(cnt>15)
+			{
+			  dis_uwb[0]=(float)numtrans(3)/1000.;
+//			  dis_uwb[1]=(float)numtrans(15)/1000.;
+//				dis_uwb[2]=(float)numtrans(27)/1000.;
+//				dis_uwb[3]=(float)numtrans(39)/1000.;
+				state=0;
+			}	
+   break;	 
+ }
+}
+
 
 
 
@@ -2966,6 +3146,7 @@ void UART4_IRQHandler(void)
 		com_data = UART4->DR;
 		#if USE_IMU_BACK_IO_AS_SONAR
 		Ultra_Get(com_data);
+		//UWB_GET(com_data);
 		#endif
 		wifiLinkTask(com_data);
 		RxBuffer4_test[RxBuffer4_test_cnt++]=com_data;
